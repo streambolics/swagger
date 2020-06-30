@@ -81,8 +81,81 @@ paths:
       description: |
         Retrieves a list of Resource objects.
         <br/><b>Notes:</b><ul>
-        <li>Objects marked as hidden are not listed, unless the <tt>includehidden</tt> option is provided.</li>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        <li>The returned list of objects is subject to pagination.</li>
         </ul>
+      parameters:
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "kind"
+        in: "query"
+        required: false
+        description: |
+          The GUID of a ResourceKind object. Only Resource objects having this value as kind are returned.
+          <br/><b>Notes:</b><ul>
+          <li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are returned.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
       responses:
         "200":
           description: |
@@ -253,8 +326,70 @@ paths:
       description: |
         Retrieves a list of ResourceLinkKind objects.
         <br/><b>Notes:</b><ul>
-        <li>Objects marked as hidden are not listed, unless the <tt>includehidden</tt> option is provided.</li>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        <li>The returned list of objects is subject to pagination.</li>
         </ul>
+      parameters:
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: |
@@ -413,8 +548,70 @@ paths:
       description: |
         Retrieves a list of ResourceKind objects.
         <br/><b>Notes:</b><ul>
-        <li>Objects marked as hidden are not listed, unless the <tt>includehidden</tt> option is provided.</li>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        <li>The returned list of objects is subject to pagination.</li>
         </ul>
+      parameters:
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: |
