@@ -8,6 +8,36 @@ servers:
   - url: https://api.int.di-labx.com
   - url: https://api.dev.di-labx.com
 paths:
+  '/auth':
+    post:
+      description: |
+        Log-on to LabX. Copy the returned token in the authorization box
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  example: 'someone@somewhere.com'
+                password:
+                  type: string
+                  example: 'PaSsWoRd01'
+      responses:
+        "200":
+          description: |
+            Successful operation. The token should be copied to authorization
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                  token:
+                    type: string
   '/api/resource/1.0/resources':
     post:
       security:
@@ -503,6 +533,8 @@ paths:
 components:
   securitySchemes:
     Authorization:
+      description: |
+        Enter here the value of the <tt>token</tt> field that you received from a valid /auth call
       type: apiKey
       in: header
       name: Authorization
