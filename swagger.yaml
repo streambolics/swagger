@@ -38,18 +38,149 @@ paths:
                     type: string
                   token:
                     type: string
-  '/api/resource/1.0/resources':
-    post:
+  '/api/resource/1.0/imconnections':
+    get:
       security:
         - Authorization: []
       description: |
-        Creates a new Resource object.
+        get
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/ImConnection"
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/resource/1.0/imconnections/{id}':
+    get:
+      security:
+        - Authorization: []
+      description: |
+        Retrieve additional information about an IM connection
+        <br/><b>Notes:</b><ul>
+        <li>It is expected that IM information has been setup by a PUT query.</li>
+        <li>It is legal to retrieve the IM information for a connection that has not be the target of a PUT query. In that case, most of the fields returned by this query will be empty.</li>
+        </ul>
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/ImConnection"
+        "401":
+          description: |
+            Access token is missing or invalid
+    put:
+      security:
+        - Authorization: []
+      description: |
+        Update the IM information about a connection.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Resource"
+              $ref: "#/components/schemas/ImConnection"
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/resource/1.0/middlewares/{uniqueid}':
+    get:
+      security:
+        - Authorization: []
+      description: |
+        get
+      parameters:
+      - name: "uniqueid"
+        in: "path"
+        required: true
+        description: |
+          A user-defined unique name.
+          <br/><b>Notes:</b><ul>
+          <li>Unique names are user defined, they do not need to be UUIDs.</li>
+          <li>It is the client responsibility to ensure  that names are kept unique, and that the same name is always used to refer to the same item.</li>
+          </ul>
+        schema:
+          type: string
+      - name: "autocreate"
+        in: "query"
+        required: true
+        description: |
+          Whether to auto-synchronize the cloud definition.
+          <br/><b>Notes:</b><ul>
+          <li>If the autocreate option is not set, issuing a GET for the given unique code returns a 404 if the resource was never synchronized before.</li>
+          <li>It is recommended to set this field to true only when the query is performed by the client that is responsible for synchronizing the resource. Othe clients should leave this field to false, in order to avoid updating a resource that they do not own.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "displayname"
+        in: "query"
+        required: true
+        description: |
+          The display name that is used as the name of the resource during synchronization.
+          <br/><b>Notes:</b><ul>
+          <li>This field is ignored if autocreate is false</li>
+          </ul>
+        schema:
+          type: string
       responses:
         "200":
           description: |
@@ -75,11 +206,48 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/resourcekinds':
+    post:
+      security:
+        - Authorization: []
+      description: |
+        Creates a new ResourceKind object.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceKind"
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/ResourceKind"
+        "401":
+          description: |
+            Access token is missing or invalid
     get:
       security:
         - Authorization: []
       description: |
-        Retrieves a list of Resource objects.
+        Retrieves a list of ResourceKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
         <li>The returned list of objects is subject to pagination.</li>
@@ -145,17 +313,6 @@ paths:
         schema:
           type: integer
           format: int64
-      - name: "kind"
-        in: "query"
-        required: false
-        description: |
-          The GUID of a ResourceKind object. Only Resource objects having this value as kind are selected.
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are selected.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
       responses:
         "200":
           description: |
@@ -179,11 +336,11 @@ paths:
                   data:
                     type: "array"
                     items:
-                      $ref: "#/components/schemas/Resource"
+                      $ref: "#/components/schemas/ResourceKind"
         "401":
           description: |
             Access token is missing or invalid
-  '/api/resource/1.0/resources/{id}':
+  '/api/resource/1.0/resourcekinds/{id}':
     get:
       security:
         - Authorization: []
@@ -238,18 +395,6 @@ paths:
         <tt>hidden</tt> property back to <tt>false</tt>.</li>
         </ul>
       parameters:
-      - name: "reason"
-        in: "query"
-        required: false
-        description: |
-          <b>Warning</b>: This feature is currently experimental and should not be used in production<br/>
-          The unique ID of the reason why the resource is deleted.
-          <br/><b>Notes:</b><ul>
-          <li>This is equivalent to including the `hiddenreason` parameter to a PUT query.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
       - name: "id"
         in: "path"
         required: true
@@ -591,18 +736,18 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
-  '/api/resource/1.0/resourcekinds':
+  '/api/resource/1.0/resources':
     post:
       security:
         - Authorization: []
       description: |
-        Creates a new ResourceKind object.
+        Creates a new Resource object.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResourceKind"
+              $ref: "#/components/schemas/Resource"
       responses:
         "200":
           description: |
@@ -624,7 +769,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/ResourceKind"
+                    $ref: "#/components/schemas/Resource"
         "401":
           description: |
             Access token is missing or invalid
@@ -632,7 +777,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Retrieves a list of ResourceKind objects.
+        Retrieves a list of Resource objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
         <li>The returned list of objects is subject to pagination.</li>
@@ -698,6 +843,44 @@ paths:
         schema:
           type: integer
           format: int64
+      - name: "kind"
+        in: "query"
+        required: false
+        description: |
+          The GUID of a ResourceKind object. Only Resource objects having this value as kind are selected.
+          <br/><b>Notes:</b><ul>
+          <li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are selected.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "includelinks"
+        in: "query"
+        required: false
+        description: |
+          Whether to include the <tt>links</tt> property in each of the returned resources
+        schema:
+          type: boolean
+      - name: "maxreportedlinks"
+        in: "query"
+        required: false
+        description: |
+          The maximum number of items returnes in the <tt>links</tt> property for each resource.
+        schema:
+          type: integer
+          format: int64
+          default: 1000
+          minimum: 0
+      - name: "links_elementkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+      - name: "links_linkkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
       responses:
         "200":
           description: |
@@ -721,11 +904,11 @@ paths:
                   data:
                     type: "array"
                     items:
-                      $ref: "#/components/schemas/ResourceKind"
+                      $ref: "#/components/schemas/Resource"
         "401":
           description: |
             Access token is missing or invalid
-  '/api/resource/1.0/resourcekinds/{id}':
+  '/api/resource/1.0/resources/{id}':
     get:
       security:
         - Authorization: []
@@ -735,6 +918,33 @@ paths:
         <li>The object is returned even if it is hidden.</li>
         </ul>
       parameters:
+      - name: "includelinks"
+        in: "query"
+        required: false
+        description: |
+          Whether to include the <tt>links</tt> property in each of the returned resources
+        schema:
+          type: boolean
+      - name: "maxreportedlinks"
+        in: "query"
+        required: false
+        description: |
+          The maximum number of items returnes in the <tt>links</tt> property for each resource.
+        schema:
+          type: integer
+          format: int64
+          default: 1000
+          minimum: 0
+      - name: "links_elementkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+      - name: "links_linkkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
       - name: "id"
         in: "path"
         required: true
@@ -780,6 +990,28 @@ paths:
         <tt>hidden</tt> property back to <tt>false</tt>.</li>
         </ul>
       parameters:
+      - name: "reason"
+        in: "query"
+        required: false
+        description: |
+          <b>Warning</b>: This feature is currently experimental and should not be used in production<br/>
+          The reason why the resource is deleted.
+          <br/><b>Notes:</b><ul>
+          <li>This is equivalent to including the `hiddenreason` parameter to a PUT query.</li>
+          <li>This is equivalent to including the `hiddenreason` parameter to a PUT query.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "reason"
+        in: "query"
+        required: true
+        description: |
+          <b>Warning</b>: This feature is currently experimental and should not be used in production<br/>
+          The reason why the resource is deleted.
+        schema:
+          type: string
+          format: guid
       - name: "id"
         in: "path"
         required: true
@@ -856,132 +1088,6 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
-  '/api/resource/1.0/resources/{id}/masters':
-    get:
-      security:
-        - Authorization: []
-      description: |
-        The list of masters of a given resource.
-        <br/><b>Notes:</b><ul>
-        <li>The returned list of objects is subject to pagination.</li>
-        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        </ul>
-      parameters:
-      - name: "kind"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of GUID of ResourceKind objects. Only TBD objects having one of these values as kind are selected.
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "linkkind"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of GUID of ResourceLinkKind objects. Only TBD objects having one of these values as linkkind are selected.
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "page"
-        in: "query"
-        required: false
-        description: |
-          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
-          <li>To iterate through items, increase the page number until the returned set is empty</li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-          default: 0
-          minimum: 0
-      - name: "pagesize"
-        in: "query"
-        required: false
-        description: |
-          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-          default: 20
-          minimum: 1
-      - name: "first"
-        in: "query"
-        required: false
-        description: |
-          The index of the first item to return.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-      - name: "last"
-        in: "query"
-        required: false
-        description: |
-          The index + 1 of the last item to return.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
-          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-      - name: "includehidden"
-        in: "query"
-        required: false
-        description: |
-          Whether to include hidden objects in the returned set.
-          <br/><b>Notes:</b><ul>
-          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
-          </ul>
-        schema:
-          type: boolean
-      - name: "id"
-        in: "path"
-        required: true
-        description: |
-          The GUID of the resource acting as element in the relation.
-        schema:
-          type: string
-          format: guid
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 204
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    example: null
-        "401":
-          description: |
-            Access token is missing or invalid
   '/api/resource/1.0/resources/{id}/elements':
     get:
       security:
@@ -1015,6 +1121,33 @@ paths:
         schema:
           type: string
           format: guid
+      - name: "includelinks"
+        in: "query"
+        required: false
+        description: |
+          Whether to include the <tt>links</tt> property in each of the returned resources
+        schema:
+          type: boolean
+      - name: "maxreportedlinks"
+        in: "query"
+        required: false
+        description: |
+          The maximum number of items returnes in the <tt>links</tt> property for each resource.
+        schema:
+          type: integer
+          format: int64
+          default: 1000
+          minimum: 0
+      - name: "links_elementkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+      - name: "links_linkkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
       - name: "page"
         in: "query"
         required: false
@@ -1219,45 +1352,171 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
-  '/api/resource/1.0/middlewares/{uniqueid}':
+  '/api/resource/1.0/resources/{id}/masters':
     get:
       security:
         - Authorization: []
       description: |
-        get
+        The list of masters of a given resource.
+        <br/><b>Notes:</b><ul>
+        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        </ul>
       parameters:
-      - name: "uniqueid"
-        in: "path"
-        required: true
+      - name: "kind"
+        in: "query"
+        required: false
         description: |
-          A user-defined unique name.
+          A comma-separated list of GUID of ResourceKind objects. Only TBD objects having one of these values as kind are selected.
           <br/><b>Notes:</b><ul>
-          <li>Unique names are user defined, they do not need to be UUIDs.</li>
-          <li>It is the client responsibility to ensure  that names are kept unique, and that the same name is always used to refer to the same item.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
-      - name: "autocreate"
+          format: guid
+      - name: "linkkind"
         in: "query"
-        required: true
+        required: false
         description: |
-          Whether to auto-synchronize the cloud definition.
+          A comma-separated list of GUID of ResourceLinkKind objects. Only TBD objects having one of these values as linkkind are selected.
           <br/><b>Notes:</b><ul>
-          <li>If the autocreate option is not set, issuing a GET for the given unique code returns a 404 if the resource was never synchronized before.</li>
-          <li>It is recommended to set this field to true only when the query is performed by the client that is responsible for synchronizing the resource. Othe clients should leave this field to false, in order to avoid updating a resource that they do not own.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "includelinks"
+        in: "query"
+        required: false
+        description: |
+          Whether to include the <tt>links</tt> property in each of the returned resources
+        schema:
+          type: boolean
+      - name: "maxreportedlinks"
+        in: "query"
+        required: false
+        description: |
+          The maximum number of items returnes in the <tt>links</tt> property for each resource.
+        schema:
+          type: integer
+          format: int64
+          default: 1000
+          minimum: 0
+      - name: "links_elementkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+      - name: "links_linkkind"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
           </ul>
         schema:
           type: boolean
-      - name: "displayname"
-        in: "query"
+      - name: "id"
+        in: "path"
         required: true
         description: |
-          The display name that is used as the name of the resource during synchronization.
-          <br/><b>Notes:</b><ul>
-          <li>This field is ignored if autocreate is false</li>
-          </ul>
+          The GUID of the resource acting as element in the relation.
         schema:
           type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/specimen/1.0/eventkinds':
+    post:
+      security:
+        - Authorization: []
+      description: |
+        Creates a new SpecimenEventKind object.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecimenEventKind"
       responses:
         "200":
           description: |
@@ -1279,16 +1538,80 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/Resource"
+                    $ref: "#/components/schemas/SpecimenEventKind"
         "401":
           description: |
             Access token is missing or invalid
-  '/api/resource/1.0/imconnections':
     get:
       security:
         - Authorization: []
       description: |
-        get
+        Retrieves a list of SpecimenEventKind objects.
+        <br/><b>Notes:</b><ul>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        <li>The returned list of objects is subject to pagination.</li>
+        </ul>
+      parameters:
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
       responses:
         "200":
           description: |
@@ -1312,20 +1635,153 @@ paths:
                   data:
                     type: "array"
                     items:
-                      $ref: "#/components/schemas/ImConnection"
+                      $ref: "#/components/schemas/SpecimenEventKind"
         "401":
           description: |
             Access token is missing or invalid
-  '/api/resource/1.0/imconnections/{id}':
+  '/api/specimen/1.0/eventkinds/{id}':
     get:
       security:
         - Authorization: []
       description: |
-        Retrieve additional information about an IM connection
+        Gets a single TBD
         <br/><b>Notes:</b><ul>
-        <li>It is expected that IM information has been setup by a PUT query.</li>
-        <li>It is legal to retrieve the IM information for a connection that has not be the target of a PUT query. In that case, most of the fields returned by this query will be empty.</li>
+        <li>The object is returned even if it is hidden.</li>
         </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the TBD
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+    delete:
+      security:
+        - Authorization: []
+      description: |
+        Removes the TBD object.
+        <br/><b>Notes:</b><ul>
+        <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+        Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+        <li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+        <tt>hidden</tt> property back to <tt>false</tt>.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the TBD
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+    put:
+      security:
+        - Authorization: []
+      description: |
+        Updates selected properties of the TBD object.
+        <br/><b>Notes:</b><ul>
+        <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+        <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the TBD
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/specimen/1.0/workflowkinds':
+    post:
+      security:
+        - Authorization: []
+      description: |
+        Creates a new SpecimenWorkflowKind object.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecimenWorkflowKind"
       responses:
         "200":
           description: |
@@ -1347,7 +1803,192 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/ImConnection"
+                    $ref: "#/components/schemas/SpecimenWorkflowKind"
+        "401":
+          description: |
+            Access token is missing or invalid
+    get:
+      security:
+        - Authorization: []
+      description: |
+        Retrieves a list of SpecimenWorkflowKind objects.
+        <br/><b>Notes:</b><ul>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        <li>The returned list of objects is subject to pagination.</li>
+        </ul>
+      parameters:
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/SpecimenWorkflowKind"
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/specimen/1.0/workflowkinds/{id}':
+    get:
+      security:
+        - Authorization: []
+      description: |
+        Gets a single TBD
+        <br/><b>Notes:</b><ul>
+        <li>The object is returned even if it is hidden.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the TBD
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+    delete:
+      security:
+        - Authorization: []
+      description: |
+        Removes the TBD object.
+        <br/><b>Notes:</b><ul>
+        <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+        Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+        <li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+        <tt>hidden</tt> property back to <tt>false</tt>.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the TBD
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -1355,13 +1996,20 @@ paths:
       security:
         - Authorization: []
       description: |
-        Update the IM information about a connection.
-      requestBody:
+        Updates selected properties of the TBD object.
+        <br/><b>Notes:</b><ul>
+        <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+        <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
         required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ImConnection"
+        description: |
+          The internal Id of the TBD
+        schema:
+          type: string
+          format: guid
       responses:
         "200":
           description: |
@@ -1396,126 +2044,6 @@ components:
       in: header
       name: Authorization
   schemas:
-    Resource:
-      type: object
-      description: |
-        A resource describes a piece of equipment, people, or an organizational unit that plays a role in the
-        execution of the tasks in the laboratory.
-        <br>
-        Each resource has a kind that further describes its role. The LabX system attaches special meaning to the predefined resource kinds,
-        but the user is free to create additional custom kinds to suit the lab's needs.
-      properties:
-        id:
-          description: |
-            The internal ID of the Definition.
-            Once attributed, the internal ID can no longer be changed.
-            <br/><b>Notes:</b><ul>
-            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
-            </ul>
-        name:
-          description: |
-            A descriptive name for the Definition.
-            The name should be descriptive and specific enough for a user to quickly identify the
-            Definition referred to by that entry.
-            <br/><b>Notes:</b><ul>
-            <li>Two entries may have the same name.</li>
-            <li>Changing the name of an entry does not alter its identity.</li>
-            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
-            </ul>
-        hidden:
-          description: |
-            Whether this Definition has been hidden.
-            <br/><b>Notes:</b><ul>
-            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
-            It can still be referenced explicitly.</li>
-            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
-            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
-            </ul>
-        kind:
-          description: |
-            The UUID of a ResourceKind that acts as the resource kind
-    ResourceKind:
-      type: object
-      description: |
-        ResourceKind
-      properties:
-        id:
-          description: |
-            The internal ID of the Definition.
-            Once attributed, the internal ID can no longer be changed.
-            <br/><b>Notes:</b><ul>
-            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
-            </ul>
-        name:
-          description: |
-            A descriptive name for the Definition.
-            The name should be descriptive and specific enough for a user to quickly identify the
-            Definition referred to by that entry.
-            <br/><b>Notes:</b><ul>
-            <li>Two entries may have the same name.</li>
-            <li>Changing the name of an entry does not alter its identity.</li>
-            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
-            </ul>
-        hidden:
-          description: |
-            Whether this Definition has been hidden.
-            <br/><b>Notes:</b><ul>
-            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
-            It can still be referenced explicitly.</li>
-            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
-            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
-            </ul>
-    ResourceLinkKind:
-      type: object
-      description: |
-        ResourceLinkKind
-      properties:
-        id:
-          description: |
-            The internal ID of the Definition.
-            Once attributed, the internal ID can no longer be changed.
-            <br/><b>Notes:</b><ul>
-            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
-            </ul>
-        name:
-          description: |
-            A descriptive name for the Definition.
-            The name should be descriptive and specific enough for a user to quickly identify the
-            Definition referred to by that entry.
-            <br/><b>Notes:</b><ul>
-            <li>Two entries may have the same name.</li>
-            <li>Changing the name of an entry does not alter its identity.</li>
-            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
-            </ul>
-        hidden:
-          description: |
-            Whether this Definition has been hidden.
-            <br/><b>Notes:</b><ul>
-            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
-            It can still be referenced explicitly.</li>
-            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
-            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
-            </ul>
-    ResourceLink:
-      type: object
-      description: |
-        A relation between a master resource and an element resource. The relation is further described with a kind.
-        <br>
-        Relations link resources in hierarchical dependencies and can be freely created and removed. The LabX system attaches special meaning
-        to the predefined link kinds, but the user is free to create additional custom kinds to suit the lab's needs.
-      properties:
-        kind:
-          description: |
-            The UUID of a ResourceLinkKind that acts as the kind of relation between the master and the element
-        master:
-          description: |
-            The UUID of a Resource that acts as the master (ie owner) in the relation
-            <br/><b>Notes:</b><ul>
-            <li>When used in a POST query, this field must either match the <tt>id</tt> parameter in the path, or be absent.</li>
-            </ul>
-        element:
-          description: |
-            The UUID of a Resource that acts as the element (ie content) in the relation
     ImConnection:
       type: object
       description: |
@@ -1638,4 +2166,243 @@ components:
             The name for the driver type. This is derived from drivertypecode.
             <br/><b>Notes:</b><ul>
             <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            </ul>
+    Resource:
+      type: object
+      description: |
+        A resource describes a piece of equipment, people, or an organizational unit that plays a role in the
+        execution of the tasks in the laboratory.
+        <br>
+        Each resource has a kind that further describes its role. The LabX system attaches special meaning to the predefined resource kinds,
+        but the user is free to create additional custom kinds to suit the lab's needs.
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
+        kind:
+          description: |
+            The UUID of a ResourceKind that acts as the resource kind
+        hiddenreason:
+          description: |
+            The reason why that resource was marked as hidden.
+            <br/><b>Notes:</b><ul>
+            <li>This field has no meaning if the resource is not marked as hidden.</li>
+            <li>A value of zero or null indicates the absence of a specific reason. This is the default value.</li>
+            <li>A value of 1 indicates that the resource was hidden because the corresponding object ceased
+            to exist in the real world. For example, in an IM connection, that would indicate that the connection was deleted in the IM middleware.</li>
+            <li>A value of 2 indicates that the resource was hidden because the corresponding object is not marked
+            as being useful in the cloud. For example, in an IM connection, that would indicate that the connection still exists, but is unchecked
+            in the ETL options.</li>
+            </ul>
+        links:
+          description: |
+            The list of downwards links (ie to elements) emanating from the resource, as a list of ResourceLinkItems.
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
+            <li>The <tt>maxreportedlinks</tt> options may be used to limit the number of links returned. There is however no way
+            of using pagination in links.</li>
+            </ul>
+        hiddenelements:
+          description: |
+            hiddenelements
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
+            </ul>
+    ResourceKind:
+      type: object
+      description: |
+        ResourceKind
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
+    ResourceLink:
+      type: object
+      description: |
+        A relation between a master resource and an element resource. The relation is further described with a kind.
+        <br>
+        Relations link resources in hierarchical dependencies and can be freely created and removed. The LabX system attaches special meaning
+        to the predefined link kinds, but the user is free to create additional custom kinds to suit the lab's needs.
+      properties:
+        kind:
+          description: |
+            The UUID of a ResourceLinkKind that acts as the kind of relation between the master and the element
+        master:
+          description: |
+            The UUID of a Resource that acts as the master (ie owner) in the relation
+            <br/><b>Notes:</b><ul>
+            <li>When used in a POST query, this field must either match the <tt>id</tt> parameter in the path, or be absent.</li>
+            </ul>
+        element:
+          description: |
+            The UUID of a Resource that acts as the element (ie content) in the relation
+    ResourceLinkItem:
+      type: object
+      description: |
+        ResourceLinkItem
+      properties:
+        linkkind:
+          description: |
+            The GUID of the Link Kind.
+        element:
+          description: |
+            The GUID of the element
+        elementkind:
+          description: |
+            The GUID of the resourcekind of the element
+        linkkindname:
+          description: |
+            The name of the Link Kind
+        elementname:
+          description: |
+            The name of the element
+        elementhidden:
+          description: |
+            Whether the element is hidden
+        elementhiddenreason:
+          description: |
+            The reason why the element is hidden
+        linkhidden:
+          description: |
+            Whether the link itself is hidden
+    ResourceLinkKind:
+      type: object
+      description: |
+        ResourceLinkKind
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
+    SpecimenEventKind:
+      type: object
+      description: |
+        SpecimenEventKind
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
+    SpecimenWorkflowKind:
+      type: object
+      description: |
+        SpecimenWorkflowKind
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
             </ul>
