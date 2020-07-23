@@ -206,6 +206,151 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/properties/{resource}/{property}':
+    get:
+      security:
+        - Authorization: []
+      description: |
+        Retrieves the value of the property associated with the resource.
+        <br/><b>Notes:</b><ul>
+        <li>If the property does not exist, or if it does not have a value, the API returns status 200, with a value of null.</li>
+        </ul>
+      parameters:
+      - name: "resource"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the resource associated with the property.
+        schema:
+          type: string
+          format: guid
+      - name: "property"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the property kind.
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/ResourceProperty"
+        "401":
+          description: |
+            Access token is missing or invalid
+    post:
+      security:
+        - Authorization: []
+      description: |
+        Sets the value of the property associated with the resource.
+      parameters:
+      - name: "resource"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the resource associated with the property.
+        schema:
+          type: string
+          format: guid
+      - name: "property"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the property kind.
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+    delete:
+      security:
+        - Authorization: []
+      description: |
+        Deletes the value of the property associated with the resource.
+      parameters:
+      - name: "resource"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the resource associated with the property.
+        schema:
+          type: string
+          format: guid
+      - name: "property"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the property kind.
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
   '/api/resource/1.0/resourcekinds':
     post:
       security:
@@ -2344,6 +2489,24 @@ components:
             <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
             setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
             </ul>
+    ResourceProperty:
+      type: object
+      description: |
+        ResourceProperty
+      properties:
+        resource:
+          description: |
+            The GUID of the resource associated with the property
+            <br/><b>Notes:</b><ul>
+            <li>In the case a hierarchical search was performed, this is the GUID of the resource that is actually associated with the property.
+            This may be the resource corresponding to the query, or the closest parent that has a value for that property.</li>
+            </ul>
+        property:
+          description: |
+            The GUID of the property kind
+        value:
+          description: |
+            The value of the property. This can be a simple value such as a string or a number, or a composite value (JSON).
     SpecimenEventKind:
       type: object
       description: |
