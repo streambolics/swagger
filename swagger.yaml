@@ -38,39 +38,6 @@ paths:
                     type: string
                   token:
                     type: string
-  '/api/resource/1.0/imconnections':
-    get:
-      security:
-        - Authorization: []
-      description: |
-        get
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 200
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    type: "array"
-                    items:
-                      $ref: "#/components/schemas/ImConnection"
-        "401":
-          description: |
-            Access token is missing or invalid
   '/api/resource/1.0/imconnections/{id}':
     get:
       security:
@@ -81,6 +48,15 @@ paths:
         <li>It is expected that IM information has been setup by a PUT query.</li>
         <li>It is legal to retrieve the IM information for a connection that has not be the target of a PUT query. In that case, most of the fields returned by this query will be empty.</li>
         </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the connection resource
+        schema:
+          type: string
+          format: guid
       responses:
         "200":
           description: |
@@ -117,6 +93,15 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ImConnection"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The GUID of the connection resource
+        schema:
+          type: string
+          format: guid
       responses:
         "200":
           description: |
@@ -147,16 +132,19 @@ paths:
       security:
         - Authorization: []
       description: |
-        get
+        Gets the resource corresponding to a middleware identified by a unique name.
       parameters:
       - name: "uniqueid"
         in: "path"
         required: true
         description: |
-          A user-defined unique name.
+          A user-defined unique name that represents the real world identity of the object.
           <br/><b>Notes:</b><ul>
           <li>Unique names are user defined, they do not need to be UUIDs.</li>
           <li>It is the client responsibility to ensure  that names are kept unique, and that the same name is always used to refer to the same item.</li>
+          <li>Using the same uniqueid always returns the same resource, even across multiple databases. This is done on purpose so that databases can be consolidated if the need arises.</li>
+          <li>It is impossible to change the uniqueid of a resource. Once it has been referred to using a given uniqueid, the same uniqueid should be used forever.</li>
+          <li>uniqueids need to be unique only in the context of the middleware, if one is specified as owner.</li>
           </ul>
         schema:
           type: string
@@ -351,6 +339,271 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/propertykinds':
+    post:
+      security:
+        - Authorization: []
+      description: |
+        Creates a new ResourcePropertyKind object.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourcePropertyKind"
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/ResourcePropertyKind"
+        "401":
+          description: |
+            Access token is missing or invalid
+    get:
+      security:
+        - Authorization: []
+      description: |
+        Retrieves a list of ResourcePropertyKind objects.
+        <br/><b>Notes:</b><ul>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        <li>The returned list of objects is subject to pagination.</li>
+        </ul>
+      parameters:
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/ResourcePropertyKind"
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/resource/1.0/propertykinds/{id}':
+    get:
+      security:
+        - Authorization: []
+      description: |
+        Gets a single ResourcePropertyKind
+        <br/><b>Notes:</b><ul>
+        <li>The object is returned even if it is hidden.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the ResourcePropertyKind
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+    delete:
+      security:
+        - Authorization: []
+      description: |
+        Removes the ResourcePropertyKind object.
+        <br/><b>Notes:</b><ul>
+        <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+        Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+        <li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+        <tt>hidden</tt> property back to <tt>false</tt>.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the ResourcePropertyKind
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+    put:
+      security:
+        - Authorization: []
+      description: |
+        Updates selected properties of the ResourcePropertyKind object.
+        <br/><b>Notes:</b><ul>
+        <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+        <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal Id of the ResourcePropertyKind
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
   '/api/resource/1.0/resourcekinds':
     post:
       security:
@@ -490,7 +743,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Gets a single TBD
+        Gets a single ResourceKind
         <br/><b>Notes:</b><ul>
         <li>The object is returned even if it is hidden.</li>
         </ul>
@@ -499,7 +752,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the ResourceKind
         schema:
           type: string
           format: guid
@@ -532,7 +785,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Removes the TBD object.
+        Removes the ResourceKind object.
         <br/><b>Notes:</b><ul>
         <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
         Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
@@ -544,7 +797,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the ResourceKind
         schema:
           type: string
           format: guid
@@ -577,7 +830,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Updates selected properties of the TBD object.
+        Updates selected properties of the ResourceKind object.
         <br/><b>Notes:</b><ul>
         <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
         <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
@@ -587,7 +840,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the ResourceKind
         schema:
           type: string
           format: guid
@@ -755,7 +1008,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Gets a single TBD
+        Gets a single ResourceLinkKind
         <br/><b>Notes:</b><ul>
         <li>The object is returned even if it is hidden.</li>
         </ul>
@@ -764,7 +1017,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the ResourceLinkKind
         schema:
           type: string
           format: guid
@@ -797,7 +1050,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Removes the TBD object.
+        Removes the ResourceLinkKind object.
         <br/><b>Notes:</b><ul>
         <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
         Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
@@ -809,7 +1062,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the ResourceLinkKind
         schema:
           type: string
           format: guid
@@ -842,7 +1095,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Updates selected properties of the TBD object.
+        Updates selected properties of the ResourceLinkKind object.
         <br/><b>Notes:</b><ul>
         <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
         <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
@@ -852,7 +1105,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the ResourceLinkKind
         schema:
           type: string
           format: guid
@@ -1058,7 +1311,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Gets a single TBD
+        Gets a single Resource
         <br/><b>Notes:</b><ul>
         <li>The object is returned even if it is hidden.</li>
         </ul>
@@ -1094,7 +1347,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the Resource
         schema:
           type: string
           format: guid
@@ -1127,7 +1380,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Removes the TBD object.
+        Removes the Resource object.
         <br/><b>Notes:</b><ul>
         <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
         Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
@@ -1161,7 +1414,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the Resource
         schema:
           type: string
           format: guid
@@ -1194,7 +1447,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Updates selected properties of the TBD object.
+        Updates selected properties of the Resource object.
         <br/><b>Notes:</b><ul>
         <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
         <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
@@ -1204,7 +1457,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the Resource
         schema:
           type: string
           format: guid
@@ -1248,9 +1501,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceKind objects. Only TBD objects having one of these values as kind are selected.
+          A comma-separated list of GUID of ResourceKind objects. Only Not specified objects having one of these values as kind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -1259,9 +1512,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceLinkKind objects. Only TBD objects having one of these values as linkkind are selected.
+          A comma-separated list of GUID of ResourceLinkKind objects. Only Not specified objects having one of these values as linkkind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -1446,9 +1699,9 @@ paths:
         in: "query"
         required: false
         description: |
-          The GUID of a ResourceLinkKind object. Only TBD objects having this value as kind are selected.
+          The GUID of a ResourceLinkKind object. Only Not specified objects having this value as kind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -1457,9 +1710,9 @@ paths:
         in: "query"
         required: false
         description: |
-          The GUID of a Resource object. Only TBD objects having this value as element are selected.
+          The GUID of a Resource object. Only Not specified objects having this value as element are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -1512,9 +1765,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceKind objects. Only TBD objects having one of these values as kind are selected.
+          A comma-separated list of GUID of ResourceKind objects. Only Not specified objects having one of these values as kind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -1523,9 +1776,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceLinkKind objects. Only TBD objects having one of these values as linkkind are selected.
+          A comma-separated list of GUID of ResourceLinkKind objects. Only Not specified objects having one of these values as linkkind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only TBD objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -1789,7 +2042,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Gets a single TBD
+        Gets a single SpecimenEventKind
         <br/><b>Notes:</b><ul>
         <li>The object is returned even if it is hidden.</li>
         </ul>
@@ -1798,7 +2051,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the SpecimenEventKind
         schema:
           type: string
           format: guid
@@ -1831,7 +2084,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Removes the TBD object.
+        Removes the SpecimenEventKind object.
         <br/><b>Notes:</b><ul>
         <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
         Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
@@ -1843,7 +2096,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the SpecimenEventKind
         schema:
           type: string
           format: guid
@@ -1876,7 +2129,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Updates selected properties of the TBD object.
+        Updates selected properties of the SpecimenEventKind object.
         <br/><b>Notes:</b><ul>
         <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
         <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
@@ -1886,7 +2139,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the SpecimenEventKind
         schema:
           type: string
           format: guid
@@ -2054,7 +2307,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Gets a single TBD
+        Gets a single SpecimenWorkflowKind
         <br/><b>Notes:</b><ul>
         <li>The object is returned even if it is hidden.</li>
         </ul>
@@ -2063,7 +2316,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the SpecimenWorkflowKind
         schema:
           type: string
           format: guid
@@ -2096,7 +2349,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Removes the TBD object.
+        Removes the SpecimenWorkflowKind object.
         <br/><b>Notes:</b><ul>
         <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
         Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
@@ -2108,7 +2361,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the SpecimenWorkflowKind
         schema:
           type: string
           format: guid
@@ -2141,7 +2394,7 @@ paths:
       security:
         - Authorization: []
       description: |
-        Updates selected properties of the TBD object.
+        Updates selected properties of the SpecimenWorkflowKind object.
         <br/><b>Notes:</b><ul>
         <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
         <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
@@ -2151,7 +2404,7 @@ paths:
         in: "path"
         required: true
         description: |
-          The internal Id of the TBD
+          The internal Id of the SpecimenWorkflowKind
         schema:
           type: string
           format: guid
@@ -2507,6 +2760,37 @@ components:
         value:
           description: |
             The value of the property. This can be a simple value such as a string or a number, or a composite value (JSON).
+    ResourcePropertyKind:
+      type: object
+      description: |
+        The description of a Resource Property. The property kind is mainly used to give names to properties.
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
     SpecimenEventKind:
       type: object
       description: |
