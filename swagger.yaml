@@ -7,9 +7,36 @@ servers:
   - url: https://api.verval.di-labx.com
   - url: https://api.int.di-labx.com
   - url: https://api.dev.di-labx.com
+tags:
+  - name: interop
+    description: |
+      Interop calls for Docker. These interop calls only work when accessing
+      the microservice directly. They are _not_ routed by the application
+      load balancer.
+  - name: definition
+    description: |
+      Definitions are setup by the administrator to represent the configuration
+      of the site. Definitions are not meant to change very often.
+  - name: realtime
+    description: |
+      Real-time data.
+  - name: resource
+    description: |
+      Resources representing equipment and processes in the lab.
+  - name: kpi
+    description: |
+      Key Performance Indicators
+  - name: metric
+    description: |
+      Real-time metrics
+  - name: logging
+    description: |
+      Real-time logging
 paths:
   '/auth':
     post:
+      tags:
+      - interop
       description: |
         Log-on to LabX. Copy the returned token in the authorization box
       requestBody:
@@ -42,6 +69,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - kpi
+      - realtime
       description: |
         Obtain the current value of a set of KPIs
       parameters:
@@ -137,6 +167,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - kpi
+      - realtime
       description: |
         Obtain the current value of a KPI
       parameters:
@@ -202,6 +235,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - kpi
+      - realtime
       description: |
         Change the current value of a KPI
       requestBody:
@@ -248,6 +284,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - kpi
       description: |
         Creates a new KpiKind object.
       requestBody:
@@ -284,6 +323,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - kpi
       description: |
         Retrieves a list of KpiKind objects.
         <br/><b>Notes:</b><ul>
@@ -382,6 +424,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - kpi
       description: |
         Gets a single KpiKind
         <br/><b>Notes:</b><ul>
@@ -424,6 +469,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - kpi
       description: |
         Removes the KpiKind object.
         <br/><b>Notes:</b><ul>
@@ -469,6 +517,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - kpi
       description: |
         Updates selected properties of the KpiKind object.
         <br/><b>Notes:</b><ul>
@@ -519,6 +570,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - metric
       description: |
         Creates a new MetricKind object.
       requestBody:
@@ -555,6 +609,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - metric
       description: |
         Retrieves a list of MetricKind objects.
         <br/><b>Notes:</b><ul>
@@ -653,6 +710,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - metric
       description: |
         Gets a single MetricKind
         <br/><b>Notes:</b><ul>
@@ -695,6 +755,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - metric
       description: |
         Removes the MetricKind object.
         <br/><b>Notes:</b><ul>
@@ -740,6 +803,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - metric
       description: |
         Updates selected properties of the MetricKind object.
         <br/><b>Notes:</b><ul>
@@ -790,6 +856,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - metric
+      - realtime
       description: |
         Update the value of a resource metric
       requestBody:
@@ -844,6 +913,8 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Gets the resource corresponding to a connection identified by a unique name and a middleware.
         <br/><b>Notes:</b><ul>
@@ -928,6 +999,8 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Removes a connection from a middleware.
       parameters:
@@ -999,6 +1072,8 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Retrieve additional information about an IM connection
         <br/><b>Notes:</b><ul>
@@ -1042,6 +1117,8 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Update the IM information about a connection.
       requestBody:
@@ -1088,6 +1165,8 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Gets the resource corresponding to a middleware identified by a unique name.
       parameters:
@@ -1158,6 +1237,8 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Retrieves the value of the property associated with the resource.
         <br/><b>Notes:</b><ul>
@@ -1208,6 +1289,8 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Sets the value of the property associated with the resource.
       parameters:
@@ -1255,6 +1338,8 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Deletes the value of the property associated with the resource.
       parameters:
@@ -1303,6 +1388,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Creates a new ResourcePropertyKind object.
       requestBody:
@@ -1339,6 +1427,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Retrieves a list of ResourcePropertyKind objects.
         <br/><b>Notes:</b><ul>
@@ -1437,6 +1528,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Gets a single ResourcePropertyKind
         <br/><b>Notes:</b><ul>
@@ -1479,6 +1573,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Removes the ResourcePropertyKind object.
         <br/><b>Notes:</b><ul>
@@ -1524,6 +1621,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Updates selected properties of the ResourcePropertyKind object.
         <br/><b>Notes:</b><ul>
@@ -1574,6 +1674,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Creates a new ResourceKind object.
       requestBody:
@@ -1610,6 +1713,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Retrieves a list of ResourceKind objects.
         <br/><b>Notes:</b><ul>
@@ -1708,6 +1814,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Gets a single ResourceKind
         <br/><b>Notes:</b><ul>
@@ -1750,6 +1859,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Removes the ResourceKind object.
         <br/><b>Notes:</b><ul>
@@ -1795,6 +1907,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Updates selected properties of the ResourceKind object.
         <br/><b>Notes:</b><ul>
@@ -1845,6 +1960,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Creates a new ResourceLinkKind object.
       requestBody:
@@ -1881,6 +1999,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Retrieves a list of ResourceLinkKind objects.
         <br/><b>Notes:</b><ul>
@@ -1979,6 +2100,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Gets a single ResourceLinkKind
         <br/><b>Notes:</b><ul>
@@ -2021,6 +2145,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Removes the ResourceLinkKind object.
         <br/><b>Notes:</b><ul>
@@ -2066,6 +2193,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Updates selected properties of the ResourceLinkKind object.
         <br/><b>Notes:</b><ul>
@@ -2116,6 +2246,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Creates a new Resource object.
       requestBody:
@@ -2152,6 +2285,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Retrieves a list of Resource objects.
         <br/><b>Notes:</b><ul>
@@ -2294,6 +2430,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Gets a single Resource
         <br/><b>Notes:</b><ul>
@@ -2369,6 +2508,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Removes the Resource object.
         <br/><b>Notes:</b><ul>
@@ -2426,6 +2568,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - resource
       description: |
         Updates selected properties of the Resource object.
         <br/><b>Notes:</b><ul>
@@ -2476,6 +2621,8 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         The list of elements of a given resource.
         <br/><b>Notes:</b><ul>
@@ -2635,6 +2782,8 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Adds a link from the master to an element.
       requestBody:
@@ -2680,6 +2829,8 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Deletes one or more links from a master. All links that pass the filter are removed.
         <br/><b>Notes:</b><ul>
@@ -2746,6 +2897,8 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         The list of masters of a given resource.
         <br/><b>Notes:</b><ul>
@@ -2905,6 +3058,8 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - resource
       description: |
         Gets the resource corresponding to a workstation identified by a unique name and a middleware.
         <br/><b>Notes:</b><ul>
@@ -2990,6 +3145,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Creates a new SpecimenEventKind object.
       requestBody:
@@ -3026,6 +3184,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Retrieves a list of SpecimenEventKind objects.
         <br/><b>Notes:</b><ul>
@@ -3124,6 +3285,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Gets a single SpecimenEventKind
         <br/><b>Notes:</b><ul>
@@ -3166,6 +3330,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Removes the SpecimenEventKind object.
         <br/><b>Notes:</b><ul>
@@ -3211,6 +3378,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Updates selected properties of the SpecimenEventKind object.
         <br/><b>Notes:</b><ul>
@@ -3261,6 +3431,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - specimen
+      - realtime
       description: |
         Upload specimen metrics
         <br/><b>Notes:</b><ul>
@@ -3295,6 +3468,9 @@ paths:
     post:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Creates a new SpecimenWorkflowKind object.
       requestBody:
@@ -3331,6 +3507,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Retrieves a list of SpecimenWorkflowKind objects.
         <br/><b>Notes:</b><ul>
@@ -3429,6 +3608,9 @@ paths:
     get:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Gets a single SpecimenWorkflowKind
         <br/><b>Notes:</b><ul>
@@ -3471,6 +3653,9 @@ paths:
     delete:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Removes the SpecimenWorkflowKind object.
         <br/><b>Notes:</b><ul>
@@ -3516,6 +3701,9 @@ paths:
     put:
       security:
         - Authorization: []
+      tags:
+      - definition
+      - specimen
       description: |
         Updates selected properties of the SpecimenWorkflowKind object.
         <br/><b>Notes:</b><ul>
