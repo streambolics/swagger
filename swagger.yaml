@@ -3,6 +3,9 @@ info:
   title: LabX API specification
   description: This document contains the externally accessible API endpoints for the LabX Cloud Backend.
   version: 1.0.0
+externalDocs:
+  description: Index to individual Readme files
+  url: 'readme.html'
 servers:
   - url: https://api.verval.di-labx.com
   - url: https://api.int.di-labx.com
@@ -4202,47 +4205,61 @@ components:
           description: |
             The internal ID of the connection object.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
         name:
           description: |
             The name of the connection. This field is retrieved from the name of the corresponding resource.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
         code:
           description: |
             The code of the connection, typically in the form CN-xxxx
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is retrieved from the systematic name of the corresponding resource.</li>
             </ul>
         instrumentnumber:
           description: |
             The instrument number.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is read-only and only retrieved if the code is CN- followed by a number.</li>
             </ul>
         systemconnection:
           description: |
             Whether this is a system connection.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>The value is derived from instrumentnumber</li>
             </ul>
         connectiontype:
           description: |
             The type of connection.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>The value is derived from `systemconnection`.</li>
             </ul>
         site:
           description: |
             The internal ID of the resource representing the site.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
         sitecode:
@@ -4259,7 +4276,9 @@ components:
           description: |
             The internal ID of the resource representing the location.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
         locationcode:
@@ -4276,7 +4295,9 @@ components:
           description: |
             The internal ID of the resource representing the configuration.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
         configurationcode:
@@ -4292,7 +4313,9 @@ components:
           description: |
             The internal ID of the resource representing the driver and its version.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
         drivercode:
@@ -4308,13 +4331,17 @@ components:
           description: |
             The code for the driver type. This is a single character, and is derived from drivercode.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
         drivertypename:
           description: |
             The name for the driver type. This is derived from drivertypecode.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
     Kpi:
       type: object
@@ -4785,7 +4812,9 @@ components:
           description: |
             The list of downwards links (ie to elements) emanating from the resource, as a list of ResourceLinkItems.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
             <li>The <tt>maxreportedlinks</tt> options may be used to limit the number of links returned. There is however no way
             of using pagination in links.</li>
@@ -4794,7 +4823,9 @@ components:
           description: |
             hiddenelements
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
             </ul>
     ResourceKind:
