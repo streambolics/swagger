@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: -Should be set by runtime-
-  description: LabX API specification.
+  title: LabX API specification
+  description: This document contains the externally accessible API endpoints for the LabX Cloud Backend.
   version: 1.0.0
 servers:
   - url: https://api.verval.di-labx.com
@@ -10,16 +10,14 @@ servers:
 tags:
   - name: interop
     description: |
-      Interop calls for Docker. These interop calls only work when accessing
-      the microservice directly. They are _not_ routed by the application
-      load balancer.
+      Miscellaneous Interop calls for Docker.
   - name: definition
     description: |
       Definitions are setup by the administrator to represent the configuration
-      of the site. Definitions are not meant to change very often.
+      of the site. Definitions are not meant to change very often, and are accessed with a CRUD API.
   - name: realtime
     description: |
-      Real-time data.
+      Real-time data. These include metrics uploaded by edge 
   - name: resource
     description: |
       Resources representing equipment and processes in the lab.
@@ -107,9 +105,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of Resource objects. Only Kpi objects having one of these values as resource are selected.
+          A comma-separated list of GUID of Resource objects. Only KpiValue objects having one of these values as resource are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only KpiValue objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -118,9 +116,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of KPI Kind objects. Only Kpi objects having one of these values as kind are selected.
+          A comma-separated list of GUID of KPI Kind objects. Only KpiValue objects having one of these values as kind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only KpiValue objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -129,9 +127,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of KPI objects. Only Kpi objects having one of these values as id are selected.
+          A comma-separated list of GUID of KPI objects. Only KpiValue objects having one of these values as id are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only KpiValue objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -159,7 +157,7 @@ paths:
                   data:
                     type: "array"
                     items:
-                      $ref: "#/components/schemas/Kpi"
+                      $ref: "#/components/schemas/KpiValue"
         "401":
           description: |
             Access token is missing or invalid
@@ -228,7 +226,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/Kpi"
+                    $ref: "#/components/schemas/KpiValue"
         "401":
           description: |
             Access token is missing or invalid
@@ -245,7 +243,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Kpi"
+              $ref: "#/components/schemas/KpiValue"
       parameters:
       - name: "id"
         in: "path"
@@ -563,6 +561,142 @@ paths:
                     example: null
                   data:
                     $ref: "#/components/schemas/KpiKind"
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/kpi/1.0/kpis/{id}':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - kpi
+      - definition
+      description: |
+        Obtain the setup properties of a KPI
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal id of the KPI
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/Kpi"
+        "401":
+          description: |
+            Access token is missing or invalid
+    put:
+      security:
+        - Authorization: []
+      tags:
+      - kpi
+      - definition
+      description: |
+        Update the setup properties of a KPI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Kpi"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal id of the KPI
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/kpi/1.0/resources/{id}/setup':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - kpi
+      - definition
+      description: |
+        Obtain the list of all KPIs defined for a resource
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal id of the resource for which KPIs are requested
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Kpi"
         "401":
           description: |
             Access token is missing or invalid
@@ -909,6 +1043,95 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/connectiongroups':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - resource
+      description: |
+        Retrieves a list of all connection groups that can be monitored by the current user
+        <br/><b>Notes:</b><ul>
+        <li>The returned list of objects is subject to pagination.</li>
+        </ul>
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Resource"
+        "401":
+          description: |
+            Access token is missing or invalid
   '/api/resource/1.0/connections/{uniqueid}':
     get:
       security:
@@ -1068,6 +1291,39 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/currentuser':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - resource
+      description: |
+        Retrieves the description of the current user
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/Resource"
+        "401":
+          description: |
+            Access token is missing or invalid
   '/api/resource/1.0/imconnections/{id}':
     get:
       security:
@@ -1158,6 +1414,95 @@ paths:
                     example: null
                   data:
                     example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/resource/1.0/middlewares':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - resource
+      description: |
+        Retrieves a list of all middlewares that can be monitored by the current user
+        <br/><b>Notes:</b><ul>
+        <li>The returned list of objects is subject to pagination.</li>
+        </ul>
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Resource"
         "401":
           description: |
             Access token is missing or invalid
@@ -3054,6 +3399,95 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/users':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - resource
+      description: |
+        Retrieves a list of all users allowed to log-on into the application
+        <br/><b>Notes:</b><ul>
+        <li>The returned list of objects is subject to pagination.</li>
+        </ul>
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Resource"
+        "401":
+          description: |
+            Access token is missing or invalid
   '/api/resource/1.0/workstations/{uniqueid}':
     get:
       security:
@@ -3885,7 +4319,203 @@ components:
     Kpi:
       type: object
       description: |
-        Kpi
+        The setup of an individual KPI.
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+            The client must ensure that the ID, if forced, does not already exists.</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+          example: 'An Example Name'
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
+          example: 'false'
+        shortname:
+          description: |
+            A name for the Definition, shorter than the standard name.
+            <br/><b>Notes:</b><ul>
+            <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+            <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+            </ul>
+          example: 'Widget'
+        systematicname:
+          description: |
+            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            <br/><b>Notes:</b><ul>
+            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            </ul>
+          example: 'Printer, third floor, serial number xxxxxxxx'
+        sortkey:
+          description: |
+            An arbitrary key used to sort the definitions in lists.
+            <br/><b>Notes:</b><ul>
+            <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            </ul>
+          example: 'A'
+        errorrangelow:
+          description: |
+            The low error threshold. Any value lower than this will be marked as in error
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '10'
+        errorrangehigh:
+          description: |
+            The high error threshold. Any value higher than this will be marked as in error
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '200'
+        warningrangelow:
+          description: |
+            The low warning threshold. Any value lower than this will be marked as in warning, unless it is outside the error thresholds
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '50'
+        warningrangehigh:
+          description: |
+            The high warning threshold. Any value higher than this will be marked as in warning, unless it is outside the error thresholds
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '100'
+        kind:
+          description: |
+            The internal id of the KPI kind of that KPI
+        resource:
+          description: |
+            The internal id of the resource that this KPI monitors
+    KpiKind:
+      type: object
+      description: |
+        KpiKind
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+            The client must ensure that the ID, if forced, does not already exists.</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+          example: 'An Example Name'
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
+          example: 'false'
+        shortname:
+          description: |
+            A name for the Definition, shorter than the standard name.
+            <br/><b>Notes:</b><ul>
+            <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+            <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+            </ul>
+          example: 'Widget'
+        systematicname:
+          description: |
+            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            <br/><b>Notes:</b><ul>
+            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            </ul>
+          example: 'Printer, third floor, serial number xxxxxxxx'
+        sortkey:
+          description: |
+            An arbitrary key used to sort the definitions in lists.
+            <br/><b>Notes:</b><ul>
+            <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            </ul>
+          example: 'A'
+        errorrangelow:
+          description: |
+            The low error threshold. Any value lower than this will be marked as in error
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '10'
+        errorrangehigh:
+          description: |
+            The high error threshold. Any value higher than this will be marked as in error
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '200'
+        warningrangelow:
+          description: |
+            The low warning threshold. Any value lower than this will be marked as in warning, unless it is outside the error thresholds
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '50'
+        warningrangehigh:
+          description: |
+            The high warning threshold. Any value higher than this will be marked as in warning, unless it is outside the error thresholds
+            <br/><b>Notes:</b><ul>
+            <li>This field is duplicated in the KPI and and KPI Kind.</li>
+            <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+            <li>A null value in the KPI uses the value from the KPI kind as default</li>
+            </ul>
+          example: '100'
+    KpiValue:
+      type: object
+      description: |
+        KpiValue
       properties:
         id:
           description: |
@@ -3994,65 +4624,6 @@ components:
             <li>This field is read only. The value is ignored in PUT and POST queries.</li>
             <li>This field is only present when the 'wait' option is specified in GET queries</li>
             </ul>
-    KpiKind:
-      type: object
-      description: |
-        KpiKind
-      properties:
-        id:
-          description: |
-            The internal ID of the Definition.
-            Once attributed, the internal ID can no longer be changed.
-            <br/><b>Notes:</b><ul>
-            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
-            <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
-            The client must ensure that the ID, if forced, does not already exists.</li>
-            </ul>
-        name:
-          description: |
-            A descriptive name for the Definition.
-            The name should be descriptive and specific enough for a user to quickly identify the
-            Definition referred to by that entry.
-            <br/><b>Notes:</b><ul>
-            <li>Two entries may have the same name.</li>
-            <li>Changing the name of an entry does not alter its identity.</li>
-            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
-            </ul>
-          example: 'An Example Name'
-        hidden:
-          description: |
-            Whether this Definition has been hidden.
-            <br/><b>Notes:</b><ul>
-            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
-            It can still be referenced explicitly.</li>
-            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
-            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
-            </ul>
-          example: 'false'
-        shortname:
-          description: |
-            A name for the Definition, shorter than the standard name.
-            <br/><b>Notes:</b><ul>
-            <li>If a definition does not have a short name, the application should use the standard name instead.</li>
-            <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
-            </ul>
-          example: 'Widget'
-        systematicname:
-          description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
-            <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
-            </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
-        sortkey:
-          description: |
-            An arbitrary key used to sort the definitions in lists.
-            <br/><b>Notes:</b><ul>
-            <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
-            <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
-            </ul>
-          example: 'A'
     MetricKind:
       type: object
       description: |

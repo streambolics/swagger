@@ -1,0 +1,369 @@
+<html>
+<head>
+    <title>Specimen</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<style>
+        h1
+        {
+            page-break-before: always;
+            border: 3px solid black;
+            border-radius: 5px;
+        }
+	  	h2:before
+		{
+    		content:' ';
+    		display:block;
+    		border:2px solid black;
+		}
+        div.answer
+        {
+            background-color: aquamarine;
+            margin-left: 80px;
+        }
+        td.answered
+        {
+            background-color: aquamarine !important;
+        }
+        td.unanswered
+        {
+            background-color: lightcoral !important;
+
+        }
+        div.note
+        {
+            background-color: aquamarine !important;
+            border: 1px solid aquamarine;
+            margin-right: 40%;
+        }
+        div.warning
+        {
+            background-color: lightcoral !important;
+            border: 1px solid lightcoral;
+            margin-left: 40%;
+        }
+    </style>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.2.6/mermaid.min.js"
+        integrity="sha256-0EUu19CAux3g/iy/+6obKNgaGhv3E6yrHdNWBnZncE0="
+        crossorigin="anonymous">
+    </script>
+</head>
+<body>
+<xmp theme="spacelab" style="display:none;">
+This document contains useful information on the Specimen service and its
+usage.
+
+|Date|Initials|Section|Changes|
+|----|--------|-------|-------|
+|<sub>24&#8209;MAY&#8209;2019</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Initial version.|
+|<sub>27&#8209;MAY&#8209;2019</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Simplified the POST method so that the client is not     required to hash the SID.|
+|<sub>29&#8209;MAY&#8209;2019</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Optimizing the POST method, allowing multiple metrics to     be uploaded in a single round trip.|
+|<sub>31&#8209;MAY&#8209;2019</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Moved the simplified API to resources to the resources     document.|
+|<sub>18&#8209;JUL&#8209;2019</sub>|<sub>SLE</sub>|<sub>Main</sub>|<small>     Initial version of the whole readme file.|
+|<sub>9&#8209;AUG&#8209;2019</sub>|<sub>SLE</sub>|<sub>All</sub>|<small>     Cleanup. Removed unneed techno-babble. Table of contents.|
+|<sub>21&#8209;FEB&#8209;2020</sub>|<sub>SLE</sub>|<sub>Swagger</sub>|<small>     Unimplemented REST APIs marked as such.|
+
+Contents
+--------
+
+  - [Workflows for applications providing data](#provider-workflows)
+  - [Symbol reference](#specimen-reference)
+  - [API reference](#swagger)
+
+
+About the Specimen service
+==========================
+
+The Specimen service allows an ETL client application to upload metrics about
+individual specimens, and a display client application to obtain various
+statistics about those metrics.
+
+The statistics provided by the service are usually requested by the KPI
+service to precompute specimen related KPIs.
+Workflows for specimen metric providers
+=======================================
+
+<a name="provider-workflows"></a>
+
+General Principles
+------------------
+
+1.  The client retrieves the GUIDs to the connections. The procedure to do so
+    is in the documentation for resources. In the specific case of IM, refer
+    to the _Obtaining Connection GUIDS in the specific case of IM_ section.
+
+
+2.  The client decides of the _SID Context_ that acts as a disambiguating
+    context for SIDs. SID 1000 represent the same specimen in two different
+    IMs if and only if their SID Context is the same. The SID and SID context
+    are joined then hashed together to provide the HSID (Hashed SID) which is
+    an anonymized version of the SID.
+
+3.  The client enters a loop where metrics are computed per specimen and
+    per connection, then uploaded to the cloud.
+    *   At startup, all metrics for all specimens need to be computed. The user
+        may trigger a full recomputation at any time.
+    *   In steady state, metrics are computed for specimens that were changed.
+    *   Note how this is reminiscent of initial _builds_ and regular _updates_
+        in the Lab Intel cube.
+
+
+Computing and uploading metrics
+-------------------------------
+
+1.  Select a specimen that needs to be updated. Obtain its SID.
+2.  Join the SID with the SID Context. The client may either transmit the pair
+    as is (in the `sid` and `sidcontext` properties), or pre-hash it itself and
+    transmit the hash (in the `hsid` property)
+3.  Compute all relevant metrics on the specimen.
+4.  Push the metrics by issuing one or more POST calls to
+
+        http://server/api/specimen/1.0/metrics
+
+    with the payload:
+
+        [
+            {
+                sid: "Specimen ID",
+                sidcontext: "SID context",
+                hsid: "Hashed SID (Optional - Only if sid/sidcontext absent)",
+                metrics: [
+                    {
+                        kind: "Metric Kind (GUID)",
+                        connection: "Connection (GUID)",
+                        middleware: "Middleware (GUID) if known",
+                        value: "Value",
+                        timestamp: "Timestamp (YYYY-MM-DDTHH:MM:SSZZZZ)"
+                    }
+                ]
+            }
+        ]
+
+    A single POST may push any number of metrics. When pushing multiple
+    metrics for the same SID, it is recommended to repeat the `metrics` property
+    instead of repeating the whole structure.
+
+    The connection and middleware GUIDs are obtained from the synchronization
+    step. The middleware GUID can be omitted, but should be present for
+    performance reasons (so the microservice does not need to retrieve it each
+    time.)
+
+    The Metric Kind GUID is a well-known GUID obtained from the `metricids.js`
+    file. What follows is a small excerpt of this file, which also defines
+    precise semantics on the metrics.
+
+        exports.MetricKind_ResultsHeld          = '91be7235-fe53-450a-b1ba-f1507b2254be';
+        exports.MetricKind_CriticalResultsHeld  = '3364ff21-eaa1-4a86-9c91-8fff0f1b832c';
+
+Example:
+
+        [ {
+                sid: "1000",
+                sidcontext: "EastCoast",
+                metrics: [ {
+                        kind: "91be7235-fe53-450a-b1ba-f1507b2254be",
+                        connection: "f4367529-bc42-4a49-9b2c-ae83ba3c3908",
+                        value: "5",
+                        timestamp: "2019-29-05T09:12:00-06:00"
+                    },{
+                        kind: "3364ff21-eaa1-4a86-9c91-8fff0f1b832c",
+                        connection: "f4367529-bc42-4a49-9b2c-ae83ba3c3908",
+                        value: "3",
+                        timestamp: "2019-29-05T09:12:00-06:00"
+                    }
+                ]
+            },{
+                sid: "1001",
+                sidcontext: "EastCoast",
+                metrics: [ {
+                        kind: "91be7235-fe53-450a-b1ba-f1507b2254be",
+                        connection: "f4367529-bc42-4a49-9b2c-ae83ba3c3908",
+                        value: "5",
+                        timestamp: "2019-29-05T09:12:00-06:00"
+                    },{
+                        kind: "3364ff21-eaa1-4a86-9c91-8fff0f1b832c",
+                        connection: "f4367529-bc42-4a49-9b2c-ae83ba3c3908",
+                        value: "3",
+                        timestamp: "2019-29-05T09:12:00-06:00"
+                    }
+                ]
+            }
+        ]
+
+
+# API Reference
+
+<a name="swagger"></a>
+
+This API reference is automatically extracted from the swagger documentation.
+The source swagger file may contain more detailed information than this
+static document.
+
+LabX API specification.
+
+Version: 1.0.0
+
+## Definitions
+### Count
+
+The count of specimens, or (specimen,middleware) pairs that match the count criteria.
+
+
+  - `status` *(number)* : The status of the value if considered as a source for a KPI. This should normally be empty, so the status is determined by KPI rules themselves.
+  - `timestamp` *(string)* : The time at which the value was computed, empty for "just now".
+  - `value` *(number)* : The count value.
+
+
+## Paths
+
+### GET /_healthcheck
+
+
+
+
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Success
+
+### GET /_version
+
+
+
+
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Success
+
+### DELETE /api/specimen/1.0/connections/(connectionid)
+
+
+
+
+
+
+Deletes all metrics for the given connection.
+  - Use this when retiring a connection.
+
+
+
+
+
+
+
+
+
+### GET /api/specimen/1.0/counts/(metric)/(resource)
+
+
+
+
+
+
+Counts the number of specimens for which the metric is not zero within the resource
+
+
+
+
+Path Params:
+
+  - `metric` : The internal ID of a metric kind
+
+  - `resource` : The internal ID of a resource. The resource may be a Connection or a Connection Group.
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested Count
+ *  The `errors` property is empty.
+
+
+### POST /api/specimen/1.0/metrics
+
+
+
+
+
+
+Uploads specimen-based metrics.
+
+
+
+
+
+
+
+
+### GET /api/specimen/1.0/middlewarecounts/(metric)/(resource)
+
+
+
+
+
+
+Counts the number of (specimen,middleware) for which the metric is not zero within the resource.
+
+
+
+
+
+Path Params:
+
+  - `metric` : The internal ID of a metric kind
+
+  - `resource` : The internal ID of a resource. The resource may be a Connection or a Connection Group.
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested Count
+ *  The `errors` property is empty.
+
+
+### DELETE /api/specimen/1.0/middlewares/(middlewareid)
+
+
+
+
+
+
+Deletes all metrics for the given middleware (Not currently implemented).
+  - Use this when retiring a middleware.
+  - This is equivalent to delete metrics for each of the connections
+    defined for that middleware.
+
+
+
+
+
+
+
+
+
+___
+
+This document was generated automatically as part of the automated build
+process.
+
+Version: 1.0.0.144
+</xmp>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script>
+    mermaid.initialize({startOnLoad:true});
+</script>
+
+</body></html>

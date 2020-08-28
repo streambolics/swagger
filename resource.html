@@ -1,0 +1,4631 @@
+<html>
+<head>
+    <title>Resource</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<style>
+        h1
+        {
+            page-break-before: always;
+            border: 3px solid black;
+            border-radius: 5px;
+        }
+	  	h2:before
+		{
+    		content:' ';
+    		display:block;
+    		border:2px solid black;
+		}
+        div.answer
+        {
+            background-color: aquamarine;
+            margin-left: 80px;
+        }
+        td.answered
+        {
+            background-color: aquamarine !important;
+        }
+        td.unanswered
+        {
+            background-color: lightcoral !important;
+
+        }
+        div.note
+        {
+            background-color: aquamarine !important;
+            border: 1px solid aquamarine;
+            margin-right: 40%;
+        }
+        div.warning
+        {
+            background-color: lightcoral !important;
+            border: 1px solid lightcoral;
+            margin-left: 40%;
+        }
+    </style>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.2.6/mermaid.min.js"
+        integrity="sha256-0EUu19CAux3g/iy/+6obKNgaGhv3E6yrHdNWBnZncE0="
+        crossorigin="anonymous">
+    </script>
+</head>
+<body>
+<xmp theme="spacelab" style="display:none;">
+This document contains useful information on the Resource service and its
+usage.
+
+|Date|Initials|Section|Changes|
+|----|--------|-------|-------|
+|<sub>31&#8209;MAY&#8209;2019</sub>|<sub>SLE</sub>|<sub>Main</sub>|<small>     Included the simplified API.     Added parallel with Polarion.|
+|<sub>06&#8209;JUN&#8209;2019</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Reorganized the workflows.|
+|<sub>06&#8209;JUN&#8209;2019</sub>|<sub>SLE</sub>|<sub>Main</sub>|<small>     Additional information about users, authorizations, home groups, etc.|
+|<sub>11&#8209;JUN&#8209;2019</sub>|<sub>SLE</sub>|<sub>Swagger</sub>|<small>     Automatic generation of the swagger documentation.|
+|<sub>21&#8209;JUN&#8209;2019</sub>|<sub>SLE</sub>|<sub>Swagger</sub>|<small>     Extended the resource links to allow custom sorting and selection of     preferred elements.|
+|<sub>17&#8209;JUL&#8209;2019</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Initial description of the distinction between direct and inderect     connections.|
+|<sub>18&#8209;JUL&#8209;2019</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Rewritten the distinction between direct and indirect connections according     to capabilities of new instrument drivers.|
+|<sub>9&#8209;AUG&#8209;2019</sub>|<sub>SLE</sub>|<sub>All</sub>|<small>     Cleanup. Removed unneed techno-babble. Table of contents.|
+|<sub>28&#8209;AUG&#8209;2019</sub>|<sub>SLE</sub>|<sub>IM&#8209;69373</sub>|<small>     Workflows involving middlewares acting as connection groups.|
+|<sub>02&#8209;SEP&#8209;2019</sub>|<sub>SLE</sub>|<sub>IM&#8209;69687</sub>|<small>     Specification of IM-specific properties for connections.|
+|<sub>02&#8209;DEC&#8209;2019</sub>|<sub>SLE</sub>|<sub>All</sub>|<small>     Miscellaneous clarifications.|
+|<sub>17&#8209;FEB&#8209;2020</sub>|<sub>SLE</sub>|<sub>Swagger</sub>|<small>     Unimplemented REST APIs marked as such.|
+|<sub>17&#8209;FEB&#8209;2020</sub>|<sub>SLE</sub>|<sub>Connection&nbsp;Groups</sub>|<small>     Added a paragraph about what connection groups are.|
+|<sub>17&#8209;FEB&#8209;2020</sub>|<sub>SLE</sub>|<sub>IM&nbsp;Connections</sub>|<small>     Draft status removed|
+|<sub>21&#8209;FEB&#8209;2020</sub>|<sub>SLE</sub>|<sub>IM&#8209;69650</sub>|<small>     Clarified limitations of the "includelinks" query parameter.|
+|<sub>27&#8209;MAR&#8209;2020</sub>|<sub>SLE</sub>|<sub>IM&#8209;69351</sub>|<small>     DELETE operation now supported on the /connections simplified API.     Clarified the action of the "autocreate" parameter, and its possible     future deprecation.|
+|<sub>23&#8209;APR&#8209;2020</sub>|<sub>SLE</sub>|<sub>ImConnections</sub>|<small>     Swagger documentation for the ImConnetions endpoint.|
+|<sub>13&#8209;MAY&#8209;2020</sub>|<sub>DJR</sub>|<sub>IM&#8209;79280</sub>|<small>     Synchronizing new users from the identity provider now functional for "autocreate"|
+|<sub>10&#8209;AUG&#8209;2020</sub>|<sub>SLE</sub>|<sub>Swagger</sub>|<small>     Swagger documentation completely rewritten. Now contains the all microservices in one     single document.|
+|<sub>10&#8209;AUG&#8209;2020</sub>|<sub>SLE</sub>|<sub>Workflows</sub>|<small>     Workflows for mirror members & properties|
+
+Contents
+--------
+
+  - [Workflows for applications displaying data](#display-workflows)
+  - [Workflows for applications editing data](#editor-workflows)
+  - [Workflows for applications providing data](#provider-workflows)
+  - [The imconnections endpoint](#im-connections)
+  - [Symbol reference](#resource-reference)
+  - [API reference](#swagger)
+
+About resources
+===============
+
+The `resource` service exposes definitions of _resources_. Resources represent
+all physical or logical agents that participate to the work of the lab.
+
+The concept of resource is quite broad, encompassing many objects that are
+usually seen as distinct. Any answer to a question of the form "_who_ (performed/
+should perform/is responsible for the correct execution of)
+this action" is a resource. For example:
+
+“Who provided this test result?”
+
+- The result was hand typed by a lab technician. Therefore a lab technician is
+  a resource.
+- The result was provided by an instrument. Therefore, an instrument is a
+  resource.
+- The result was computed by a rule. Therefore, a rule is a resource.
+- The result is the default value recommended by a SOP. Therefore, a SOP is
+  a resource.
+
+Typical resources include:
+
+- Lab equipment such as instruments, decappers, centrifuges, refrigerated
+  storage, etc.
+- IT equipment such as desktop computers, servers, printers, signal converters
+  (Lantronix), light poles, etc.
+- Software services such as web servers, mail servers, shared file storage,
+  lab middleware, etc.
+- Manual or automatic procedures, such as IM rules, SOPs, etc.
+- Organizational units such as labs, wards, boards of directors, etc.
+- Users
+- Ad hoc groups of other resources, such as “all the barcode printers on the
+  second floor”.
+
+Resource identity
+-----------------
+
+Resources have a formal identity known as their "Id". This identity can never
+be changed, and does not depend on any of the editable properties of a
+resource. More specifically, the identity does not depend on the name of the
+resource, nor its relationships with other resources.
+
+As a consequence, a resource can be renamed and moved in resource hierarchies
+without altering its identity. Also, two resources may have the same name, the
+system will still be able do disambiguate them according to their id.
+
+The id is implemented as a UUID.
+
+People vs Users
+---------------
+
+People are considered resources. They are different from _users_. While users
+are indeed people and need to be considered resources, there are other people
+that are tracked but that are not necessarily users of LabX.
+
+A typical example is a requesting physician, that may be the person who ordered
+some test on a specimen. This person needs to be tracked in the system, it is
+a resource since it is the answer to the question “_who_ did this?” but is not
+a user.
+
+Resource Hierarchy
+------------------
+
+Resources are organized in an hierarchical way. Any resource (named _master_)
+may oversee any number of sub-resources named _elements_. This is obviously true
+for organizational units and groups, but is in fact extended to all possible
+kinds of resources. This is useful when a resource needs to be described in
+minute details. For example, an analyzer can be described as _containing_
+multiple analytical units, a pipetting needle, a computer and a serial
+interface, and the computer itself is _hosting_ a web service which _implements_
+three REST interfaces that _expose_ a database. Note however that such level of
+detail is not required for the software to work.
+
+Similarly, element resources are _contained_ in any number of master
+resources. This is the exact same relation seen from the other end.
+
+Note that whether a resource is a master or an element is only meaningful in the
+context of a link. A resource may be the master in one link, and the element
+in another link.
+
+One at most of these masters has a privileged relation to the contained
+resource, and is known as its _parent_. The _parent_ relationship helps organize
+the resources in a tree, that we call the _organization tree_. Element resources
+inherit some properties of their parent, and are called _children_. For example,
+unless told otherwise, we expect an organization to be in the same time zone as
+its parent.
+
+The relations are seen as going _down_ from a master to its elements, and
+_up_ from the elements to their masters. No resource may relate to itself.
+
+Recursive contents
+------------------
+
+A resource may contain element resources that are themselves masters. When
+asking for the contents of a resource, a client usually only receives the
+direct contents.
+
+A client may ask for _recursive_ contents instead, in which sub-containers are
+themselves resolved into their own content. Such recursion may expose the same
+resource more than once if it is reachable using multiple paths. Also, recursive
+contents has the risk of inducing cycles (resource A links down to B which links
+down back to A)
+
+Dynamic resources and proxies
+-----------------------------
+
+Some resources may represent another (set of) resources in a particular context.
+For example, there may be a resource titled “Nearest printer”. This resource
+represents another resource, namely the one being a printer, and being the
+nearest to the current workstation.
+
+Another such resource might be “All instruments currently offline”. This is
+typically a group whose contents change over time.
+
+Resource Kinds
+--------------
+
+Each resource has a kind (which is a definition) representing its typical
+usage, for example “Person”, “Printer” or “Organizational Unit”.
+
+The resource service does not limit the list of kinds of resources, nor does
+it require any resource kind to be pre-defined. Client application and modules
+are free to add any resource kind they see fit.
+
+LabX itself does require some resource kinds to be defined; see the source code
+for a list of those, along with their precise semantics.
+
+Note also that it is sometimes possible to modify the resource kind of a
+resource after its creation, especially for user created custom kinds.
+However, since predefined resource kinds have a special meaning for the
+software, changing the kind of a resource from “Connection” to “Pipetting
+needle” might have strange effects and should be disallowed.
+
+Relation Kinds
+--------------
+
+Each relation between a container resource and an element resource is known as
+a link, and also has a kind. Typical link kinds include:
+
+- the “Parent” links unite a parent with each of its children. Resources
+  linked by this kind of relation form a tree structure (ie each resource has
+  at most one such relation going upwards)
+
+- The “Contains” links unite an ad-hoc group with each of its elements.
+
+Note that while highly discouraged, nothing prevents a master to be linked to
+the same element multiple times, with different relation kinds.
+
+Database structure
+------------------
+
+<center>![Database structure](resource-database-structure.png)</center>
+
+Parallel with Polarion items
+----------------------------
+
+While resources are quite different in in nature from Polarion work items, the
+way they are organized is very similar.
+
+<a name="3dc65525c34d54ba86159ece25a5183b"></a>
+###Types
+
+<center>![Types in Polarion](resource-polarion-type.png)</center>
+
+The work item here has type “Code”. Polarion comes with some predefined types,
+but additional ones can defined by the end user. It is possible, with some
+restrictions, to change the type of a work item after it was created.
+The equivalent in resources is the _Resource Kind_, which defines the purpose of
+a resource, and can be changed later.
+
+<a name="4fdd2d482f5550a79e84538e73233a94"></a>
+###Links
+
+<center>![Links in Polarion](resource-polarion-links.png)</center>
+
+Each Polarion work item has links to any number of other items. The links also
+have a type (in the _Role_ column) that is user defined and can be changed after
+the link was created. The equivalent in resources are _Links_ and _Link Kinds_.
+
+<a name="30f4b56a077d59e2afa615fb138b8802"></a>
+###Navigation
+
+<center>![Navigation in Polarion](resource-polarion-navigation.png)</center>
+
+When displaying a Polarion work item, the list of its _masters_ (ie all other
+Polarion work items that have an outgoing link to this item) is displayed above
+the main title, and the list of its _elements_ (ie the list of all other
+Polarion work items linked by this item) is displayed below. The user may
+freely navigate the hierarchy of items.
+
+Workflows for client applications displaying data
+=================================================
+
+<a name="display-workflows"></a>
+
+These are the workflows that can be used by client applications that need to
+display data on behalf of a user.
+
+
+Preliminary Notes
+-----------------
+
+<a name="ecd90f7a14b65317ac8bb8992c76f323"></a>
+####Guids
+As usual, the actual parameters sent to a query are GUIDs. The workflows here
+use the human readable versions using programmatic names enclosed in «» marks.
+
+The mapping between programmatic names and actual GUIDs are in `resourceIds.js`.
+
+<a name="30e0b9b3b5445a07b3094f574c6959fb"></a>
+####Pagination
+
+Remember that every time a collection of resources is returned, the list is
+paginated.
+
+
+Obtaining the connection groups for the current user
+----------------------------------------------------
+
+The simplified API:
+
+    http://server/api/resource/1.0/connectiongroups
+
+will return a list of resources that must be shown to the user as a pick
+list for his choice of connection groups.
+
+The returned set contains exactly what needs to be shown, and especially:
+
+  * The first item in the list is the "home" or "preferred" group for the user.
+  * Items are sorted according to the preferences of the user.
+  * Items that the user is entitled to see, but chose to hide, are not present
+    in the list.
+
+Keep in mind that the resources returned here do not necessarily have their
+Resource Kind equal to `ResourceKind_ConnectionGroup`. The items may in fact
+be:
+
+  * Automatically populated special purpose groups
+  * Middlewares, which can be seen as the group of all connections managed by
+    that middleware.
+
+Obtaining the contents of groups
+--------------------------------
+
+There are two ways of obtaining the contents of the groups.
+
+You can obtain the contents directly by using the
+
+    http://server/api/resource/1.0/connectiongroups
+
+query by including `includelinks=true` parameter in the URL:
+
+    http://server/api/resource/1.0/connectiongroups?
+        includelinks=true
+
+In that case, each resource in the list will contain a `links` property that
+contains an array of linked sub-resources. Enumerate that list and keep
+the ones of kind `ResourceKind_Connection`. Note that this array contains at
+most 100 links, even if the resource has more, and there is no way to apply
+a filter.
+
+You can also obtain the contents of a specific group at any time by calling:
+
+    http://server/api/resource/1.0/resources/[Group-Id]/elements
+
+Again, keep only the items of kind `ResourceKind_Connection`.
+Obtaining the “Current User“ resource
+-------------------------------------
+
+This resource represents the current user. It is the root resources needed to
+retrieve all what the user can do.
+
+To retrieve the current user, issue a GET query to
+
+    http://server/api/resource/1.0/currentuser
+
+This will return a resource representing the current user. Parse the return
+value and obtain its ID (and possibly, name). This will be used later as
+`current-user-id`
+
+Client Workflows for data providers
+===================================
+
+<a name="provider-workflows"></a>
+
+These are workflows to be used by client applications that want to upload
+data (esp. metrics). This particularly applies to ETL drivers.
+
+Auto-creating Middleware and Connection resources
+-------------------------------------------------
+
+Before uploading metrics data, the client must obtain the GUIDs for the
+related resources. The easiest way of doing this is to use the simplilfied
+interface.
+
+The client should first create the Middleware resource by deciding on a unique
+code, then issuing a GET query to
+
+    http://server/api/resource/1.0/middlewares/
+
+Then create each connection known by the middleware by deciding on unique
+codes, then issuing GET queries to
+
+    http://server/api/resource/1.0/connections/
+
+
+Auto-creating connections in the specific case of IM
+----------------------------------------------------
+
+The ETL driver uses the simplified interface during the synchronization phase,
+then remembers the guids in memory. Next time the driver starts it can redo
+the synchronization phase and it will receive back the same guids.
+
+
+1.  Compute a unique code for the middleware itself. This would typically be
+    built from the serial number. Be aware that the code must be the same for
+    all mirror members (we are _not_ computing a code for individual members,
+    but for the IM system as a whole)
+
+2.  Issue a GET query to:
+
+        http://server/api/resource/1.0/middlewares/[uniquecode]?
+            autocreate=true&
+            name=[Name of the middleware]
+
+3.  Parse the returned data (which is a resource) and keep the id property.
+    This id will be needed in the future queries as MiddlewareId.
+
+4.  Iterate over all connections, direct or indirect. For each, compute a
+    unique code. The unique code must be unique for the middleware, but two
+    connections can share the same unique code if they are served from two
+    different middlewares. For direct connections, the recommended code should
+    contain the _Connection Number_ (101, 102, etc). For indirect connections,
+    the unique code should be the Connection Number suffixed by the Instrument
+    ID.
+
+5.  Issue a GET query to:
+
+        http://server/api/resource/1.0/connections/[uniquecode]?
+            autocreate=true&
+            middleware=[middlewareid]&
+            name=[common name of the connection]
+
+6.  Parse the returned data (which is a resource) and keep the id property.
+    This is the Connection GUID.
+
+<a name="21dda81971a45cf48a06f77bb7e33819"></a>
+###Example
+
+Issue the GET query for the IM middleware:
+
+    GET http://server/api/resource/1.0/middlewares/SN-123456
+        ?autocreate=true
+        &name=Instrument%20Manager
+
+Returns:
+
+    {
+    "statuscode": 201, "status": "Created", "errors": null,
+    "data": {
+        "id": "0465bc3c-6c40-55f5-9fb1-664c611a5401",
+        "name": "Instrument Manager", "shortname": "", "systematicname": "SN-123456",
+        "sortkey": "",
+        "hrefs": [ { [...] } ],
+        "kind": "b3115cba-34af-47ca-8405-f328858d6f89",
+        "kindname": "Middleware",
+        "links": []
+        }
+    }
+
+Parse the id field and keep it: 0465bc3c-6c40-55f5-9fb1-664c611a5401. Pass it
+to queries for connections
+
+    GET http://server/api/resource/1.0/connections/CN-101
+        ?middleware=0465bc3c-6c40-55f5-9fb1-664c611a5401
+        &autocreate=true
+        &name=Architect
+
+Auto-creating Workstation resources for IM Mirror members
+---------------------------------------------------------
+
+To create IM mirror members:
+
+1.  Use the /middlewares call to register IM as a middleware.
+    You can of course reuse the id received from the call when registering
+    connections.
+
+2.  Register each mirror member using the /workstations API call. As uniquecode,
+    use the network name of the station. Avoid using the IP address unless you
+    are certain it will never change.
+
+        http://server/api/resource/1.0/workstations/[uniquecode]?
+            autocreate=true&
+            middleware=[middlewareid]&
+            name=[common name of the workstation]
+
+3.  Upload additional information about the workstation that do not
+    change often, and is not a metric, such as its IP addresses. Use
+    a PUT the /properties API for these.
+
+4.  Once this is done, the workstation object can be used to upload
+    the metrics about the mirror member status.
+
+Direct and indirect connections in the specific case of IM
+----------------------------------------------------------
+
+In some scenarios, IM connects some instruments through a secondary or
+"daisy chain" connection. Examples include:
+
+  - Abbott DMS
+  - Roche CITM
+  - A secondary Instrument Manager.
+
+The lab user is interested in what happens at the instrument level, no
+matter how many connections the results traversed. The IT user is interested
+in the connections themselves.
+
+To that purpose, LabX defines two broad flavors of connections:
+
+  - _Direct_ connections are used to directly connect IM to an instrument
+    or to a middleware. Direct connections in IM are actively connected to
+    a communication port and use an instrument driver.
+  - _Indirect_ connections are used to model the multi-hop connection between
+    IM and the instrument.
+
+There are two ways an IM driver can represent an indirect connection:
+
+  - The most common case is to use a pair (Connection, Instrument ID). In
+    that case, the connection defines a "Instrument ID map" to translate
+    between the Insturment ID and the actual instrument. We call these
+    _old style_ indirect connections.
+  - Some newer drivers (including the one for Abbott DMS) use a connection map
+    that define the indirect connections as true IM connections. We call these
+    _new style_ indirect connections.
+
+The ETL driver must therefore distinguish the following cases:
+
+  - Direct connections, always corresponding to an IM connection with an active
+    driver.
+  - Old style indirect connections represented in IM as a pair (Direct
+    Connection Number, Instrument ID).
+  - New style indirect connections represented in IM as an inactive connection,
+    fed with results from a direct connection with a new style driver.
+
+Obviously, when setting up the Connection Groups, the administrator would
+distribute the indirect connections in the groups he creates for the lab users,
+and the direct connections he creates for IT users.
+
+<a name="cbf1f8ef96ed5f328d2b4983b42910ae"></a>
+### Metrics
+
+The distinction between direct and indirect connections has impacts on how
+metrics are uploaded from IM to LabX. A few examples include:
+
+  - Queue sizes are irrelevant for indirect connections.
+  - Connection status can be tricky for indirect connections. While it is
+    obvious that when the corresponding direct connection is `Off`, all
+    corresponding indirect connections are `Off` also, we cannot guarantee that
+    an indirect connection is `On` just because the connection to the DMS is
+    OK (the DMS itself may have trouble connecting the instrument).
+
+Additional details about this can be found in the reference for the metrics
+themselves.
+
+<a name="bd136c80609f52dca1134905d1f3fab1"></a>
+### Unique Code
+
+The recommended method of generating unique codes passed to
+`http://server/api/resource/1.0/connections/` is to use:
+
+  - `CN-xxx` for direct connections, where xxx is the connection number in
+    IM (101, 102, etc).
+  - `CN-xxx` for _new style_ indirect connections.
+  - `CN-xxx-yyyyy` for old style indirect connections, where xxx is the
+    direct connection number and yyyyy is the instrument ID.
+
+<a name="1386ec1c513151f599ea357c0cfba0f7"></a>
+### Multiple connections to the same instrument
+
+At the connection level, we do not try to be smart or group connections to
+the same instrument. For example, if the `Abbott DMS orders` direct connection
+also has entries in the Instrument Map, we would create three additional
+indirect connections (`Architect c8000 1 through Abbott DMS orders`, etc.)
+which would be distinct from the three previous ones.
+
+A future extension of LabX will take care of that by explicitly defining the
+actual instruments and linking them to all the connections used to connect
+them. See the symbol references:
+
+  - [#2af58fea-4240-4305-b7c4-5144457454cb](`ResourceKind_Instrument`)
+    for resources representing instruments.
+  - [#2924dd58-72f6-4c3d-93eb-cd2bfc1db3d9](`ResourceLinkKind_Connection`)
+    for links between connections and instruments.
+
+<a name="f68d17600fa75837a0d6a55c17c04da9"></a>
+### When the secondary itself is able to report connection statuses
+
+Imagine the case where the secondary itself is able to report the status of its
+connections. This could occur because:
+
+  - The secondary sends status messages about its internal state, that are
+    interpreted by the IM driver and uploaded to LabX. We do not yet have
+    a scenario for that.
+
+  - The secondary is able to upload its status to LabX directly. This would
+    occur if the secondary is itself an IM system customized for a business
+    partner.
+
+In that case, each connected instrument would correspond to three distinct
+connections:
+
+  - One _direct_ connection from IM to secondary.
+  - One _indirect_ connection from IM to instrument (labeled "through DMS").
+  - One _direct_ connection from secondary to instrument.
+
+Each of these three connections must be represented in the database since they
+are independent.
+
+Simplified interface for obtaining GUIDS
+----------------------------------------
+
+Most APIs require knowing the GUID to a resource. Typically, the metrics API
+requires knowing the guids of connections.
+
+Display-only clients can simply query for the list of all available connections
+using GET queries to the global resource items, but clients that need to
+synchronize their configuration to the cloud need to somehow detect whether
+a resource already exists in the cloud, and auto-create it otherwise.
+
+Such clients may choose between two methods:
+
+*   The full interface involves the client actively remembering the GUIDS of
+    already created connections, and issuing POST queries to
+
+        http://server/api/resource/1.0/resources
+
+    to create new resources, then remembering the returned guids. The full
+    interface is recommended, but can be hard to fully implement as it involves
+    creating multiple objects and links, then securely storing the guids in
+    the client.
+
+*   The simplified interface involves issuing GET queries to specialized
+    endpoints that will automate the retrieval and creation of resources and
+    links based on a _unique code_. The client is no longer required to remember
+    the guids across sessions, but is required to devise a method for creating
+    unique codes.
+
+The simplified API queries retrieve or create a new resource in the cloud
+configuration based on a _unique code_. They simplify the work of the client by
+automating the setting of many key properties of the resources and link them
+together.
+
+However, for the correct function of the simplified API, the client is
+responsible for providing _unique codes_ that fulfill the following
+prerequisites:
+
+*   They consist only of latin letters, digits, dashes (-) and dots (.). The
+    codes are case sensitive: `abc` is different from `ABC`
+*   They are truly _unique_ (at least for a tenant, but it is recommended for
+    them to be unique in the whole world)
+*   They are _unchanging_. If the unique code ever changes, the simplified API
+    will not be able to retrieve the old resource and will create a new one.
+
+It is therefore recommended that a unique code is built using internal identity
+of the objects, not on user-defined names.
+
+All simplified API calls share the following common properties:
+
+*   They are accessed through the `GET` verb, although sometimes they will
+    create new resources.
+*   The `autocreate` field ensures that the resource is created if none exists
+    with the given unique code.
+*   The `name` field is used to provide a default name. The name is only used
+    when initially creating the resource. If the resource is already existing,
+    its name is not changed.
+*   The status code can be used to check whether the resource was pre-existing
+    (`200 - Success`) or was just created (`201 - Created`)
+Workflows for client applications editing the configuration
+===========================================================
+
+<a name="editor-workflows"></a>
+
+These are the workflows that can be used to edit the configuration
+
+
+Preliminary Notes
+-----------------
+
+<a name="ecd90f7a14b65317ac8bb8992c76f323"></a>
+####Guids
+As usual, the actual parameters sent to a query are GUIDs. The workflows here
+use the human readable versions using programmatic names enclosed in «» marks.
+
+The mapping between programmatic names and actual GUIDs are in `resourceIds.js`.
+
+<a name="30e0b9b3b5445a07b3094f574c6959fb"></a>
+####Pagination
+
+Remember that every time a collection of resources is returned, the list is
+paginated.
+
+
+Retrieving the list of all users
+--------------------------------
+
+    http://server/api/resource/1.0/users?autocreate=true
+
+This synchronizes all users from the logon provider. Users can also be
+retrieved from:
+
+    http://server/api/resource/1.0/resources?kind=«ResourceKind_User»
+
+but this will _not_ synchronize from the identity provider, only return the
+users already present.
+
+Retrieving the list of all connections
+-------------------------------------
+
+Issue a GET to:
+
+    http://server/api/resource/1.0/resources?kind=«ResourceKind_Connection»
+
+This API is only available to administrators. It will return all
+connections defined in the system, including those not displayed on that user's
+dashboard.
+
+Note : in the specific case of IM, it is possible to obtain the list of
+connection with additional IM-specific properties. See the documentation
+for the [imconnections](#im-connections) endpoint.
+
+Retrieving the list of all connection groups
+--------------------------------------------
+
+Issue a GET to:
+
+    http://server/api/resource/1.0/resources?kind=«ResourceKind_ConnectionGroup»
+
+This API is only available to administrators. It will return all connection
+groups defined in the system, including those that do not appear on the
+dashboard for that user.
+
+Editing the contents of a connection group
+------------------------------------------
+
+To rename a connection group, issue a PUT to:
+
+    http://server/api/resource/1.0/resources/«group-id»
+
+with body:
+
+    {
+        name: "«new name»"
+    }
+
+To add a connection to a group, issue a POST to:
+
+    http://server/api/resource/1.0/resources/«group-id»/links
+
+with body:
+
+    {
+        element: "«connection-id»"
+        linkkind: "«ResourceLinkKind_Content»"
+    }
+
+To remove a connection from a group, issue a DELETE to:
+
+    http://server/api/resource/1.0/resources/«group-id»/links?
+        element=«connection-id»&
+        linkkind=«ResourceLinkKind_Content»
+
+
+Allowing a user to monitor a connection group
+---------------------------------------------
+
+To allow a group for a user, issue a POST to:
+
+    http://server/api/resource/1.0/resources/«user-id»/links
+
+with body:
+
+    {
+        element: "«group-id»",
+        linkkind: "«ResourceLinkKind_ReadAccess»"
+    }
+
+To remove a group from the user, issue a DELETE to:
+
+    http://server/api/resource/1.0/resources/«user-id»/links?
+        element=«group-id»&
+        linkkind=«ResourceLinkKind_ReadAccess»
+
+Getting and setting additional resource properties
+--------------------------------------------------
+
+To set the value of an additional property, issue a PUT to
+
+    http://server/api/resource/1.0/resources/«resource-id»/properties/«property-id»
+
+The body should be the value of the property, which is any JSON value,
+including arrays and/or records.
+
+To retrieve the value of an additional property, issue a GET to
+the same API.
+
+The Property ids need to correspond to a Resource Property Kind, that
+can be managed with the
+
+    http://server/api/resource/1.0/propertykinds
+
+and
+
+    http://server/api/resource/1.0/propertykinds/«property-id»
+
+CRUD APIs.
+The ImConnections endpoint
+==========================
+
+<a name="im-connections"></a>
+
+
+
+This simplified endpoint provides tools to manage resources of kind
+`ResourceKind_Connection` according to the IM worldview. This is done mainly
+through additional resources and links, that are exposed as named properties
+by the simplified interface.
+
+<div class="warning">
+    This API is meant to be used during setup. Since calling this API hits many
+    different tables in the resource module, it may be inefficient for routine
+    use.
+</div>
+
+Rationale
+---------
+
+Using resources to represent additional informations simplifies the navigation
+in the organizational view. For example, given a site, it becomes immediately
+possible to navigate to its connections, without the need of additional APIs.
+
+Also, additional information being resources having connections as elements
+allows to define metrics and or KPIs on those. It becomes feasible to have KPIs
+on sites, locations, drivers, etc.
+
+General view
+------------
+
+This is a general view of the relations used to represent IM specific data.
+The following sections each describe relatede sets of these relations.
+
+<div class="mermaid">
+    graph TD
+        classDef Connection fill:#39f,stroke:#000;
+        classDef Configuration fill:#3fc,stroke:#000;
+        classDef Software fill:#fc6,stroke:#000;
+        classDef Organization fill:#9f3,stroke:#000;
+
+        soft[diiastmi]
+        softv1[v8.15.004]
+        softv2[v8.15.005]
+        class soft,softv1,softv2 Software
+
+        soft-->|Version|softv1
+        soft-->|Version|softv2
+
+        conf1[Architect]
+        conf2[Centaur]
+        conn1[Architect 1]
+        conn2[Architect 2]
+        conn3[Centaur 1]
+
+        class conf1,conf2 Configuration;
+        class conn1,conn2,conn3 Connection;
+
+        softv1-->|Instance|conf1
+        softv2-->|Instance|conf2
+        conf1-->|Configuration|conn1
+        conf1-->|Configuration|conn2
+        conf2-->|Configuration|conn3
+
+        site1[Alpha Site]
+        site2[Omega Site]
+        location1[Main location]
+        location2[First Floor]
+        location3[Second Floor]
+
+        class site1,site2,location1,location2,location3 Organization;
+
+        site1-->|Child|location1
+        site2-->|Child|location2
+        site2-->|Child|location3
+
+        site1-->|Site|conn1
+        site2-->|Site|conn2
+        site2-->|Site|conn3
+
+        location1-->|Location|conn1
+        location2-->|Location|conn2
+        location3-->|Location|conn3
+
+        subgraph Legend
+            x_conn[Connection]
+            class x_conn Connection
+            x_org[Organization]
+            class x_org Laboratory
+            x_conf[Configuration]
+            class x_conf Configuration
+            x_soft[Software]
+            class x_soft Software
+        end
+</div>
+
+Sites and locations
+-------------------
+
+Each connection may be attached to a _site_ and a _location_. LabX represents
+these as resources of kind `ResourceKind_Laboratory`, and links them
+to the connections using links of kind `ResourceLinkKind_Site` and
+`ResourceLinkKind_Location`. Note that the site and location are the masters
+and the connections are the elements, as one site may contain any number
+of connections but a connection only belongs to one site.
+
+<div class="mermaid">
+    graph TD
+        classDef Connection fill:#39f,stroke:#000;
+        classDef Configuration fill:#3fc,stroke:#000;
+        classDef Software fill:#fc6,stroke:#000;
+        classDef Organization fill:#9f3,stroke:#000;
+
+        conn1[Architect 1]
+        conn2[Architect 2]
+        conn3[Centaur 1]
+        class conn1,conn2,conn3 Connection;
+
+        site1[Alpha Site]
+        site2[Omega Site]
+        location1[Main location]
+        location2[First Floor]
+        location3[Second Floor]
+
+        class site1,site2,location1,location2,location3 Organization;
+
+        site1-->|Child|location1
+        site2-->|Child|location2
+        site2-->|Child|location3
+
+        site1-->|Site|conn1
+        site2-->|Site|conn2
+        site2-->|Site|conn3
+
+        location1-->|Location|conn1
+        location2-->|Location|conn2
+        location3-->|Location|conn3
+
+        subgraph Legend
+            x_conn[Connection]
+            class x_conn Connection
+            x_org[Organization]
+            class x_org Laboratory
+            x_conf[Configuration]
+            class x_conf Configuration
+            x_soft[Software]
+            class x_soft Software
+        end
+</div>
+
+Configurations and Drivers
+--------------------------
+
+Each connection is defined by a _configuration_. Each configuration uses a
+driver. All these are again represented as resources.
+
+<div class="mermaid">
+    graph TD
+        classDef Connection fill:#39f,stroke:#000;
+        classDef Configuration fill:#3fc,stroke:#000;
+        classDef Software fill:#fc6,stroke:#000;
+        classDef Organization fill:#9f3,stroke:#000;
+
+        soft[diiastmi]
+        softv1[v8.15.004]
+        softv2[v8.15.005]
+        class soft,softv1,softv2 Software
+
+        soft-->|Version|softv1
+        soft-->|Version|softv2
+
+        conf1[Architect]
+        conf2[Centaur]
+        conn1[Architect 1]
+        conn2[Architect 2]
+        conn3[Centaur 1]
+
+        class conf1,conf2 Configuration;
+        class conn1,conn2,conn3 Connection;
+
+        softv1-->|instance|conf1
+        softv2-->|instance|conf2
+        conf1-->|configuration|conn1
+        conf1-->|configuration|conn2
+        conf2-->|configuration|conn3
+
+        subgraph Legend
+            x_conn[Connection]
+            class x_conn Connection
+            x_org[Organization]
+            class x_org Laboratory
+            x_conf[Configuration]
+            class x_conf Configuration
+            x_soft[Software]
+            class x_soft Software
+        end
+</div>
+
+Backend implementation
+----------------------
+
+<div class="note">
+  This section is part of the design task and not a specification.
+</div>
+
+
+Create a new endpoint at the URL:
+
+    http://server/api/resources/1.0/imconnections/:id
+
+This endpoint exposes Connection resources with additional fields as expected
+for IM. The endpoint supports three operations:
+
+  * `GET` without the :id parameter, returns all connections defined in LabX,
+    subject to paging.
+  * `GET` with the :id parameter, returns the connection identified by the given
+    guid.
+  * `PUT` with the :id parameter, updates the properties of the connection.
+
+Besides the usual properties of resources, the endpoint adds the following:
+
+  * `site`, `sitename`, `sitecode`: The id, the name and the unique code for the "Site" property
+    of an IM connection.
+  * `location`, `locationname`, `locationcode`: the id, the name and the unique code for the "Location"
+    property of an IM connection.
+  * `configuration`, `configurationname`, `configurationcode`: the id, name and unique code for the configuration
+  * `driver`, `drivername`, `drivercode`, `driverversion`: the id, name and unique code for the driver version.
+
+The endpoint shall:
+
+ 1. Update the name of the connection with the given `name` parameter.
+ 1. Create resource for the site, generating the id by hashing the `sitecode`
+    with the `ResourceKind_Organization` namespace. Make the site the parent of
+    the connection, with a link of kind `ResourceLinkKind_ImSite`
+ 1. Create a resource for the location, by hashing the `locationcode` with the
+    id of the site and `ResourceKind_Organization` as namespace. Make the
+    location a parent of the connection, with `ResourceLinkKind_ImLocation`.
+ 1. Create a resource  for the configuration by hashing the `configurationcode` with
+    the id of the middleware and `ResourceKind_Configuration`. Make the
+    configuration a parent of the connection, with `ResourceLinkKind_Configuration`
+ 1. Create a resource for the driver hashing the code using `ResourceKind_Software`.
+    Do the same for the version, link them with `ResourceLinkKind_Version`. Link
+    the version to the configuration with `ResourceLinkKind_Instance`.
+
+Single Masters
+--------------
+
+The design relies on the presence of _Single Masters_, ie relations where any
+resource has at most one master through a given link kind. For example, a
+connection has at most one master through the `ResourceLinkKind_ImLocation`
+relation. That means that if a PUT operation specified a new master, the old
+master must be unlinked.
+
+Create a utility function `LinkSingleMaster (Element, Master, Kind)` that:
+
+  1. Deletes all existing links from any master to Element with the given kind
+  2. Creates a link from Master to Element with the given kind.
+
+Create a utility function `GetSingleMaster (Element, Kind)` that:
+
+  1. Returns the (single) master of Element with the given kind.
+
+Workflow for the ETL driver
+---------------------------
+
+<div class="note">
+  This section shall be moved to the "ETL workflows" chapter.
+</div>
+
+
+After accessing each of the connections, the ETL driver should update the
+information for an IM connection by issuing a PUT with the following
+properties:
+
+  * `name`: the name of the connection.
+  * `sitename`: the (unique) name of the site
+  * `locationname`: the (unique) name of the location
+  * `configurationcode`: the unique code for the configuration. This must be unchanging (ie the internal number of the configuration,
+    prefixed by `CC-`)
+  * `configurationname`: the name of the configuration. This name may change.
+  * `drivercode`: the internal code name for the driver, for example "diiastmi"
+  * `driverversion`: the full version of the driver, for example "v8.15.004"
+  * `drivername`: the name of the driver, without the version, for example "Configurable ASTM driver"
+
+<div class="mermaid">
+    sequenceDiagram
+        participant ETL
+        participant Backend
+
+        ETL->>Backend: GET middlewares/:code
+        Backend->>ETL: Middleware resource id
+
+        loop Connections
+
+            ETL->>Backend: GET connections/:code
+            Backend->>ETL: Connection resource id
+            ETL->>Backend: PUT imconnections/:id
+
+        end
+</div>
+
+Example payload to `imconnections`:
+
+    PUT http://server/api/resource/1.0/imconnections/3f45-xxxx-yyyyyyyy
+    {
+        "name": "Architect 1",
+        "sitename": "West Coast",
+        "locationname": "First Floor",
+        "configurationcode": "CC-101",
+        "configurationname": "Architect",
+        "drivercode": "diiastmi",
+        "driverversion": "v8.15.004",
+        "drivername": "Configurable ASTM driver"
+    }
+
+What is a connection group?
+===========================
+
+A connection group is a configuration item that allows you to group together
+a set of _connections_ in order to monitor them as a whole.
+
+To monitor a connection group, LabX defines a set of KPIs. Each of these KPIs
+are an indicator of the health of a lab process, in relation to the connections
+in the group. For example, one of the KPIs allows you to see how well
+auto-verification works for the connections of the group.
+
+Manually defined connection groups
+----------------------------------
+
+Connection groups reflect the organization of your lab, so it is up to you
+to define relevant groups and insert the appropriate connections in the group.
+
+ -  A connection group can contain connections from multiple different IM
+    middlewares. You may build a group of all your hematology instruments, even
+    if they are connected by multiple different IMs.
+
+ -  The order in which connections are inserted into a connection group is
+    irrelevant, they are all treated the same.
+
+ -  You can insert a connection in any number of connection groups. You may have
+    a connection group for all hematology instruments, and one group for all
+    emergency instruments; a hematology instrument used in the ER would be in
+    both groups.
+
+ -  You cannot insert the same connection twice in the same connection group.
+
+Automatically defined connection groups
+---------------------------------------
+
+In order to simplify the initial setup of connection groups, the LabX system
+automatically creates a range of configuration items that you can choose to use
+as a connection groups. Contrary to user-defined groups:
+
+ -  You are not allowed to manually alter the contents of the group directly
+    in LabX.
+
+ -  The contents of the group are altered according to external setup performed
+    on the IM middleware itself. For example, if you alter a connection in
+    IM and change its _location_ field from **first floor** to **second floor**,
+    the connection will automatically be removed from the connection group named
+    "first floor" and will be added to the connection group named "second floor".
+
+<div class="note">
+Note that due to delays in the transmission of data from the IM middleware to
+the LabX cloud, the propagation of the changes from IM to the connection groups
+may take up to a few minutes.
+</div>
+
+The LabX cloud automatically maintains the following connection groups:
+
+  - A _middleware_ connection group for each of the known middlewares (IMs). This
+    group contains _all_ connections managed by that middleware, including system
+    connections such as QMGR and Purge.
+
+  - A _location_ and a _site_ connection group for each of the locations and
+    sites defined in the IM setup of connections. The group contains all
+    connections that share the same site, or share the same site _and_ location.
+    The group may contain connections from multiple different IMs.
+
+  - A _configuration_ connection group for each of the configurations defined
+    in IM. The connection group contains all connections that use that
+    configuration.
+
+
+Symbol reference
+================
+
+<a name="resource-reference"></a>
+This section contains the list of known kinds for resources and resource
+links.
+
+Resource Kinds
+--------------
+
+<a name="1389ad81-7863-4d2e-ad8d-5c96df1cadff"></a>
+<a name="6e2a90ffdb0157a69ac036920396bba0"></a>
+###ResourceKind_Configuration
+    GUID: '1389ad81-7863-4d2e-ad8d-5c96df1cadff'
+A _Configuration_ resource represents the configuration of a connection.
+
+<a name="8ac62bd9-9ada-497c-8431-4883391e5704"></a>
+<a name="c37bca02df5b59118a377fb8d2d2d3f8"></a>
+###ResourceKind_Connection
+    GUID: '8ac62bd9-9ada-497c-8431-4883391e5704'
+A _Connection_ is a software module that connects an external device so
+that orders can be transmitted and results can be retrieved. A connection
+is typically used to exchange such data with analytical instruments,
+LISes or other middlewares.
+Connections are managed by larger software modules. In the current version
+of LabX, the only software modules that can manage connections are
+middlewares, but other kinds of resources (LIS, quality managers such as
+EE) will be able to do that in the future.
+<a name="5e0179c5d4d35c089e20c406a020abbb"></a>
+####Owner
+The owner of a Connection is the Middleware or LIS that hosts it.
+
+<a name="5f00f658-4d33-4690-bc99-570097d92de9"></a>
+<a name="519ba9c94cf95dfd908bddf95da8affa"></a>
+###ResourceKind_ConnectionGroup
+    GUID: '5f00f658-4d33-4690-bc99-570097d92de9'
+A _Connection Group_ is a grouped resource that represents a set of
+connections that are usually handled as a whole.
+
+<a name="1294ed5b-40da-4f52-9f6d-822994a985dd"></a>
+<a name="6ffceadc0f0554648448d0313a313e20"></a>
+###ResourceKind_Dummy
+    GUID: '1294ed5b-40da-4f52-9f6d-822994a985dd'
+A _Dummy_ resource is a resource entry that is only useful for testing
+purposes. The LabX software will never attach any particular meaning to
+dummy resources.
+Dummy resources should only be created in test databases. They can - and
+should - be deleted quickly. Any resource of this kind, created more than
+24 hours ago is susceptible of being removed from the database, along with
+all its corresponding resource links.
+It is the only resource kind that can actually be deleted from the
+database.
+
+<a name="9f20ce5f-54bd-4567-a04f-a2d4f2c21252"></a>
+<a name="cfab45d9fe045c408812ec0f3e815daf"></a>
+###ResourceKind_HomeConnectionGroup
+    GUID: '9f20ce5f-54bd-4567-a04f-a2d4f2c21252'
+A _Home Connection Group_ is a connection group specifically designed to
+serve as the landing page for a user. **This feature was deprecated** in
+favor of using middlewares as default connection groups. It was meant as a
+group containing all connections a user can monitor.
+There was one such Home Connection Group for each user. Its contents was
+derived automatically from all other groups the user has access to.
+<a name="5e0179c5d4d35c089e20c406a020abbb"></a>
+####Owner
+The owner of a Home Connection Group is the corresponding user.
+<a name="63ca703bb7c1525895021beb0d03767d"></a>
+####Usage
+Home Connection Groups are not implemented.
+
+<a name="2af58fea-4240-4305-b7c4-5144457454cb"></a>
+<a name="c64a95aaa1fe5b02943846990e63fd6d"></a>
+###ResourceKind_Instrument
+    GUID: '2af58fea-4240-4305-b7c4-5144457454cb'
+An _Instrument_ is a laboratory device that is able to analyze specimens
+and produce results.
+Instruments are typically connected to a middleware or directly to an LIS,
+through one or more connections.
+Note that it is not required that instruments are defined in order for
+LabX to work.
+<a name="0f2c869918a35e7fa858d4e35af8f78d"></a>
+####Rationale
+IM only uses connections. This is a limitation when multiple connections
+are used to connect the same actual device.
+
+<a name="b99fcd5f-4dc5-485d-bf3a-1fb462a5e175"></a>
+<a name="1ac7ca4fe8dc543ab899d72da47b4d01"></a>
+###ResourceKind_Laboratory
+    GUID: 'b99fcd5f-4dc5-485d-bf3a-1fb462a5e175'
+A _Laboratory_ is an organizational unit that performs scientific
+measurements on specimens that are brought from the outside, and produces
+reports about the results of said measurements.
+As such, it is responsible for the correct operation of the test equipment
+performing those measurements, including the review of results for
+discrepancies, maintenance of the equipment, assessment of the performance
+of said equipment, etc.
+Laboratories are usually specialized in some kinds of measurements. This
+specialization is not formally represented in LabX. Most laboratories
+known to LabX perform medical measurements on samples drawn from humans or
+animals, but nothing precludes using LabX for laboratories that monitor
+environmental factors such as air quality.
+Laboratories are usually organized as a master organization ("the lab")
+that oversees an ensemble of more specialized labs ("biochemistry lab",
+"hematology lab", "emergency lab", etc.)
+
+<a name="b3115cba-34af-47ca-8405-f328858d6f89"></a>
+<a name="6c412f8b9eef5f03acb53b603e73eedb"></a>
+###ResourceKind_Middleware
+    GUID: 'b3115cba-34af-47ca-8405-f328858d6f89'
+A _Middleware_ is a software module that manages the instrument connections
+within a laboratory, but is not usually sufficient to handle all
+aspects of laboratory management. Typically a middleware would not include
+tools for invoicing, roster management, etc. and instead focuses only
+on routing orders and results across connections.
+In LabX, the most common middleware encountered is _Instrument Manager_,
+but other middlewares such as _JResultNet_, _LPM_, or _Abbott DMS_ could
+be represented also.
+In the specific case of Instrument Manager, the Middleware resource
+represents the IM system as a whole, including all members of the mirror
+set, all thin clients, all optional add-ons, etc. In the future, the
+individual components of the system (especially each member of the
+mirror set) will be represented by sub-resources.
+Note that the case of EP Evaluator is not clear yet. While EE can manage
+instrument connections, its main goal is not to manage the connections
+themselves.
+
+<a name="11e92349-ac51-4aeb-b450-c48863d7ed6b"></a>
+<a name="0c25429c7679513a8f0aa221cb0b2654"></a>
+###ResourceKind_MiddlewareGroup
+    GUID: '11e92349-ac51-4aeb-b450-c48863d7ed6b'
+A _Middleware Group_ is a user managed collection of middlewares that are
+to be monitored as a whole.
+
+<a name="8b46c098-7c38-49ad-a4e5-5711b6c9a93c"></a>
+<a name="a2d477bb74785eb495ebb587b391e7b0"></a>
+###ResourceKind_Process
+    GUID: '8b46c098-7c38-49ad-a4e5-5711b6c9a93c'
+A _Process_ represents a generic software component that runs on a
+(group of) workstations to provide some kind of service.
+<a name="47ce0bee0ebc5c7ea0aba605d196db84"></a>
+####Examples
+A web server, a FTP server, a Docker cluster.
+<a name="db96d317d6015146a305c7fcc5cdf6a0"></a>
+####Refinements
+Many kinds of processes are more finely known by LabX and thave their
+own Resource Kind : middlewares, connections, etc.
+
+<a name="2d4f4340-9612-473f-b7bb-22b900068a95"></a>
+<a name="1470a08bc8b95c4282cd9f883a964094"></a>
+###ResourceKind_Software
+    GUID: '2d4f4340-9612-473f-b7bb-22b900068a95'
+A _Software_ represents a (version) of code that implements an application.
+<a name="47ce0bee0ebc5c7ea0aba605d196db84"></a>
+####Examples
+Instrument Manager 8.15.3, ASTM driver 8.12.22, etc.
+
+<a name="2872294b-23f3-4be3-bc09-c0241e1e96a5"></a>
+<a name="0aa14d69e7c5532cb7ae1c25253cabe0"></a>
+###ResourceKind_User
+    GUID: '2872294b-23f3-4be3-bc09-c0241e1e96a5'
+A _User_ represents a user of the system. Users have access rights that
+represent what they are allowed to do.
+User resources cannot be configured by the user, they are shortcuts to
+the user identity provider (Usually Cognito). They are provisioned
+automatically.
+Note that a user is not necessarily a human being. Additional users may
+be used to represent processes (eg an ETL driver in an Instrument Manager
+system) or roles (eg _the administrator_). Similarly, multiple different
+users may correspond to the same actual person (eg someone might logon
+as a regular user or as an administrative user)
+<a name="0f2c869918a35e7fa858d4e35af8f78d"></a>
+####Rationale
+Users pulled from the Cognito user pool are encapsulated in resources for
+the following reasons.
+<a name="c8b5f20825e85de4a97d6bec0ec7bab9"></a>
+#####Executive summary
+*    Simplifies the handling of API keys needed to access Cognito.
+*    Simplifies client code that no longer has to deal with token
+     negociation.
+*    Provides privacy using pseudonymization and only forwarding relevant
+     PII.
+*    Provides durability by keeping historical records even if the Cognito
+     Entry is deleted.
+Basically, the encapsulation works by only performing the operations that
+are relevant to the task at hand (by explicitly writing code that does
+it), instead of intercepting irrelevant operations and denying them (by
+writing complex access IAM profiles and rules).
+<a name="e0597932980e53b5a74aa0d1b1655ab7"></a>
+#####Simplicity
+Accessing Cognito from a client is not as easy as it may seem. The client
+must provide an authentication token, and API key, etc to Cognito in order
+to support its claims. Since client code is freely available to the end
+user, none of these keys can be hardcoded in the client, and must be
+negociated when neede. Moreover those tokens should be short lived so they
+cannot be intercepted by the client and reused later.
+Therefore, the client should contain code that keeps track of multiple
+tokens, each with different lifetimes, and each with their own negociation
+protocol.
+Using the resource microservice instead, the client just has to query the
+appropriate endpoint, providing its existing LabX authorization token.
+The results are returned with an already agreed upon format.
+<a name="62883d7ca952560dbe43c46d97902de5"></a>
+#####Security
+All Cognito tokens and secret API keys remain on the server and are never
+revealed to the client, greatly simplifying their management and
+preventing leaks.
+<a name="e6285a445eb25671b7199e73ed0d18f9"></a>
+#####Privacy
+LabX power users may need to access the list of users, especially to grant
+them access rights (to connection groups, for example) or insert them in
+user groups. That does not mean however that power users have the right to
+access all personal information beyond the name of the user.
+Cognito records may contain extensive personal information about each user
+that we do not want a power user to access. Restricting access to only the
+name must be done by setting up complex access policies in IAM and
+Cognito. Those rules must take into account the following privacy
+requirements:
+*   Users may request their data to be erased (eg using RGPD claims)
+*   When the database covers multiple regions, power users from one region
+    may not be allowed access to users to another region.
+Using the resource microservice, the code can load the full information
+from Cognito, then forward only the name to the client, further hiding it
+if the user has requested his personal information to be erased, or if
+the user belongs to another region.
+Moreover, the encapsulation provides an identity based on an opaque GUID
+that contains no decodable personal information, thus providing
+pseudonymization.
+<a name="1b7971b60ca3514db9828b1c2f3ac178"></a>
+#####Durability
+Cognito records can be deleted at any time. However, LabX may need to keep
+track of users even in the case they are deleted from the Cognito user
+pool:
+*   For traceability, all critical operations must be recorded with the
+    identity of the operator. If this identification is a Cognito ID, the
+    identification will be lost if the user record is removed from the
+    Cognito pool. Using an encapsulation, user records are kept as
+    resources even if they are deleted from Cognito.
+*   We also may want to track changes made to the user records themselves.
+    Each time Cognito user entries are synced into the resources, changes
+    can be detected and recorded.
+*   Since users are represented as resources, they can be used in any
+    place where a resource is used to represent the _who_ in trace
+    records.
+<a name="780fa80a972b52b092702432f8062513"></a>
+####Access
+Resources of type user can be accessed from the generalized API. However,
+the generalized API will _not_ automatically synchronize the users from
+the identity provider.
+For users to be automatically synchronized, use the following
+[API](#f5870149d61d5763a45061ce855c9d33) instead:
+    http://server/api/resource/1.0/users?autoupdate=true
+
+<a name="5d7f99a5-d5ff-4715-8eff-8500d3e59dd7"></a>
+<a name="8c5b91cfbac55c08bda715d17481ae1e"></a>
+###ResourceKind_UserGroup
+    GUID: '5d7f99a5-d5ff-4715-8eff-8500d3e59dd7'
+
+<a name="a3047565-0717-4032-9f2e-011485b8e83a"></a>
+<a name="e46618d376855b3286395a96973deb36"></a>
+###ResourceKind_Workstation
+    GUID: 'a3047565-0717-4032-9f2e-011485b8e83a'
+  A _Workstation_ represents a physical or virtual machine having its own
+  dedicated resources (disk space, processor, etc.) that can host processes.
+
+
+Resource Link Kinds
+-------------------
+
+<a name="d799c4b4-f010-4b10-b201-42d9bef64339"></a>
+<a name="475471a069495d8ca93a880c995f241a"></a>
+###ResourceLinkKind_Child
+    GUID: 'd799c4b4-f010-4b10-b201-42d9bef64339'
+A "Child" link unites a parent organization to its children sub-
+organizations.
+The "Child" relationship is expected to form a tree-like structure where
+every resource has at most one parent. It represent the fact that the
+responsibility of the parent organization extends over all its children,
+ie the managing body of a parent is also responsible for the correct
+operation of the children.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master     | Element    | Meaning
+ |------------|------------|-------------------------------------------------
+ | Laboratory | Laboratory | The element is a specialised lab
+ | Laboratory | Middleware | The middleware is under responsibility of the lab
+ | Laboratory | Instrument | The instrument is under responsibility of the lab
+
+<a name="c4648aa6-ccd6-4f86-9f75-274ba53600c6"></a>
+<a name="c0bb0a5796ea52e9ade1709bfcd3807f"></a>
+###ResourceLinkKind_Component
+    GUID: 'c4648aa6-ccd6-4f86-9f75-274ba53600c6'
+The _Component_ link unites some kind of (software or hardware) device with
+its parts.
+It is usually considered that the composite resource needs all its
+components to work properly. If one of the components of a composite
+resource fails, the whole composite resource is in a failed state also,
+or at least operating in a sub-optimal fashion.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master     | Element         | Meaning
+ |------------|-----------------|-------------------------------------------
+ | Middleware | Connection      | The middleware runs the software needed to establish the connection
+ | Instrument | Analytical unit | The instrument contains a specialized sub-unit doing some of the tests
+
+<a name="5196d206-a507-4880-a52c-23288ec1b895"></a>
+<a name="f9d05b9b1f295d3e99dcc2b87845a4b3"></a>
+###ResourceLinkKind_Configuration
+    GUID: '5196d206-a507-4880-a52c-23288ec1b895'
+The _Configuration_ link unites a configuration with the connections that
+use that configuration.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master        | Element    | Meaning
+ |---------------|------------|-------------------------------------------
+ | Configuration | Connection | The given connection is configured with the given configuration
+
+<a name="2924dd58-72f6-4c3d-93eb-cd2bfc1db3d9"></a>
+<a name="b37aac2b81e355f3b209e30c6a3de0a8"></a>
+###ResourceLinkKind_Connection
+    GUID: '2924dd58-72f6-4c3d-93eb-cd2bfc1db3d9'
+The _Connection_ link unites a software connection module with the
+equipment it communicates with.
+To avoid ambiguous situations, a connection is never connected to another
+connection.
+Note that the type of data exchanged by the connection and the device
+is not modeled. Whether it is medical data or stock quotes is irrelevant.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master     | Element    | Meaning
+ |------------|------------|-------------------------------------------
+ | Connection | Instrument | The connection leads to the instrument
+ | Connection | Middleware | The connection leads to another middleware
+
+<a name="3075f69c-d115-4b7d-8f3d-dad5a4d10d91"></a>
+<a name="e9302978acbc5661b74835f349b699c1"></a>
+###ResourceLinkKind_Content
+    GUID: '3075f69c-d115-4b7d-8f3d-dad5a4d10d91'
+The _Content_ link unites a group with each of its elements.
+Every kind of resource may have a corresponding "group" kind that behaves
+the same way as its elements. For exemple, "user" resource can be
+grouped in "user groups", which mostly behave as a single user.
+The current LabX implementation recognizes only the "Connection Group"
+kind, that groups connections.
+A resource may be member of any number of groups.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master           | Element    | Meaning
+ |------------------|------------|-------------------------------------------
+ | Connection Group | Connection | The group represents a summary of the connections
+ | User Group       | User       | The user belongs to the group  and inherits access rights
+
+<a name="c49f7cc5-e9b3-42f7-aa8a-a6d547dc9d10"></a>
+<a name="748a2c1ec8f4596dbdce705e538f553e"></a>
+###ResourceLinkKind_Host
+    GUID: 'c49f7cc5-e9b3-42f7-aa8a-a6d547dc9d10'
+The _Host_ link unites a workstation with the processes running on it
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master      | Element    | Meaning
+ |-------------|------------|-------------------------------------------
+ | Workstation | Middleware | The middleware runs on the workstation
+ | Workstation | Process    | The process runs on the workstation
+
+<a name="26449177-7c4d-41b6-9349-c8fb3ce751bc"></a>
+<a name="62cedbcc3c0258528afb94780e8eef01"></a>
+###ResourceLinkKind_Instance
+    GUID: '26449177-7c4d-41b6-9349-c8fb3ce751bc'
+The _Version_ link unites a generic resource with a versioned vision of
+itself.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master   | Element    | Meaning
+ |----------|------------|-------------------------------------------
+ | Software | Connection | The connection uses the software as a driver
+
+<a name="3f72bb16-602f-4608-a091-ee10721d1be7"></a>
+<a name="c50d26e35b4e572585bfc40e081a5600"></a>
+###ResourceLinkKind_Location
+    GUID: '3f72bb16-602f-4608-a091-ee10721d1be7'
+The _Location_ link unites a location with the connections defined in
+that location.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master        | Element    | Meaning
+ |---------------|------------|-------------------------------------------
+ | Laboratory    | Connection | The connection is located in the laboratory
+
+<a name="aff0d320-9909-4d14-addb-f2d0982ded84"></a>
+<a name="425d252abbef5db08c041a9b3a63a25a"></a>
+###ResourceLinkKind_ReadAccess
+    GUID: 'aff0d320-9909-4d14-addb-f2d0982ded84'
+The _ReadAccess_ link unites a resource (typically an actor such as a
+user) with another resource visible by that actor.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master     | Element    | Meaning
+ |------------|------------|-------------------------------------------------
+ | User | Connection Group | The user is allowed to monitor the KPIs for the group
+
+<a name="1979ff93-fb60-4aa6-91a2-fe83d9ce3dc3"></a>
+<a name="d973a3f9f37b5d29a16854f00457b894"></a>
+###ResourceLinkKind_Site
+    GUID: '1979ff93-fb60-4aa6-91a2-fe83d9ce3dc3'
+The _Site_ link unites a site with the connections defined in
+that location.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master        | Element    | Meaning
+ |---------------|------------|-------------------------------------------
+ | Laboratory    | Connection | The connection is located in the site
+
+<a name="a2c387f8-8d5d-47e5-9c98-a5e21645fc4f"></a>
+<a name="c5ac6634840c5f57b1d68bb32321cabd"></a>
+###ResourceLinkKind_Version
+    GUID: 'a2c387f8-8d5d-47e5-9c98-a5e21645fc4f'
+The _Version_ link unites a generic resource with a versioned vision of
+itself.
+<a name="266c5f4305d056a4a39dd12512f4983b"></a>
+####Typical Usages
+ | Master   | Element  | Meaning
+ |----------|----------|-------------------------------------------
+ | Software | Software | The element is a version of the software denoted by the master.
+<a name="47ce0bee0ebc5c7ea0aba605d196db84"></a>
+####Examples
+  "Instrument Manager 8.15" is a version of "Instrument Manager"
+
+<a name="b9806f86b8a45a1bbf31e63e636860df"></a>
+# API Reference
+
+<a name="swagger"></a>
+
+This API reference is automatically extracted from the swagger documentation.
+The source swagger file may contain more detailed information than this
+static document.
+
+This document contains the externally accessible API endpoints for the LabX Cloud Backend.
+
+Version: 1.0.0
+
+<a name="0c5b3f2ddd525006906bf0b6327ee7e1"></a>
+## Definitions
+<a name="d04b452dd19750449885ef205eda881f"></a>
+### ImConnection
+
+Additional, IM-specific information about a ressource that acts as a connection.
+
+
+  - `code` : The code of the connection, typically in the form CN-xxxx
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is retrieved from the systematic name of the corresponding resource.</li>
+  </ul>
+  - `configuration` : The internal ID of the resource representing the configuration.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This resource can be used as a connection group.</li>
+  </ul>
+  - `configurationcode` : The code for the configuration, typically in the form of CF-xxxx.
+  - `configurationname` : The name of the configuration.
+  <br/><b>Notes:</b><ul>
+  <li>This field is ignored in a PUT if no `configurationcode` is given.</li>
+  </ul>
+  - `connectiontype` : The type of connection.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>The value is derived from `systemconnection`.</li>
+  </ul>
+  - `driver` : The internal ID of the resource representing the driver and its version.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This resource can be used as a connection group.</li>
+  </ul>
+  - `drivercode` : The code for the driver.
+  - `drivername` : The name of the driver
+  - `drivertypecode` : The code for the driver type. This is a single character, and is derived from drivercode.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  </ul>
+  - `drivertypename` : The name for the driver type. This is derived from drivertypecode.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  </ul>
+  - `driverversion` : The name of the driver with its version.
+  - `id` : The internal ID of the connection object.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  </ul>
+  - `instrumentnumber` : The instrument number.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read-only and only retrieved if the code is CN- followed by a number.</li>
+  </ul>
+  - `location` : The internal ID of the resource representing the location.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This resource can be used as a connection group.</li>
+  </ul>
+  - `locationcode` : The code for the location.
+  - `locationname` : The name of the location.
+  <br/><b>Notes:</b><ul>
+  <li>This field is ignored in a PUT if no `locationcode` is given.</li>
+  <li>If the field is not specified, it defaults to `locationcode`.</li>
+  </ul>
+  - `name` : The name of the connection. This field is retrieved from the name of the corresponding resource.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  </ul>
+  - `site` : The internal ID of the resource representing the site.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This resource can be used as a connection group.</li>
+  </ul>
+  - `sitecode` : The code for the site.
+  - `sitename` : The name of the site.
+  <br/><b>Notes:</b><ul>
+  <li>This field is ignored in a PUT if no `sitecode` is given.</li>
+  <li>If this field is not specified, it defaults to `sitecode`.</li>
+  </ul>
+  - `systemconnection` : Whether this is a system connection.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>The value is derived from instrumentnumber</li>
+  </ul>
+
+<a name="20cc19602ef95cf1b3646183b9238977"></a>
+### Kpi
+
+Kpi
+
+
+  - `additionaldata` : Additional data attached to the value, in JSON format, depending on the KPI.
+  - `id` : The internal UUID of the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `issuedat` : The timestamp when the value was issued by the microservice.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `kindid` : The internal UUID for the Kpi Kind
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `kindname` : The name of the KPI Kind
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `label` : A short label for the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `name` : The name of the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `recomputepending` : Whether a recomputation was scheduled for the value
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `refreshat` : The timestamp when a client should ask for a refreshed value.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `refreshdelta` : The number of milliseconds between issuedat and refreshat
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `resourceid` : The internal ID of the resource targeted by the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `status` : The status of the value, as one of the KpiStatus values
+  - `timestamp` : The timestamp when the value was computed.
+  - `validfor` : The number of milliseconds between issuedat and validuntil
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `validuntil` : The timestamp when the value will cease to be valid
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `value` : The value of the KPI
+  - `waitsuccess` : Whether recomputation of the value completed within the allowed wait time
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>This field is only present when the 'wait' option is specified in GET queries</li>
+  </ul>
+
+<a name="3960a8c176275169910ae9eb926692b8"></a>
+### KpiKind
+
+KpiKind
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+<a name="deeaaa542ddd557ca6dc47f68b7b2ef3"></a>
+### MetricKind
+
+MetricKind
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+<a name="5c2946c75cf55e50b53c8fd8da548dd9"></a>
+### MetricValue
+
+MetricValue
+
+
+  - `name` : The name of the Metric
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  </ul>
+  - `timestamp` : The timestamp when the value was computed.
+  - `value` : The value of the Metric
+
+<a name="60a80972feb45f2bad7fb349771ab127"></a>
+### Resource
+
+A resource describes a piece of equipment, people, or an organizational unit that plays a role in the
+execution of the tasks in the laboratory.
+<br>
+Each resource has a kind that further describes its role. The LabX system attaches special meaning to the predefined resource kinds,
+but the user is free to create additional custom kinds to suit the lab's needs.
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `hiddenelements` : hiddenelements
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
+  </ul>
+  - `hiddenreason` : The reason why that resource was marked as hidden.
+  <br/><b>Notes:</b><ul>
+  <li>This field has no meaning if the resource is not marked as hidden.</li>
+  <li>A value of zero or null indicates the absence of a specific reason. This is the default value.</li>
+  <li>A value of 1 indicates that the resource was hidden because the corresponding object ceased
+  to exist in the real world. For example, in an IM connection, that would indicate that the connection was deleted in the IM middleware.</li>
+  <li>A value of 2 indicates that the resource was hidden because the corresponding object is not marked
+  as being useful in the cloud. For example, in an IM connection, that would indicate that the connection still exists, but is unchecked
+  in the ETL options.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `kind` : The UUID of a ResourceKind that acts as the resource kind
+  - `links` : The list of downwards links (ie to elements) emanating from the resource, as a list of ResourceLinkItems.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
+  <li>The <tt>maxreportedlinks</tt> options may be used to limit the number of links returned. There is however no way
+  of using pagination in links.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+<a name="98a01cf1e57051baac5706f7ae652302"></a>
+### ResourceKind
+
+ResourceKind
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+<a name="d528654bceac560c9d05fd1ea63a74ff"></a>
+### ResourceLink
+
+A relation between a master resource and an element resource. The relation is further described with a kind.
+<br>
+Relations link resources in hierarchical dependencies and can be freely created and removed. The LabX system attaches special meaning
+to the predefined link kinds, but the user is free to create additional custom kinds to suit the lab's needs.
+
+
+  - `element` : The UUID of a Resource that acts as the element (ie content) in the relation
+  - `kind` : The UUID of a ResourceLinkKind that acts as the kind of relation between the master and the element
+  - `master` : The UUID of a Resource that acts as the master (ie owner) in the relation
+  <br/><b>Notes:</b><ul>
+  <li>When used in a POST query, this field must either match the <tt>id</tt> parameter in the path, or be absent.</li>
+  </ul>
+
+<a name="769251cf693b56f6a18661550db5479b"></a>
+### ResourceLinkItem
+
+ResourceLinkItem
+
+
+  - `element` : The GUID of the element
+  - `elementhidden` : Whether the element is hidden
+  - `elementhiddenreason` : The reason why the element is hidden
+  - `elementkind` : The GUID of the resourcekind of the element
+  - `elementname` : The name of the element
+  - `linkhidden` : Whether the link itself is hidden
+  - `linkkind` : The GUID of the Link Kind.
+  - `linkkindname` : The name of the Link Kind
+
+<a name="572bf595525b552ab1865531af5e3f01"></a>
+### ResourceLinkKind
+
+ResourceLinkKind
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+<a name="f8625011980b53859993aaa3efb7dcd9"></a>
+### ResourceProperty
+
+ResourceProperty
+
+
+  - `property` : The GUID of the property kind
+  - `resource` : The GUID of the resource associated with the property
+  <br/><b>Notes:</b><ul>
+  <li>In the case a hierarchical search was performed, this is the GUID of the resource that is actually associated with the property.
+  This may be the resource corresponding to the query, or the closest parent that has a value for that property.</li>
+  </ul>
+  - `value` : The value of the property. This can be a simple value such as a string or a number, or a composite value (JSON).
+
+<a name="105edf322597549d8a7710f8177d7dcf"></a>
+### ResourcePropertyKind
+
+The description of a Resource Property. The property kind is mainly used to give names to properties.
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+<a name="9bf61a3583c355b6a51780f77a27fd38"></a>
+### SpecimenEventKind
+
+SpecimenEventKind
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+<a name="24c970298d8f57f184be984a5b49a5fe"></a>
+### SpecimenWorkflowKind
+
+SpecimenWorkflowKind
+
+
+  - `hidden` : Whether this Definition has been hidden.
+  <br/><b>Notes:</b><ul>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+  </ul>
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
+  <br/><b>Notes:</b><ul>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
+  </ul>
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
+  <br/><b>Notes:</b><ul>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+  </ul>
+  - `shortname` : A name for the Definition, shorter than the standard name.
+  <br/><b>Notes:</b><ul>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+  </ul>
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
+  <br/><b>Notes:</b><ul>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  </ul>
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  <br/><b>Notes:</b><ul>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+
+
+<a name="53959baae51656ecb68b7a5380a7d1c7"></a>
+## Paths
+
+<a name="3d876effc66456e3b4b66ef150b43605"></a>
+### GET /api/kpi/1.0/currentvalues
+
+
+
+
+
+
+Obtain the current value of a set of KPIs
+
+
+
+Query Params:
+
+  - `recompute` : Force the recomputation of the KPI value
+<br/><b>Notes:</b><ul>
+<li>When true, the KPI values are always recomputed.</li>
+<li>When false, the KPI values are never recomputed.</li>
+<li>When absent, KPI values are recomputed when their refresh time has been reached</li>
+<li>This option applies to all KPIs selected by the query</li>
+</ul>
+
+
+  - `wait` : The total amount of milliseconds the query should wait for KPIs to be recomputed.
+<br/><b>Notes:</b><ul>
+<li>The default is not to wait</li>
+<li>When specified, and some KPIs need to be recomputed, the query will wait up to that duration for computations to complete</li>
+<li>When the time has elapsed, KPIs that are noy yet recomputed are returned with their previous value (which may still be valid)</li>
+<li>The query returns as soon as all KPIs are recomputed, or the timeout elapses, whichever occurs first.</li>
+<li>This option applies to all KPIs selected by the query</li>
+</ul>
+
+
+  - `resource` : A comma-separated list of GUID of Resource objects. Only Kpi objects having one of these values as resource are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+</ul>
+
+
+  - `kind` : A comma-separated list of GUID of KPI Kind objects. Only Kpi objects having one of these values as kind are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+</ul>
+
+
+  - `id` : A comma-separated list of GUID of KPI objects. Only Kpi objects having one of these values as id are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="9b486deae1bf5121acd38e65fbfebf99"></a>
+### GET /api/kpi/1.0/currentvalues/(id)
+
+
+
+
+
+
+Obtain the current value of a KPI
+
+
+
+Query Params:
+
+  - `recompute` : Force the recomputation of the KPI value
+<br/><b>Notes:</b><ul>
+<li>When true, the KPI values are always recomputed.</li>
+<li>When false, the KPI values are never recomputed.</li>
+<li>When absent, KPI values are recomputed when their refresh time has been reached</li>
+</ul>
+
+
+  - `wait` : The total amount of milliseconds the query should wait for KPIs to be recomputed.
+<br/><b>Notes:</b><ul>
+<li>The default is not to wait</li>
+<li>When specified, and some KPIs need to be recomputed, the query will wait up to that duration for computations to complete</li>
+<li>When the time has elapsed, KPIs that are noy yet recomputed are returned with their previous value (which may still be valid)</li>
+<li>The query returns as soon as all KPIs are recomputed, or the timeout elapses, whichever occurs first.</li>
+</ul>
+
+
+Path Params:
+
+  - `id` : id
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="420dfa438a5d579b854d49e36d481e77"></a>
+### PUT /api/kpi/1.0/currentvalues/(id)
+
+
+
+
+
+
+Change the current value of a KPI
+
+
+
+
+
+Path Params:
+
+  - `id` : id
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="12436a04947e5d4eb19a4306cbf4a937"></a>
+### GET /api/kpi/1.0/kpikinds
+
+
+
+
+
+
+Retrieves a list of KpiKind objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="2e8fd648b1705a2987f14bf020d1d61d"></a>
+### POST /api/kpi/1.0/kpikinds
+
+
+
+
+
+
+Creates a new KpiKind object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="a9b7ce543fc55184bbac68ab8100755b"></a>
+### DELETE /api/kpi/1.0/kpikinds/(id)
+
+
+
+
+
+
+Removes the KpiKind object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the KpiKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="eea05961d5765068a1f3dd013a7c0791"></a>
+### GET /api/kpi/1.0/kpikinds/(id)
+
+
+
+
+
+
+Gets a single KpiKind
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the KpiKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="b1071c435f1f5571b51a4cbf5a2d3ef8"></a>
+### PUT /api/kpi/1.0/kpikinds/(id)
+
+
+
+
+
+
+Updates selected properties of the KpiKind object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the KpiKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="833bd86b23cb5503b90866fdc39c5cad"></a>
+### GET /api/metric/1.0/metrickinds
+
+
+
+
+
+
+Retrieves a list of MetricKind objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="0cd0ac9d8545520abc8f23613f1e03d1"></a>
+### POST /api/metric/1.0/metrickinds
+
+
+
+
+
+
+Creates a new MetricKind object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="6af50dcd6b565708a2e525a9351fae1c"></a>
+### DELETE /api/metric/1.0/metrickinds/(id)
+
+
+
+
+
+
+Removes the MetricKind object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the MetricKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="fc4559f3048854d5a8d48d2106e3b294"></a>
+### GET /api/metric/1.0/metrickinds/(id)
+
+
+
+
+
+
+Gets a single MetricKind
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the MetricKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="84d52ef00aa7513fa2908bfc5fdd6f57"></a>
+### PUT /api/metric/1.0/metrickinds/(id)
+
+
+
+
+
+
+Updates selected properties of the MetricKind object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the MetricKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="f2a0550aff6852fa9039f86e507e1b6a"></a>
+### POST /api/metric/1.0/resources/(resourceid)/currentvalues/(metrickindid)
+
+
+
+
+
+
+Update the value of a resource metric
+
+
+
+
+
+Path Params:
+
+  - `resourceid` : The internal GUID of the resource targeted by the metric
+
+
+  - `metrickindid` : The internal GUID of the Metric Kind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="b5e793b551915e93b8e726b2add46431"></a>
+### DELETE /api/resource/1.0/connections/(uniqueid)
+
+
+
+
+
+
+Removes a connection from a middleware.
+
+
+
+Query Params:
+
+  - `reason` : The reason why the connection is deleted.
+<br/><b>Notes:</b><ul>
+<li>See the HiddenReason parameter in resource for a list of allowed values.</li>
+</ul>
+
+
+  - `middleware` : The middleware that owns the definition.
+<br/><b>Notes:</b><ul>
+<li>The uniqueid parameter needs to be unique only within the context of a single middleware.</li>
+</ul>
+
+
+Path Params:
+
+  - `uniqueid` : A user-defined unique name that represents the real world identity of the object.
+<br/><b>Notes:</b><ul>
+<li>Unique names are user defined, they do not need to be UUIDs.</li>
+<li>It is the client responsibility to ensure  that names are kept unique, and that the same name is always used to refer to the same item.</li>
+<li>Using the same uniqueid always returns the same resource, even across multiple databases. This is done on purpose so that databases can be consolidated if the need arises.</li>
+<li>It is impossible to change the uniqueid of a resource. Once it has been referred to using a given uniqueid, the same uniqueid should be used forever.</li>
+<li>uniqueids need to be unique only in the context of the middleware, if one is specified as owner.</li>
+</ul>
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="d1d7ef6513ba580ea038b305a324076b"></a>
+### GET /api/resource/1.0/connections/(uniqueid)
+
+
+
+
+
+
+Gets the resource corresponding to a connection identified by a unique name and a middleware.
+<br/><b>Notes:</b><ul>
+<li>An IM client typically registers additional information using the <c>imconnections</c> api.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `autocreate` : Whether to auto-synchronize the cloud definition.
+<br/><b>Notes:</b><ul>
+<li>If the autocreate option is not set, issuing a GET for the given unique code returns a 404 if the resource was never synchronized before.</li>
+<li>It is recommended to set this field to true only when the query is performed by the client that is responsible for synchronizing the resource. Other clients should leave this field to false, in order to avoid updating a resource that they do not own.</li>
+</ul>
+
+
+  - `displayname` : The display name that is used as the name of the resource during synchronization.
+<br/><b>Notes:</b><ul>
+<li>This field is ignored if autocreate is false</li>
+</ul>
+
+
+  - `middleware` : The middleware that owns the definition.
+<br/><b>Notes:</b><ul>
+<li>The uniqueid parameter needs to be unique only within the context of a single middleware.</li>
+</ul>
+
+
+Path Params:
+
+  - `uniqueid` : A user-defined unique name that represents the real world identity of the object.
+<br/><b>Notes:</b><ul>
+<li>Unique names are user defined, they do not need to be UUIDs.</li>
+<li>It is the client responsibility to ensure  that names are kept unique, and that the same name is always used to refer to the same item.</li>
+<li>Using the same uniqueid always returns the same resource, even across multiple databases. This is done on purpose so that databases can be consolidated if the need arises.</li>
+<li>It is impossible to change the uniqueid of a resource. Once it has been referred to using a given uniqueid, the same uniqueid should be used forever.</li>
+<li>uniqueids need to be unique only in the context of the middleware, if one is specified as owner.</li>
+</ul>
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="689219aef8be54b9b254d292bbaf4d1f"></a>
+### GET /api/resource/1.0/imconnections/(id)
+
+
+
+
+
+
+Retrieve additional information about an IM connection
+<br/><b>Notes:</b><ul>
+<li>It is expected that IM information has been setup by a PUT query.</li>
+<li>It is legal to retrieve the IM information for a connection that has not be the target of a PUT query. In that case, most of the fields returned by this query will be empty.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The GUID of the connection resource
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="42541fa1916853589d4052a54943421f"></a>
+### PUT /api/resource/1.0/imconnections/(id)
+
+
+
+
+
+
+Update the IM information about a connection.
+
+
+
+
+
+Path Params:
+
+  - `id` : The GUID of the connection resource
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="c61ee0b96c7b5b4eab0cdf59cd5601fe"></a>
+### GET /api/resource/1.0/middlewares/(uniqueid)
+
+
+
+
+
+
+Gets the resource corresponding to a middleware identified by a unique name.
+
+
+
+Query Params:
+
+  - `autocreate` : Whether to auto-synchronize the cloud definition.
+<br/><b>Notes:</b><ul>
+<li>If the autocreate option is not set, issuing a GET for the given unique code returns a 404 if the resource was never synchronized before.</li>
+<li>It is recommended to set this field to true only when the query is performed by the client that is responsible for synchronizing the resource. Other clients should leave this field to false, in order to avoid updating a resource that they do not own.</li>
+</ul>
+
+
+  - `displayname` : The display name that is used as the name of the resource during synchronization.
+<br/><b>Notes:</b><ul>
+<li>This field is ignored if autocreate is false</li>
+</ul>
+
+
+Path Params:
+
+  - `uniqueid` : A user-defined unique name that represents the real world identity of the object.
+<br/><b>Notes:</b><ul>
+<li>Unique names are user defined, they do not need to be UUIDs.</li>
+<li>It is the client responsibility to ensure  that names are kept unique, and that the same name is always used to refer to the same item.</li>
+<li>Using the same uniqueid always returns the same resource, even across multiple databases. This is done on purpose so that databases can be consolidated if the need arises.</li>
+<li>It is impossible to change the uniqueid of a resource. Once it has been referred to using a given uniqueid, the same uniqueid should be used forever.</li>
+<li>uniqueids need to be unique only in the context of the middleware, if one is specified as owner.</li>
+</ul>
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="a91c084f6525517096aaed53f1dad1c3"></a>
+### DELETE /api/resource/1.0/properties/(resource)/(property)
+
+
+
+
+
+
+Deletes the value of the property associated with the resource.
+
+
+
+
+
+Path Params:
+
+  - `resource` : The GUID of the resource associated with the property.
+
+
+  - `property` : The GUID of the property kind.
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="34952eecc778529b8495a148d3ac865a"></a>
+### GET /api/resource/1.0/properties/(resource)/(property)
+
+
+
+
+
+
+Retrieves the value of the property associated with the resource.
+<br/><b>Notes:</b><ul>
+<li>If the property does not exist, or if it does not have a value, the API returns status 200, with a value of null.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `resource` : The GUID of the resource associated with the property.
+
+
+  - `property` : The GUID of the property kind.
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="6f4ed47df375568eaa07a8b08d33f4c4"></a>
+### POST /api/resource/1.0/properties/(resource)/(property)
+
+
+
+
+
+
+Sets the value of the property associated with the resource.
+
+
+
+
+
+Path Params:
+
+  - `resource` : The GUID of the resource associated with the property.
+
+
+  - `property` : The GUID of the property kind.
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="b3eed0389a3659df93335c872e9e4302"></a>
+### GET /api/resource/1.0/propertykinds
+
+
+
+
+
+
+Retrieves a list of ResourcePropertyKind objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="fd91d0b39b175b29a95906ab30ff8103"></a>
+### POST /api/resource/1.0/propertykinds
+
+
+
+
+
+
+Creates a new ResourcePropertyKind object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="f6dec20e29fb55c2883c85629fb59950"></a>
+### DELETE /api/resource/1.0/propertykinds/(id)
+
+
+
+
+
+
+Removes the ResourcePropertyKind object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourcePropertyKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="95962b2d655d50659f7383deb3d592d4"></a>
+### GET /api/resource/1.0/propertykinds/(id)
+
+
+
+
+
+
+Gets a single ResourcePropertyKind
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourcePropertyKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="f5aa04cee79d5d2a847117eb2ebb5b54"></a>
+### PUT /api/resource/1.0/propertykinds/(id)
+
+
+
+
+
+
+Updates selected properties of the ResourcePropertyKind object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourcePropertyKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="004be5cfb8c25703a2bcc2470206c253"></a>
+### GET /api/resource/1.0/resourcekinds
+
+
+
+
+
+
+Retrieves a list of ResourceKind objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="bf1c2c40477157abbe920c42a4b2cc29"></a>
+### POST /api/resource/1.0/resourcekinds
+
+
+
+
+
+
+Creates a new ResourceKind object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="3645a739b7435349a5a01549f240260e"></a>
+### DELETE /api/resource/1.0/resourcekinds/(id)
+
+
+
+
+
+
+Removes the ResourceKind object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourceKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="e989dd852c3a58898c817f2c837e405c"></a>
+### GET /api/resource/1.0/resourcekinds/(id)
+
+
+
+
+
+
+Gets a single ResourceKind
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourceKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="c21506653b1c5388aa5a6ba3b9e6dcda"></a>
+### PUT /api/resource/1.0/resourcekinds/(id)
+
+
+
+
+
+
+Updates selected properties of the ResourceKind object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourceKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="073682082a0e5642872ac18c4ae4a6d9"></a>
+### GET /api/resource/1.0/resourcelinkkinds
+
+
+
+
+
+
+Retrieves a list of ResourceLinkKind objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="686de57c2a7459a88baf499a53400e4f"></a>
+### POST /api/resource/1.0/resourcelinkkinds
+
+
+
+
+
+
+Creates a new ResourceLinkKind object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="0cde15f060b656dd8c0190330b918f15"></a>
+### DELETE /api/resource/1.0/resourcelinkkinds/(id)
+
+
+
+
+
+
+Removes the ResourceLinkKind object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourceLinkKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="9de3bcaa7b015c77bdde87c15fbdfc53"></a>
+### GET /api/resource/1.0/resourcelinkkinds/(id)
+
+
+
+
+
+
+Gets a single ResourceLinkKind
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourceLinkKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="484e3799509e557e8a9b9615ef3bea6a"></a>
+### PUT /api/resource/1.0/resourcelinkkinds/(id)
+
+
+
+
+
+
+Updates selected properties of the ResourceLinkKind object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the ResourceLinkKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="da71f755790c51e781722f0392a865e5"></a>
+### GET /api/resource/1.0/resources
+
+
+
+
+
+
+Retrieves a list of Resource objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+  - `kind` : The GUID of a ResourceKind object. Only Resource objects having this value as kind are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are selected.</li>
+</ul>
+
+
+  - `includelinks` : Whether to include the <tt>links</tt> property in each of the returned resources
+
+
+  - `maxreportedlinks` : The maximum number of items returnes in the <tt>links</tt> property for each resource.
+
+
+  - `links_elementkind` : A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+  - `links_linkkind` : A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="fa9e7c1730a453489338177354ada9f8"></a>
+### POST /api/resource/1.0/resources
+
+
+
+
+
+
+Creates a new Resource object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="5a6a31dc86ef5681a60a805c017b178d"></a>
+### DELETE /api/resource/1.0/resources/(id)
+
+
+
+
+
+
+Removes the Resource object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `reason` : <b>Warning</b>: This feature is currently experimental and should not be used in production<br/>
+The reason why the resource is deleted.
+<br/><b>Notes:</b><ul>
+<li>This is equivalent to including the `hiddenreason` parameter to a PUT query.</li>
+</ul>
+
+
+Path Params:
+
+  - `id` : The internal Id of the Resource
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="264324120bc5559a803a51437acaab55"></a>
+### GET /api/resource/1.0/resources/(id)
+
+
+
+
+
+
+Gets a single Resource
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includelinks` : Whether to include the <tt>links</tt> property in each of the returned resources
+
+
+  - `maxreportedlinks` : The maximum number of items returnes in the <tt>links</tt> property for each resource.
+
+
+  - `links_elementkind` : A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+  - `links_linkkind` : A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+Path Params:
+
+  - `id` : The internal Id of the Resource
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="36fd5ab53d875130baccea83f90bb74d"></a>
+### PUT /api/resource/1.0/resources/(id)
+
+
+
+
+
+
+Updates selected properties of the Resource object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the Resource
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="6fe786c5366257cd9ffd05e7984d10e7"></a>
+### GET /api/resource/1.0/resources/(id)/elements
+
+
+
+
+
+
+The list of elements of a given resource.
+<br/><b>Notes:</b><ul>
+<li>The returned list of objects is subject to pagination.</li>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `kind` : A comma-separated list of GUID of ResourceKind objects. Only Not specified objects having one of these values as kind are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+</ul>
+
+
+  - `linkkind` : A comma-separated list of GUID of ResourceLinkKind objects. Only Not specified objects having one of these values as linkkind are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+</ul>
+
+
+  - `includelinks` : Whether to include the <tt>links</tt> property in each of the returned resources
+
+
+  - `maxreportedlinks` : The maximum number of items returnes in the <tt>links</tt> property for each resource.
+
+
+  - `links_elementkind` : A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+  - `links_linkkind` : A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+Path Params:
+
+  - `id` : The GUID of the resource acting as master in the relation.
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="87cba85386815e9f8de40decdde3a087"></a>
+### DELETE /api/resource/1.0/resources/(id)/links
+
+
+
+
+
+
+Deletes one or more links from a master. All links that pass the filter are removed.
+<br/><b>Notes:</b><ul>
+<li>Great care must be taken to precisely filter the links to be deleted.
+Failure to provide specific filters may result in deleting more links than expected.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `kind` : The GUID of a ResourceLinkKind object. Only Not specified objects having this value as kind are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+</ul>
+
+
+  - `element` : The GUID of a Resource object. Only Not specified objects having this value as element are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+</ul>
+
+
+Path Params:
+
+  - `id` : The GUID of the resource acting as master in the relation.
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="48a32d7ed62e5df5bb34c2544672c072"></a>
+### POST /api/resource/1.0/resources/(id)/links
+
+
+
+
+
+
+Adds a link from the master to an element.
+
+
+
+
+
+Path Params:
+
+  - `id` : The GUID of the resource acting as master in the relation.
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="2ae3603b949d54c2a34ace2d2638bc33"></a>
+### GET /api/resource/1.0/resources/(id)/masters
+
+
+
+
+
+
+The list of masters of a given resource.
+<br/><b>Notes:</b><ul>
+<li>The returned list of objects is subject to pagination.</li>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `kind` : A comma-separated list of GUID of ResourceKind objects. Only Not specified objects having one of these values as kind are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+</ul>
+
+
+  - `linkkind` : A comma-separated list of GUID of ResourceLinkKind objects. Only Not specified objects having one of these values as linkkind are selected.
+<br/><b>Notes:</b><ul>
+<li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+</ul>
+
+
+  - `includelinks` : Whether to include the <tt>links</tt> property in each of the returned resources
+
+
+  - `maxreportedlinks` : The maximum number of items returnes in the <tt>links</tt> property for each resource.
+
+
+  - `links_elementkind` : A comma-separated list of ResourceKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+  - `links_linkkind` : A comma-separated list of ResourceLinkKind guids, limiting the elements reported in the <tt>links</tt> property.
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+Path Params:
+
+  - `id` : The GUID of the resource acting as element in the relation.
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="19d3d71a8fe959f0a604bc7e791606f7"></a>
+### GET /api/resource/1.0/workstations/(uniqueid)
+
+
+
+
+
+
+Gets the resource corresponding to a workstation identified by a unique name and a middleware.
+<br/><b>Notes:</b><ul>
+<li>An IM client typically retrieves workstations to report their status as mirror members.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `autocreate` : Whether to auto-synchronize the cloud definition.
+<br/><b>Notes:</b><ul>
+<li>If the autocreate option is not set, issuing a GET for the given unique code returns a 404 if the resource was never synchronized before.</li>
+<li>It is recommended to set this field to true only when the query is performed by the client that is responsible for synchronizing the resource. Other clients should leave this field to false, in order to avoid updating a resource that they do not own.</li>
+</ul>
+
+
+  - `displayname` : The display name that is used as the name of the resource during synchronization.
+<br/><b>Notes:</b><ul>
+<li>This field is ignored if autocreate is false</li>
+</ul>
+
+
+  - `middleware` : The middleware that owns the definition.
+<br/><b>Notes:</b><ul>
+<li>The uniqueid parameter needs to be unique only within the context of a single middleware.</li>
+</ul>
+
+
+Path Params:
+
+  - `uniqueid` : A user-defined unique name that represents the real world identity of the object.
+<br/><b>Notes:</b><ul>
+<li>Unique names are user defined, they do not need to be UUIDs.</li>
+<li>It is the client responsibility to ensure  that names are kept unique, and that the same name is always used to refer to the same item.</li>
+<li>Using the same uniqueid always returns the same resource, even across multiple databases. This is done on purpose so that databases can be consolidated if the need arises.</li>
+<li>It is impossible to change the uniqueid of a resource. Once it has been referred to using a given uniqueid, the same uniqueid should be used forever.</li>
+<li>uniqueids need to be unique only in the context of the middleware, if one is specified as owner.</li>
+</ul>
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="5ee71e00d4f456ea810cc5325df2405c"></a>
+### GET /api/specimen/1.0/eventkinds
+
+
+
+
+
+
+Retrieves a list of SpecimenEventKind objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="af6c35c091c055fbbdd560b50e4bf45d"></a>
+### POST /api/specimen/1.0/eventkinds
+
+
+
+
+
+
+Creates a new SpecimenEventKind object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="1a828dced894503eb8ad061680cea4d9"></a>
+### DELETE /api/specimen/1.0/eventkinds/(id)
+
+
+
+
+
+
+Removes the SpecimenEventKind object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the SpecimenEventKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="507ed1b60016543d8e505a5cd0574bc1"></a>
+### GET /api/specimen/1.0/eventkinds/(id)
+
+
+
+
+
+
+Gets a single SpecimenEventKind
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the SpecimenEventKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="77d37c096cb654038082de8a30c37c2f"></a>
+### PUT /api/specimen/1.0/eventkinds/(id)
+
+
+
+
+
+
+Updates selected properties of the SpecimenEventKind object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the SpecimenEventKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="5089dabadb915ca48cf48cba8182ad49"></a>
+### POST /api/specimen/1.0/metrics
+
+
+
+
+
+
+Upload specimen metrics
+<br/><b>Notes:</b><ul>
+<li>Refer to readme file for more information on the upload of specimen metrics</li>
+</ul>
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="165cb1ff06f75f17b0b5a68bce8264d5"></a>
+### GET /api/specimen/1.0/workflowkinds
+
+
+
+
+
+
+Retrieves a list of SpecimenWorkflowKind objects.
+<br/><b>Notes:</b><ul>
+<li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `includehidden` : Whether to include hidden objects in the returned set.
+<br/><b>Notes:</b><ul>
+<li>When absent, the returned object list does not contain objects marked as hidden.</li>
+</ul>
+
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="f1bf67925c3f579e9faa82ec5544c16c"></a>
+### POST /api/specimen/1.0/workflowkinds
+
+
+
+
+
+
+Creates a new SpecimenWorkflowKind object.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="96fec056943b5e18873b637a7726eaca"></a>
+### DELETE /api/specimen/1.0/workflowkinds/(id)
+
+
+
+
+
+
+Removes the SpecimenWorkflowKind object.
+<br/><b>Notes:</b><ul>
+<li>This does not actually delete the object from the database, as it may be needed for historical reasons.
+Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
+<li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
+<tt>hidden</tt> property back to <tt>false</tt>.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the SpecimenWorkflowKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="20a776c81afb5784a141a61f5f21e43d"></a>
+### GET /api/specimen/1.0/workflowkinds/(id)
+
+
+
+
+
+
+Gets a single SpecimenWorkflowKind
+<br/><b>Notes:</b><ul>
+<li>The object is returned even if it is hidden.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the SpecimenWorkflowKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="cac9860bd9ff53bca7baf88cf11efcd2"></a>
+### PUT /api/specimen/1.0/workflowkinds/(id)
+
+
+
+
+
+
+Updates selected properties of the SpecimenWorkflowKind object.
+<br/><b>Notes:</b><ul>
+<li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
+<li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal Id of the SpecimenWorkflowKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="8e68b0f5c1335ac085abee78c8c48a85"></a>
+### POST /auth
+
+
+
+
+
+
+Log-on to LabX. Copy the returned token in the authorization box
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation. The token should be copied to authorization
+
+Appendix - About Definitions
+============================
+
+Definitions are building blocks of the configuration.
+
+Definition types
+----------------
+
+Each definition has a _type_. Definitions of the same type are grouped together
+and form something like an SQL _table_.
+
+Some examples of types (note that all types listed here do not necessarily
+exist in LabX):
+
+- _Resources_ which are devices, agents, services etc actively participating
+  to the lab operation.
+
+- _KPIs_ which represent each of the Key Performance Indicators that are
+  published by LabX.
+
+- _Tests_ which describe the tests performed by the lab, for example `WBC`
+
+- _Fluids_ which describe the fluids on which tests are performed by the
+  lab.
+
+Each definition type is obtained using a REST resource within a service.
+Sometimes, the name of the type corresponds to the name of the service, but
+one service may make use of multiple definition types.
+
+Examples:
+
+    /api/resource/1.0/resources
+    /api/resource/1.0/resourcekinds
+
+
+Properties
+----------
+
+A definition has the following base properties. Each type of definition may
+add additional properties that are useful for that particular type (for example,
+Test definitions would include a list of instruments on which the test can
+be performed)
+
+- A _Unique ID_. This uniquely identifies the definition across the whole
+  known universe. The unique ID is implemented as a GUID. Technically, the
+  GUID of a definition should be fully opaque, not coding any information
+  (ie a fully random GUID). However, it may be useful, in some rare cases,
+  for the GUID to be derived from properties of the definition; this should
+  be motivated.
+
+- A _Name_. This is used when the definition is being displayed to the end user.
+  It should be representative within the user context, but might not be enough
+  to globally identify the object being referred to (ie, multiple definitions
+  might have the same name if they are never shown together in a given context)
+
+- An optional _Short Name_. This is used when the definition is being displayed
+  to the end user in grids. The semantics of the short name is similar to the
+  name. When the short name is not given, the name is used instead.
+
+- An optional _Systematic Name_. This is used during configuration, typically
+  in pick lists. The Systematic Name is basically the same as the Name, but
+  bears a more systematic naming convention, to help administrators retrieve
+  things more easily. If the Systematic Name is not given, the Name is used
+  instead.
+
+- An optional _Ordering Key_. This is used when showing multiple definitions
+  in a list. Although not shown to the user, the Ordering key is used to sort
+  the definition in ascending order of that key. When two definitions have
+  the sampe ordering key, they are sorted in alphabetical order of the name
+  being displayed (ie name, short name or systematic name)
+
+- An optional _Technical description_. This is used to precisely describe the
+  definition: what it is, what it is used for, etc. Tenants are free to
+  use this for any purpose.
+
+Example
+-------
+
+- A definition that represents a printer.
+  - _Type_ is `resource`.
+  - _Name_ is `Color laser printer`. This is how end users will see the printer
+    in their application.
+  - _Short Name_ is `Color Prt`
+  - _Systematic Name_ is `Printer - 2nd Floor - Laserjet MX3400`. This is shown
+    to administrators, eg when they are granting access rights to the printer
+    for a user.
+  - _Kind_ is `Printer`.
+
+Definitions vs Kinds
+--------------------
+
+_Kinds_ are special cases of definitions, that represent a broad class of
+objects that share a common functionality or purpose.
+
+For example, each _resource_ (see the Resource service for more details) has
+a kind that indicates its purpose. The kind may be `Printer`, `Analyzer`,
+`Desktop computer`, etc.
+
+When obtaining the list of definitions of a given type where a kind is defined,
+it is possible to filter according to the kind using the `kind` query parameter;
+the kind being a definition, its unique ID should be given.
+
+    /api/resource/1.0/resources?kind=154eb46e-7933-40fd-8f47-78dbbac3c536
+
+Example: units vs unit kinds:
+
+| Unit   | Unit Kind |
+| ----   | --------- |
+| Metre  | Distance  |
+| Mile   | Distance  |
+| Litre  | Volume    |
+| Gallon | Volume    |
+
+Sharing of the Unique Id
+------------------------
+
+It is possible that two definitions, belonging to two tenants, will have the
+same unique id. This indicates that the two definitions intrinsically represent
+the same object or concept. This is typically the case for kinds.
+
+Appendix - Useful links
+============
+
+Convince IE to display JSON
+---------------------------
+
+
+https://stackoverflow.com/questions/2483771/how-can-i-convince-ie-to-simply-display-application-json-rather-than-offer-to-do
+
+___
+
+This document was generated automatically as part of the automated build
+process.
+
+Version: 1.0.0.544
+</xmp>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script>
+    mermaid.initialize({startOnLoad:true});
+</script>
+
+</body></html>

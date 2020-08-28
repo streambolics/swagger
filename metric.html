@@ -1,0 +1,1303 @@
+<html>
+<head>
+    <title>Metric</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<style>
+        h1
+        {
+            page-break-before: always;
+            border: 3px solid black;
+            border-radius: 5px;
+        }
+	  	h2:before
+		{
+    		content:' ';
+    		display:block;
+    		border:2px solid black;
+		}
+        div.answer
+        {
+            background-color: aquamarine;
+            margin-left: 80px;
+        }
+        td.answered
+        {
+            background-color: aquamarine !important;
+        }
+        td.unanswered
+        {
+            background-color: lightcoral !important;
+
+        }
+        div.note
+        {
+            background-color: aquamarine !important;
+            border: 1px solid aquamarine;
+            margin-right: 40%;
+        }
+        div.warning
+        {
+            background-color: lightcoral !important;
+            border: 1px solid lightcoral;
+            margin-left: 40%;
+        }
+    </style>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.2.6/mermaid.min.js"
+        integrity="sha256-0EUu19CAux3g/iy/+6obKNgaGhv3E6yrHdNWBnZncE0="
+        crossorigin="anonymous">
+    </script>
+</head>
+<body>
+<xmp theme="spacelab" style="display:none;">
+This document contains useful information on the Metric service and its
+usage.
+
+|Date|Initials|Section|Changes|
+|----|--------|-------|-------|
+|<sub>18&#8209;JUL&#8209;2019</sub>|<sub>SLE</sub>|<sub>Main</sub>|<small>     Initial draft|
+|<sub>18&#8209;JUL&#8209;2019</sub>|<sub>SLE</sub>|<sub>Symbols</sub>|<small>     Added symbol reference.|
+|<sub>24&#8209;JUL&#8209;2019</sub>|<sub>SLE</sub>|<sub>API</sub>|<small>     Added new metric kinds. Revisited the API and the introduction in doc.|
+|<sub>9&#8209;AUG&#8209;2019</sub>|<sub>SLE</sub>|<sub>All</sub>|<small>     Cleanup. Removed unneed techno-babble. Table of contents.|
+|<sub>13&#8209;AUG&#8209;2019</sub>|<sub>SLE</sub>|<sub>API</sub>|<small>     Corrected some APIs that used `metrics` instead of `metric` as the name     of the service.|
+|<sub>17&#8209;FEB&#8209;2020</sub>|<sub>SLE</sub>|<sub>Swagger</sub>|<small>     Unimplemented REST APIs marked as such.|
+|<sub>17&#8209;FEB&#8209;2020</sub>|<sub>SLE</sub>|<sub>Validity</sub>|<small>     Clarified the meaning of the Validity for resource metrics.|
+|<sub>23&#8209;APR&#8209;2020</sub>|<sub>SLE</sub>|<sub>Metric&nbsp;Kinds</sub>|<small>     Additional Metric Kinds. Clarified how IMBool range works in relation to timestamps.     Additional connection statuses.|
+
+Contents
+--------
+
+  - [Symbol reference](#metric-reference)
+  - [API reference](#swagger)
+
+
+
+About metrics
+=============
+
+The `metric` service maintains individual real-time metrics. These are later
+combined to synthesize KPIs.
+
+A _Metric_ represents actual value being regularly obtained.
+
+Note that contrary to KPIs, metrics do not have _expected values_ that might
+trigger an action when bounds are violated.
+
+Metric Kinds
+------------
+
+The Metric Kind is a configuration item that indicates _what_ is being metered,
+independantly on _how_ it was metered, and _on what_ it was metered.
+
+For example the Metric Kind “IM InQ Size” indicates that we measure the size
+of an Instrument Manager InQ. This can be done in a multitude of ways (the ETL
+driver can upload it, an external probe can perform a query directly in Caché,
+etc.)
+
+Resource Metrics
+----------------
+
+A _resource metric_ is a metric identified by the pair (Resource, Metric Kind).
+As such, their `resource` and `kind` properties are fixed.
+
+Resource Metrics are those usually relevant for reporting the status of
+resources in the lab. Their identity specifically allows them to be used in
+the computation of KPIs.
+
+  - Resource metrics do not need to be created by a `POST` query, they are
+    auto-created when needed (ie when their value is set for the first time.)
+
+  - Resource metrics do have a unique ID and can be handled as if they were
+    ad-hoc metrics. The contrary is not true, you cannot handle an ad-hoc
+    metric with the resource metrics API calls, even if the `resource` and
+    `kind` properties are defined.
+
+Specimen Metrics
+----------------
+
+A _Specimen Metric_ is a metric that is attached to a specimen and a connection.
+These are described in the documentation for the specimen service.
+
+Ad-hoc Metrics
+--------------
+
+An _ad-hoc metric_ is a metric in the most general sense, that cannot be
+identified formally by any of its characteristics.
+
+Although an ad-hoc metric can be linked to a resource, and can have a
+metric kind, they are not formally required to do so. Also, there may be any
+number of ad-hoc metrics that have the same resource and kind.
+
+Ad-hoc metrics cannot usually be used in the computation of KPIs.
+
+Workflows for Metric Data Providers
+===================================
+
+Setting the current value of a Resource Metric
+----------------------------------------------
+
+To set the value of a Resource Metric, issue a `PUT` query to
+
+    http://server/api/metric/resources/:resourceid/currentvalues/:kindid
+
+where `resourceid` is the GUID of the resource and `kindid` is the metric
+kind. The kind id is usually one of the supported metric kinds (see reference
+section) but the client must have some way of remembering or retrieving the
+id of the resource. The documentation for the resource service describes some
+simpified APIs to retrieve resource ids for middlewares and connections.
+
+Setting the current value of an ad-hoc metric
+---------------------------------------------
+
+To set the value of an ad-hoc Metric, issue a `PUT` query to
+
+    http://server/api/metric/currentvalues/:id
+
+where `id` is the GUID of the ad-hoc metric. The GUID was auto-generated when
+the ad-hoc metric was created. The client must have some way of storing and
+retrieving that id.
+
+Payload for the value of a metric
+---------------------------------
+
+The payload to upload a value is formatted:
+
+    {
+        value: 10
+        timestamp: "2019-01-01T10:00"
+        name: "InQ"
+    }
+
+  - `value` is the value of the metric. This is required and must be numeric.
+  - `timestamp`: the timestamp when the value was obtained. This is optional,
+    and will default to the current time if absent.
+  - `name`: The name of the metric. This is optional, and only used when the
+    metric is created.
+
+Regular updates of metrics
+--------------------------
+
+When metrics are used as source for the computation of KPIs, they must be
+uploaded regularly even if they did not change.
+
+When a KPI needs to be recomputed, but the metrics involved in the computation
+are too old (according to the _validity limit_ as described next) the KPI
+computation fails with the error _insufficient data_.
+
+Validity limits for metrics
+---------------------------
+
+Each metric kind defines a validity limit. This limit is only effective for
+resource metrics, specimen metrics are not affected.
+
+The validity limit of a metric is the maximum interval at which a new value
+for the metric must be provided. If a metric value does not change significantly,
+the ETL client may delay the upload of the value up to the validity limit.
+
+This helps reduce the traffic between the ETL driver and the backend, but has
+the adverse effect of delaying the detection of a persistent connection failure
+between ETL and the backend.
+
+The general principle for uploading a metric value is as follows:
+
+  1. Determine the appropriate validity limit. Divide it by two to obtain the
+     upload interval.
+  2. Determine the rules for deciding whether a value changed significantly.
+     Each metric kind has its own rules for this. Typically, a change is
+     significant if the absolute delta is above a given limit, says 10, *or*
+     the relative delta is above another given limit, say 15%.
+  3. Loop every 15 seconds
+     1. Acquire a new value
+     2. If no value was never successfully uploaded, upload the new value
+     3. If the new value is significantly different from the previously
+        uploaded value, upload the new value
+     4. If the upload interval elapsed since the last successful upload,
+        upload the new value.
+     5. Otherwise, do not upload the new value.
+
+<div class="warning">
+The validity limit is meant as a way to reduce bandwidth, not as a failure
+detection scheme. Implementations should refrain from lowering validity limits
+for every metric to act as a poor man's failure detection scheme.
+</div>
+
+Since this scheme does not allow for the detection of persistent connection
+errors, there should be *one* resource metric representing the status of the
+connection, and that has a very short (less than 1 minute) validity limit.
+This metric should be used as watchdog for the connection status.
+
+Bulk uploading of metrics
+-------------------------
+
+<div class="warning">
+This is not supported yet. Each metric needs to be uploaded individually.
+</div>
+
+An ETL driver should attempt to group multiple metric uploads in the same
+query message. To do so, during the data acquisition loop, uploads should be
+queued instead of being performed individually on the spot. Once several uploads
+have been queued, perform a single query to upload them all. A good value for
+grouping is around 10 metrics per query.
+
+<a name="metric-reference"></a>
+
+Symbol reference
+================
+
+This section contains the list of known kinds for metrics
+
+Metric Kinds
+------------
+
+<a name="11689cd2-146e-433c-ac29-e745d71621f7"></a>
+###MetricKind_ArbiterVisible
+    GUID: '11689cd2-146e-433c-ac29-e745d71621f7'
+The _Arbiter Connection_ KPI reports whether the mirror member can
+report its status to the arbiter.
+#### Applies to
+  - A workstation
+#### Unit of measure
+  One of the values in the ImBool_* enumeration.
+
+<a name="3364ff21-eaa1-4a86-9c91-8fff0f1b832c"></a>
+###MetricKind_CriticalResultsHeld
+    GUID: '3364ff21-eaa1-4a86-9c91-8fff0f1b832c'
+The _Critical Results Held_ metric is used to upload the number of results
+that are both critical (ie urgent, out of medical range, etc.) and currently
+held for review on a given specimen and connection.
+#### Unit
+Number of results
+#### Target
+A (Specimen, Connection) pair. The connection may be a direct or indirect
+connection.
+
+<a name="db80f8ba-3978-477d-913d-8dbc2288e5d1"></a>
+###MetricKind_DatabaseTimeLatency
+    GUID: 'db80f8ba-3978-477d-913d-8dbc2288e5d1'
+The _Database Time Latency_ KPI reports the estimated latency ...
+#### Applies to
+  - A workstation
+#### Unit of measure
+  Seconds.
+
+<a name="a5e80958-c99a-4b81-9540-5c8b412591af"></a>
+###MetricKind_FirstResults
+    GUID: 'a5e80958-c99a-4b81-9540-5c8b412591af'
+The _First Results_ metric is used to upload the total number of results that
+are not repeats.
+#### Unit
+Number of results
+#### Target
+A (Specimen, Connection) pair. The connection may be a direct or indirect
+connection.
+
+<a name="adb09229-f5d1-4a78-8167-0cb978ee71dd"></a>
+###MetricKind_IISRunning
+    GUID: 'adb09229-f5d1-4a78-8167-0cb978ee71dd'
+The _IIS Running_ metric is used to report the fact that IIS is running.
+#### Unit
+One of the values in the IMStatus_* range.
+#### Target
+A middleware or a workstation
+
+<a name="34ec7ce7-c998-478d-ae83-7322e003df9a"></a>
+###MetricKind_ImCommTrace
+    GUID: '34ec7ce7-c998-478d-ae83-7322e003df9a'
+The _IM Comm Trace Status_ is used to report the status of the COMM
+trace.
+#### Unit
+One of the values in the IMBool_* range. IMBool_True means that the
+connection trace is on, ImBool_False means the connection trace is off,
+ImBool_NotLicensed can be used if the feature is not licensed.
+
+<a name="24afd0b1-8de7-43c5-ae76-f24263becd59"></a>
+###MetricKind_ImErrors
+    GUID: '24afd0b1-8de7-43c5-ae76-f24263becd59'
+The _Instrument Manager Errors_ metric is used to report the number of
+errors currently logged for a connection.
+  - This is an IM-Specific value, but any middleware that has a similar
+ notion is free to use it also.
+#### Unit
+Number of errors
+#### Target
+A direct connection. The metric should not be reported for indirect
+connections.
+
+<a name="3a105742-8c87-4572-be3d-331d752ee612"></a>
+###MetricKind_ImIn
+    GUID: '3a105742-8c87-4572-be3d-331d752ee612'
+The _IM In_ metric is used to report the count of inbound messages
+#### Unit
+The number of messages
+
+<a name="9745e87e-c2d1-4e06-98ec-b72e78b02daa"></a>
+###MetricKind_ImInQ
+    GUID: '9745e87e-c2d1-4e06-98ec-b72e78b02daa'
+The _Instrument Manager In Queue_ metric is used to report the InQ size
+for a connection.
+  - This is an IM-Specific value, but any middleware that has a similar
+ notion is free to use it also.
+#### Unit
+  Number of messages
+#### Target
+A direct connection. The metric should not be reported for indirect
+connections.
+
+<a name="9774730c-025a-4153-88d0-b4196c6ac620"></a>
+###MetricKind_ImLastTransaction
+    GUID: '9774730c-025a-4153-88d0-b4196c6ac620'
+The _IM Last Transaction_ metric is used to report the date and time
+of the last transaction.
+#### Unit
+A timestamp expressed as the number of seconds elapsed since Jan 1, 1970.
+This is known as a "unix timestamp". This must be expressed in the UTC time
+zone, not the local time zone.
+#### Notes
+In Caché, the UNIX_TIMESTAMP function can be used to convert to a Unix
+Timestamp.
+If the value is not known, send 0.
+
+<a name="ee5be383-9ad9-4f80-abf3-a15071a8ac2b"></a>
+###MetricKind_ImOutOfService
+    GUID: 'ee5be383-9ad9-4f80-abf3-a15071a8ac2b'
+The _Instrument Manager Out Of Service_ metric is used to report the current
+Out-of-Service status of a connection. Out-of-service metric represents
+the fact that the connection is marked as removed from routing. This is
+different from the IMStatus_OutOfService value for ImStatus.
+#### Unit
+One of the values in the IMBool_* range. IMBool_True means that the
+connection is marked as out-of-service, ImBool_False means the connection is
+not out-of-service.
+#### Target
+A direct or indirect connection.
+  - For indirect connections, it is recommended to mirror the status of the
+ corresponding direct connection, but use the ImStatus_Indirect status
+ instead of the ImStatus_On when the connection is functional. This
+ indicates that the status is expected to be OK, but that cannot be
+ guaranteed.
+
+<a name="9b1253e8-e611-4f66-adf4-bf89cf116375"></a>
+###MetricKind_ImRunningInstances
+    GUID: '9b1253e8-e611-4f66-adf4-bf89cf116375'
+The _IM Running instances_ metric is used to report the number of instances
+of a connection that are currently running.
+This is mainly useful for system connections, and especially Qmgr, that
+exist in multiple instances, but that we want to represent as a single
+item.
+#### Unit
+  An integer between 0 and MetricKind_ImTotalInstances.
+#### Notes
+  Setting that number is not sufficient for the backend to deduce the
+  status of the service. The status of the connection must also be
+  reported in MetricKind_ImStatus, as usual.
+
+<a name="a51de484-cf70-4eeb-ba05-bd262578c226"></a>
+###MetricKind_ImSendQ
+    GUID: 'a51de484-cf70-4eeb-ba05-bd262578c226'
+The _Instrument Manager Send Queue_ metric is used to report the SendQ size
+for a connection.
+  - This is an IM-Specific value, but any middleware that has a similar
+ notion is free to use it also.
+#### Unit
+Number of messages
+#### Target
+A direct connection. The metric should not be reported for indirect
+connections.
+
+<a name="ff07c388-06f9-46f0-bad6-58fe8bfe5f07"></a>
+###MetricKind_ImSent
+    GUID: 'ff07c388-06f9-46f0-bad6-58fe8bfe5f07'
+The _IM Sent_ metric is used to report the count of outbound messages
+
+<a name="d65be8ca-13c3-4393-a70e-5dd4c93ff9c0"></a>
+###MetricKind_ImStatus
+    GUID: 'd65be8ca-13c3-4393-a70e-5dd4c93ff9c0'
+The _Instrument Manager Status_ metric is used to report the current status
+of a connection.
+#### Unit
+One of the values in the IMStatus_* range.
+#### Target
+A direct or indirect connection.
+  - For indirect connections, it is recommended to mirror the status of the
+ corresponding direct connection, but use the ImStatus_Indirect status
+ instead of the ImStatus_On when the connection is functional. This
+ indicates that the status is expected to be OK, but that cannot be
+ guaranteed.
+
+<a name="756c7255-a92a-4f96-a45f-2e3953189c61"></a>
+###MetricKind_ImTotalInstances
+    GUID: '756c7255-a92a-4f96-a45f-2e3953189c61'
+The _IM Total instances_ metric is used to report the total number
+of instances of a connection.
+This is mainly useful for system connections, and especially Qmgr, that
+exist in multiple instances, but that we want to represent as a single
+item.
+
+<a name="76689d05-aae3-4d7b-8a20-d13e3f5404fb"></a>
+###MetricKind_JournalTimeLatency
+    GUID: '76689d05-aae3-4d7b-8a20-d13e3f5404fb'
+The _Journal Time Latency_ KPI reports the estimated latency ...
+#### Applies to
+  - A workstation
+#### Unit of measure
+  Seconds.
+
+<a name="678c6045-abd9-4767-bede-5e262891fa08"></a>
+###MetricKind_MemoryUsage
+    GUID: '678c6045-abd9-4767-bede-5e262891fa08'
+The _Memory Usage_ metric is used to report the current load on available
+physical main memory (RAM).
+#### Unit
+A percentage value between 0 and 100. 100% means that all RAM is used, and 0%
+indicates that all of RAM is free.
+#### Target
+  - A resource representing a middleware, a workstation or an IoT appliance
+ that uses a CPU for control.
+
+<a name="1ce8d9c9-98b9-43a3-82eb-b745c4a445d8"></a>
+###MetricKind_MirrorRole
+    GUID: '1ce8d9c9-98b9-43a3-82eb-b745c4a445d8'
+The _Mirroring Role_ KPI reports the current role of the workstation in
+a mirror set.
+#### Applies to
+  - A workstation
+#### Unit of measure
+  One of the values in the MirrorRole_* enumeration.
+
+<a name="22d9863f-c0e5-4fcf-87e8-b0a6f5fee4f3"></a>
+###MetricKind_MirrorStatus
+    GUID: '22d9863f-c0e5-4fcf-87e8-b0a6f5fee4f3'
+The _Mirroring Status_ KPI reports the current status of the mirror in
+a mirror set.
+#### Applies to
+  - A workstation
+#### Unit of measure
+  One of the values in the MirrorStatus_* enumeration.
+
+<a name="eb364886-25c6-404a-91cf-834c7dba4a0e"></a>
+###MetricKind_ProcessorUsage
+    GUID: 'eb364886-25c6-404a-91cf-834c7dba4a0e'
+The _Processor Usage_ metric is used to report the current load on the CPU.
+When a system is composed of multiple CPUs, cores or hyperthreading cells,
+this represents the load on the whole array of available CPUs.
+#### Unit
+A percentage value between 0 and 100. 100% indicates that processor is fully
+busy and 0% indicates that processor is entirely idle.
+#### Target
+  - A resource representing a middleware, a workstation or an IoT appliance
+ that uses a CPU for control.
+  - A resource representing a CPU, a CPU core, or a CPU hyperthreading cell.
+
+<a name="e04bdf79-458a-4970-98a5-1d8ed44acfe8"></a>
+###MetricKind_RepeatedResults
+    GUID: 'e04bdf79-458a-4970-98a5-1d8ed44acfe8'
+The _Repeated Results_ metruc is used to upload the total number of results
+that are repeats.
+#### Unit
+Number of results
+#### Target
+A (Specimen, Connection) pair. The connection may be a direct or indirect
+connection.
+
+<a name="386c6158-1926-400c-9ae4-741c8fe72efa"></a>
+###MetricKind_ResultsAutoVerified
+    GUID: '386c6158-1926-400c-9ae4-741c8fe72efa'
+The _Results Auto Verified_ is used to upload the total number of results
+that have the status "released" and were made so by a totally automatic
+process (eg Rules in Instrument Manager).
+All auto-verified results are released by definition, so this count must
+always be less than or equal to
+[Results Released](#cfd2146c-3697-483c-a38f-1370f0cd7f41)
+#### Unit
+Number of results
+#### Target
+A (Specimen, Connection) pair. The connection may be a direct or indirect
+connection.
+
+<a name="91be7235-fe53-450a-b1ba-f1507b2254be"></a>
+###MetricKind_ResultsHeld
+    GUID: '91be7235-fe53-450a-b1ba-f1507b2254be'
+The _Results Held_ metric is used to upload the number of results that are
+currently held for review on a given specimen and connection.
+  - The count of results includes both critical and non-critical results.
+ As such, this metric is always greater or equal to the
+ [Critical Results Held](#3364ff21-eaa1-4a86-9c91-8fff0f1b832c) metric.
+#### Unit
+Number of results
+#### Target
+A (Specimen, Connection) pair. The connection may be a direct or indirect
+connection.
+
+<a name="cfd2146c-3697-483c-a38f-1370f0cd7f41"></a>
+###MetricKind_ResultsReleased
+    GUID: 'cfd2146c-3697-483c-a38f-1370f0cd7f41'
+The _Results Released_ is used to upload the total number of results that
+have the status "released".
+Some of those results would be included in
+[Results Auto Verified](#386c6158-1926-400c-9ae4-741c8fe72efa) also
+#### Unit
+Number of results
+#### Target
+A (Specimen, Connection) pair. The connection may be a direct or indirect
+connection.
+
+<a name="3494d33c-d097-409a-9561-e61b1435a51b"></a>
+###MetricKind_ResultsWithPendingCall
+    GUID: '3494d33c-d097-409a-9561-e61b1435a51b'
+The _Results With Pending Call_ metric is used to upload the number of
+results that have the status "pending call" on a specimen and connection.
+#### Unit
+Number of results
+#### Target
+A (Specimen, Connection) pair. The connection may be a direct or indirect
+connection.
+
+<a name="6234d37a-8620-43e7-a62b-571fdccd749b"></a>
+###MetricKind_WindowsServiceStatus
+    GUID: '6234d37a-8620-43e7-a62b-571fdccd749b'
+The _Windows Service Status_ metric is used to report the status of the
+uploader service from IM to the cloud.
+#### Unit
+One of the values in the IMStatus_* range.
+#### Target
+A middleware or a workstation
+
+
+Instrument Manager Status Codes
+-------------------------------
+
+<a name="5"></a>
+###ImStatus_AlwaysOn
+    GUID: '5'
+The _Always On_ status indicates that the connection does not have
+a proper status, because it is always available for technical reasons.
+This is the recommented status for manual connections.
+
+<a name="9"></a>
+###ImStatus_Connecting
+    GUID: '9'
+The _Connecting_ status indicates that the connection is ready to communicate
+with the device, but that the logical link is not yet established.
+This occurs when the connection waits for the protocol to establish the
+communication, including the TCP connection, the SSL/TLS negociation, and
+some other token exchanges.
+
+<a name="6"></a>
+###ImStatus_Delegated
+    GUID: '6'
+The _Delegated_ status indicates that the connection status is OK, but
+since the actual connection is delegated to another entity, that other
+entity status needs to be taken into account also.
+This is the recommended status for indirect connections instead of
+[On](#10) when they are fully functional.
+
+<a name="1"></a>
+###ImStatus_Error
+    GUID: '1'
+The _Error_ status indicates that the connection is experiencing errors.
+
+<a name="12"></a>
+###ImStatus_LightPole
+    GUID: '12'
+The _Light Pole_ status indicates that the connection is a light pole.
+
+<a name="13"></a>
+###ImStatus_Manual
+    GUID: '13'
+The _Manual_ status indicates that the connection is manual, and is
+always available.
+
+<a name="14"></a>
+###ImStatus_NonInterfaced
+    GUID: '14'
+The _Non Interfaced_ status indicates that the connection represents
+an instrument that is not actually connected to the middleware.
+
+<a name="2"></a>
+###ImStatus_Off
+    GUID: '2'
+The _Off_ status indicates that the connection is currently off.
+
+<a name="8"></a>
+###ImStatus_OffRequest
+    GUID: '8'
+The _Off Request_ status indicates that the connection is being stopped.
+
+<a name="10"></a>
+###ImStatus_On
+    GUID: '10'
+The _On_ status indicates that the connection is fully functional and able
+to exchange data with the device.
+
+<a name="7"></a>
+###ImStatus_OnRequest
+    GUID: '7'
+The _On Request_ status indicates that the connection is being initialized.
+
+<a name="3"></a>
+###ImStatus_OutOfOrder
+    GUID: '3'
+The _Out of Order_ status indicates that the connection is experiencing
+recurring trouble and is not expected to become functional again for a
+long time.
+  - This differs from the [Off](#2) status because restoring the connection
+ is not just a matter of re-starting the connection.
+  - This differs from the [Out of Service](#4) status because this indicates
+ that the connection is still needed, but unavailable for reasons out of
+ the control of the lab.
+
+<a name="4"></a>
+###ImStatus_OutOfService
+    GUID: '4'
+The _Out of Service_ status indicates that the connection has been shut down
+for an unspecified amount of time, because it is no longer needed.
+  - This differs from the [Out Of Order](#3) status because it indicates that
+ the connection has been shut down willingly, and is not needed anymore.
+  - This differs from the IMOutOfService boolean status, which indicates
+ that the connection has been removed from routing.
+
+<a name="0"></a>
+###ImStatus_Unknown
+    GUID: '0'
+The _Unknown_ status indicates that the status of the connection is
+explicitly not known.
+This should be uploaded when the client is unable to assess the status
+of the connection, for whatever reason.
+
+<a name="11"></a>
+###ImStatus_Utility
+    GUID: '11'
+The _Utility_ status indicates that the connection is a utility such as
+bi-directional QC integration.
+
+
+# API Reference
+
+<a name="swagger"></a>
+
+This API reference is automatically extracted from the swagger documentation.
+The source swagger file may contain more detailed information than this
+static document.
+
+LabX API specification.
+
+Version: 1.0.0
+
+## Definitions
+### Metric
+
+The definition of a metric.
+
+  - `id` *(string)* : An opaque, unique ID that identifies the definition.
+  <ul>
+  <li>The unique ID is a GUID; it is expressed in hexadecimal, lowercase, including dashes as separators.</li>
+  <li>When issuing a POST query, the ID should normally be omitted; the service will then generate a new, unique ID.
+      Otherwise, the ID must be different from those of the already existing definitions. </li>
+  <li>When issuing a PUT query, the ID must match the one specified in the path or be omitted.</li>
+  </ul>
+  - `kind` *(string)* : The unique ID of the Metric kind of this metric.  - `name` *(string)* : The usual name for the definition. This usual name needs to make
+  sense for an end user.
+  <ul>
+  <li>Multiple definitions may share the same name if they reference two objects that are never used in the same context.</li>
+  <li>Usual names should never be left empty.</li>
+  <li>Usual names have no fixed size limit, but should not normally exceed 50 characters or glyphs.</li>
+  </ul>
+  - `resource` *(string)* : The unique ID of the resource monitored by this metric.  - `shortname` *(string)* : A shorter version of the usual name. This may be used instead of
+  the usual name where space is constrained, eg in grids.
+  <ul>
+  <li>If no short name is given, the usual name is used instead, but may be truncated as needed.</li>
+  <li>Short names have no fixed size limit, but should not normally exceed 12 characters or glyphs.</li>
+  </ul>
+  - `sortkey` *(string)* : An arbitrary string that is used to sort lists of definitions.
+  Definitions are sorted according to the increasing value of this
+  key.
+  <ul>
+  <li>When two definitions share the same sortkey (and especially when their sortkey is empty, which is the usual case)
+      they are sorted according to their usual name using localized conventions.</li>
+  <li>Value should consist exclusively of printable ASCII characters.</li>
+  <li>Lexicographic sort is used, implying that `item9` is after `item10`</li>
+  <li>The sortkey is never meant to be shown to the end user, only to admins during setup.</li>
+  </ul>
+  - `systematicname` *(string)* : A systematized version of the name of the definition.
+  <ul>
+  <li>This is used in global contexts, when it is imperative to correctly disambiguate what is shown, typically during setup.</li>
+  <li>If the systematic name is not given, the usual name is used instead.</li>
+  <li>The systematic name is not meant to be shown to the end user, although it may be displayed when advanced details are requested.</li>
+  </ul>
+
+### MetricKind
+
+The kind (aka type) of a Metric. Examples include “% CPU”, “InQ size“.
+
+  - `id` *(string)* : An opaque, unique ID that identifies the definition.
+  <ul>
+  <li>The unique ID is a GUID; it is expressed in hexadecimal, lowercase, including dashes as separators.</li>
+  <li>When issuing a POST query, the ID should normally be omitted; the service will then generate a new, unique ID.
+      Otherwise, the ID must be different from those of the already existing definitions. </li>
+  <li>When issuing a PUT query, the ID must match the one specified in the path or be omitted.</li>
+  </ul>
+  - `name` *(string)* : The usual name for the definition. This usual name needs to make
+  sense for an end user.
+  <ul>
+  <li>Multiple definitions may share the same name if they reference two objects that are never used in the same context.</li>
+  <li>Usual names should never be left empty.</li>
+  <li>Usual names have no fixed size limit, but should not normally exceed 50 characters or glyphs.</li>
+  </ul>
+  - `shortname` *(string)* : A shorter version of the usual name. This may be used instead of
+  the usual name where space is constrained, eg in grids.
+  <ul>
+  <li>If no short name is given, the usual name is used instead, but may be truncated as needed.</li>
+  <li>Short names have no fixed size limit, but should not normally exceed 12 characters or glyphs.</li>
+  </ul>
+  - `sortkey` *(string)* : An arbitrary string that is used to sort lists of definitions.
+  Definitions are sorted according to the increasing value of this
+  key.
+  <ul>
+  <li>When two definitions share the same sortkey (and especially when their sortkey is empty, which is the usual case)
+      they are sorted according to their usual name using localized conventions.</li>
+  <li>Value should consist exclusively of printable ASCII characters.</li>
+  <li>Lexicographic sort is used, implying that `item9` is after `item10`</li>
+  <li>The sortkey is never meant to be shown to the end user, only to admins during setup.</li>
+  </ul>
+  - `systematicname` *(string)* : A systematized version of the name of the definition.
+  <ul>
+  <li>This is used in global contexts, when it is imperative to correctly disambiguate what is shown, typically during setup.</li>
+  <li>If the systematic name is not given, the usual name is used instead.</li>
+  <li>The systematic name is not meant to be shown to the end user, although it may be displayed when advanced details are requested.</li>
+  </ul>
+
+### MetricValue
+
+
+
+  - `id` *(string)* : The internal ID of the metric. This is only returned by GET queries,
+  and ignored in PUT queries.
+  - `name` *(string)* : The usual name, retrieved from the metric definition. This is
+  returned by GET queries, and only used by PUT queries if the metric
+  is auto-created.
+  - `timestamp` *(string)* : The date and time when the metric value was obtained.
+  - `value` *(number)* : The acquired value. Note that contrary to KPIs, only numerical
+  values are accepted.
+
+
+## Paths
+
+### GET /_healthcheck
+
+
+
+
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Success
+
+### GET /_version
+
+
+
+
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Success
+
+### GET /api/metric/1.0/metrickinds
+
+
+
+
+
+
+
+Query Params:
+
+  - `page` : The page number in the list to return.
+This is used for pagination, to avoid returning too many entries
+when querying a data resource list.
+<ul>
+<li>This value, along with the `pagesize` parameter, determines the subset of items returned by the query.</li>
+<li>The first page is numbered as 0.</li>
+<li>It is legal to query for a page beyond the end of the list; in that case, an empty subset is returned.</li>
+</ul>
+
+
+  - `pagesize` : The size of an individual page. This is the maximum number of items
+that will be returned at once.
+<ul>
+<li>This is used in conjuction with the `page` parameter to determine the range of items to return.</li>
+<li>When less that this maximum number of items are returned, the end of the list has been reached.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<ul>
+<li>This is an alternate to querying by a `page` number, and allows the query to start at any arbitrary position.</li>
+<li>This parameter is ignored if a page number is given.</li>
+<li>The very first item is numbered 0.</li>
+<li>It is legal to query for items past the end of the list; an empty subset will be returned in that case.</li>
+</ul>
+
+
+  - `last` : The index of the first item where to stop the list.
+<ul>
+<li>This item will _not_ be returned.</li>
+<li>The value of `last` should be used as the value of `first` to obtain the next items in the list.</li>
+<li>The parameter is ignored if `page` is specified.</li>
+<li>If not specified, defaults to `first` + `pagesize`.</li>
+<li>Less than last-first items will be returned if the end of the list has been reached.</li>
+<li><b>Known issue</b>: This parameter is ignored if the `first` parameter is absent or zero.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested MetricKind data as
+    an array.
+ *  The array may be empty if the operation did not select any
+    relevant MetricKind.
+ *  The data is returned as as array even if only one MetricKind
+    is returned.
+ *  The `errors` property is empty.
+
+
+### POST /api/metric/1.0/metrickinds
+
+
+
+
+
+
+
+
+
+
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested MetricKind
+ *  The `errors` property is empty.
+
+
+### DELETE /api/metric/1.0/metrickinds/(id)
+
+
+
+
+
+
+Removes a metric kind
+
+
+
+
+Path Params:
+
+  - `id` : The internal ID of a Metric kind
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested MetricKind
+ *  The `errors` property is empty.
+
+
+- `400`: The requested MetricKind cannot be retrieved because of a
+malformed argument in the query. Typically, an argument of type
+GUID has an invalid syntax, or an argument expected to be a number
+is badly formed.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+- `404`: The requested MetricKind does not exist.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+### GET /api/metric/1.0/metrickinds/(id)
+
+
+
+
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal ID of a Metric kind
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested MetricKind
+ *  The `errors` property is empty.
+
+
+- `400`: The requested MetricKind cannot be retrieved because of a
+malformed argument in the query. Typically, an argument of type
+GUID has an invalid syntax, or an argument expected to be a number
+is badly formed.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+- `404`: The requested MetricKind does not exist.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+### PUT /api/metric/1.0/metrickinds/(id)
+
+
+
+
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal ID of a Metric kind
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested MetricKind
+ *  The `errors` property is empty.
+
+
+- `400`: The requested MetricKind cannot be retrieved because of a
+malformed argument in the query. Typically, an argument of type
+GUID has an invalid syntax, or an argument expected to be a number
+is badly formed.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+- `404`: The requested MetricKind does not exist.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+### GET /api/metric/1.0/metrics
+
+
+
+
+
+
+Gets the list of defined metrics.
+
+
+Query Params:
+
+  - `page` : The page number in the list to return.
+This is used for pagination, to avoid returning too many entries
+when querying a data resource list.
+<ul>
+<li>This value, along with the `pagesize` parameter, determines the subset of items returned by the query.</li>
+<li>The first page is numbered as 0.</li>
+<li>It is legal to query for a page beyond the end of the list; in that case, an empty subset is returned.</li>
+</ul>
+
+
+  - `pagesize` : The size of an individual page. This is the maximum number of items
+that will be returned at once.
+<ul>
+<li>This is used in conjuction with the `page` parameter to determine the range of items to return.</li>
+<li>When less that this maximum number of items are returned, the end of the list has been reached.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<ul>
+<li>This is an alternate to querying by a `page` number, and allows the query to start at any arbitrary position.</li>
+<li>This parameter is ignored if a page number is given.</li>
+<li>The very first item is numbered 0.</li>
+<li>It is legal to query for items past the end of the list; an empty subset will be returned in that case.</li>
+</ul>
+
+
+  - `last` : The index of the first item where to stop the list.
+<ul>
+<li>This item will _not_ be returned.</li>
+<li>The value of `last` should be used as the value of `first` to obtain the next items in the list.</li>
+<li>The parameter is ignored if `page` is specified.</li>
+<li>If not specified, defaults to `first` + `pagesize`.</li>
+<li>Less than last-first items will be returned if the end of the list has been reached.</li>
+<li><b>Known issue</b>: This parameter is ignored if the `first` parameter is absent or zero.</li>
+</ul>
+
+
+  - `resource` : The internal ID of a resource, or empty to select all resources
+
+  - `kind` : The internal ID of the Metric kind, or empty for all kinds
+
+
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested Metric data as
+    an array.
+ *  The array may be empty if the operation did not select any
+    relevant Metric.
+ *  The data is returned as as array even if only one Metric
+    is returned.
+ *  The `errors` property is empty.
+
+
+### POST /api/metric/1.0/metrics
+
+
+
+
+
+
+Creates a new metric definition.
+
+
+
+
+
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested Metric
+ *  The `errors` property is empty.
+
+
+### DELETE /api/metric/1.0/metrics/(id)
+
+
+
+
+
+
+Removes a metric
+
+
+
+
+Path Params:
+
+  - `id` : The internal ID of a Metric
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested Metric
+ *  The `errors` property is empty.
+
+
+- `400`: The requested Metric cannot be retrieved because of a
+malformed argument in the query. Typically, an argument of type
+GUID has an invalid syntax, or an argument expected to be a number
+is badly formed.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+- `404`: The requested Metric does not exist.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+### GET /api/metric/1.0/metrics/(id)
+
+
+
+
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal ID of a Metric
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested Metric
+ *  The `errors` property is empty.
+
+
+- `400`: The requested Metric cannot be retrieved because of a
+malformed argument in the query. Typically, an argument of type
+GUID has an invalid syntax, or an argument expected to be a number
+is badly formed.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+- `404`: The requested Metric does not exist.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+### PUT /api/metric/1.0/metrics/(id)
+
+
+
+
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal ID of a Metric
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested Metric
+ *  The `errors` property is empty.
+
+
+- `400`: The requested Metric cannot be retrieved because of a
+malformed argument in the query. Typically, an argument of type
+GUID has an invalid syntax, or an argument expected to be a number
+is badly formed.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+- `404`: The requested Metric does not exist.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+### DELETE /api/metric/1.0/resources/(resourceid)/currentvalues/(metrickindid)
+
+
+
+
+
+
+Deletes a resource metric.
+
+
+
+
+
+
+
+Responses:
+
+- `204`: The query succeeded. No data is returned.
+Note that for technical reasons, the status code returned by http is `200`,
+while the response body contains `204`. If the http status code was 204, the
+body would have to be totally empty.
+
+
+### GET /api/metric/1.0/resources/(resourceid)/currentvalues/(metrickindid)
+
+
+
+
+
+
+Retrieves the value of a resource metric.
+
+
+
+
+
+
+
+Responses:
+
+- `200`: The operation succeeded.
+ *  The `data` property contains the requested MetricValue
+ *  The `errors` property is empty.
+
+
+- `400`: The requested MetricValue cannot be retrieved because of a
+malformed argument in the query. Typically, an argument of type
+GUID has an invalid syntax, or an argument expected to be a number
+is badly formed.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+- `404`: The requested MetricValue does not exist.
+ *  The `data` property is empty.
+ *  The `errors` property contains a list of messages describing
+    the problem; those messages can be shown to the end user.
+
+
+### PUT /api/metric/1.0/resources/(resourceid)/currentvalues/(metrickindid)
+
+
+
+
+
+
+Sets the value of a resource metric.
+
+
+
+
+
+
+
+Responses:
+
+- `204`: The query succeeded. No data is returned.
+Note that for technical reasons, the status code returned by http is `200`,
+while the response body contains `204`. If the http status code was 204, the
+body would have to be totally empty.
+
+
+___
+
+This document was generated automatically as part of the automated build
+process.
+
+Version: 1.0.0.196
+</xmp>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script>
+    mermaid.initialize({startOnLoad:true});
+</script>
+
+</body></html>
