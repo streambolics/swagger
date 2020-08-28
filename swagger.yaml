@@ -4548,21 +4548,27 @@ components:
           description: |
             The internal UUID of the KPI
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '3c3cf89f-6ccc-4ced-b5c9-de7e3ac276b7'
         name:
           description: |
             The name of the KPI
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: 'Architect - Send Queue'
         label:
           description: |
             A short label for the KPI
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: 'SendQ'
         value:
@@ -4585,70 +4591,90 @@ components:
           description: |
             Whether a recomputation was scheduled for the value
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: 'false'
         kindid:
           description: |
             The internal UUID for the Kpi Kind
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '3c3cf89f-6ccc-4ced-b5c9-de7e3ac276b7'
         kindname:
           description: |
             The name of the KPI Kind
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: 'Send Queue'
         resourceid:
           description: |
             The internal ID of the resource targeted by the KPI
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '3c3cf89f-6ccc-4ced-b5c9-de7e3ac276b7'
         issuedat:
           description: |
             The timestamp when the value was issued by the microservice.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '2020-01-01T10:01:00'
         refreshat:
           description: |
             The timestamp when a client should ask for a refreshed value.
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '2020-01-01T10:02:00'
         refreshdelta:
           description: |
             The number of milliseconds between issuedat and refreshat
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '60000'
         validuntil:
           description: |
             The timestamp when the value will cease to be valid
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '2020-01-01T10:03:00'
         validfor:
           description: |
             The number of milliseconds between issuedat and validuntil
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: '120000'
         waitsuccess:
           description: |
             Whether recomputation of the value completed within the allowed wait time
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is only present when the 'wait' option is specified in GET queries</li>
             </ul>
     MetricKind:
@@ -4719,7 +4745,9 @@ components:
           description: |
             The name of the Metric
             <br/><b>Notes:</b><ul>
-            <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: 'Architect - Send Queue'
         value:
