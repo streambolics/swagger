@@ -250,14 +250,17 @@ Metric Kinds
 ------------
 
 <a name="11689cd2-146e-433c-ac29-e745d71621f7"></a>
-###MetricKind_ArbiterVisible
+###MetricKind_ArbiterConnectionStatus
     GUID: '11689cd2-146e-433c-ac29-e745d71621f7'
-The _Arbiter Connection_ KPI reports whether the mirror member can
+The _Arbiter Connection Status_ KPI reports whether the mirror member can
 report its status to the arbiter.
 #### Applies to
   - A workstation
 #### Unit of measure
-  One of the values in the ImBool_* enumeration.
+  A member of the ArbiterStatus_ enumeration.
+  0 - Unreachable
+  1 - Arbiter Controlled
+  2 - Agent Controlled
 
 <a name="3364ff21-eaa1-4a86-9c91-8fff0f1b832c"></a>
 ###MetricKind_CriticalResultsHeld
@@ -1292,7 +1295,7 @@ ___
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.196
+Version: 1.0.0.198
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>

@@ -5162,7 +5162,7 @@ components:
     SpecimenWorkflowKind:
       type: object
       description: |
-        SpecimenWorkflowKind
+        An event is used as base for defining workflows. Workflows and TATs are curretnly experimental.
       properties:
         id:
           description: |

@@ -1343,6 +1343,12 @@ A _Software_ represents a (version) of code that implements an application.
 ####Examples
 Instrument Manager 8.15.3, ASTM driver 8.12.22, etc.
 
+<a name="9a910022-bb72-45c6-b858-93daa4955758"></a>
+<a name="9c17aa80591a5c75a5e9a751c1eab04e"></a>
+###ResourceKind_Tenant
+    GUID: '9a910022-bb72-45c6-b858-93daa4955758'
+A _Tenant_ resource represents a tenant.
+
 <a name="2872294b-23f3-4be3-bc09-c0241e1e96a5"></a>
 <a name="0aa14d69e7c5532cb7ae1c25253cabe0"></a>
 ###ResourceKind_User
@@ -1613,6 +1619,49 @@ itself.
 ####Examples
   "Instrument Manager 8.15" is a version of "Instrument Manager"
 
+
+Resource Property Kinds
+-----------------------
+
+<a name="df8aee43-4573-456c-9d28-6ac42d1baf58"></a>
+<a name="1e0e7e1ba3195e49b301313b24ee3e68"></a>
+###ResourcePropertyKind_FailoverMode
+    GUID: 'df8aee43-4573-456c-9d28-6ac42d1baf58'
+The _Failover Mode_ property gives additional information about failover modes
+in high availability configurations.
+<a name="96609897a1545312abf336b623dd7b71"></a>
+####Applies to
+Workstation :    How that workstation participates in a failover scenario
+Middleware :     How all workstations in that middleware participate in the
+                 failover scenario.
+                 Example: "Both primary and failover are managed by arbiter"
+<a name="9fd84338f3a95e3db9914969514db722"></a>
+####Format
+{
+    "description": "some descriptive text"
+}
+description:     A descriptive text. This can be anything that describes the
+                 failover mode or scenario.
+
+<a name="8d45af1f-e176-4bdf-b05f-a5b2c9a34962"></a>
+<a name="0f8dc978bf555edc91cd161a4c726079"></a>
+###ResourcePropertyKind_NetworkAddresses
+    GUID: '8d45af1f-e176-4bdf-b05f-a5b2c9a34962'
+The _Network Addresses_ property gives the collection of addresses of a
+workstation or other network equipment.
+<a name="9fd84338f3a95e3db9914969514db722"></a>
+####Format
+ {
+     "ipv4": ["IP-1", "IP-2", etc],
+     "vipv4": ["VIP-1", "VIP-2", etc]
+ }
+ ipv4:     the collection of IP V4 addresses, as a 4-number dotted
+           notation. This should be an array.
+ vipv4:    the collection of virtual IP V4 address. This should be
+           the empty list if no VIP is attributed to the workstation.
+           The VIP listed here *may*, but are not required to,
+           be also listed in the ipv4 array.
+
 <a name="b9806f86b8a45a1bbf31e63e636860df"></a>
 # API Reference
 
@@ -1636,12 +1685,16 @@ Additional, IM-specific information about a ressource that acts as a connection.
 
   - `code` : The code of the connection, typically in the form CN-xxxx
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This field is retrieved from the systematic name of the corresponding resource.</li>
   </ul>
   - `configuration` : The internal ID of the resource representing the configuration.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This resource can be used as a connection group.</li>
   </ul>
   - `configurationcode` : The code for the configuration, typically in the form of CF-xxxx.
@@ -1651,37 +1704,51 @@ Additional, IM-specific information about a ressource that acts as a connection.
   </ul>
   - `connectiontype` : The type of connection.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>The value is derived from `systemconnection`.</li>
   </ul>
   - `driver` : The internal ID of the resource representing the driver and its version.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This resource can be used as a connection group.</li>
   </ul>
   - `drivercode` : The code for the driver.
   - `drivername` : The name of the driver
   - `drivertypecode` : The code for the driver type. This is a single character, and is derived from drivercode.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   </ul>
   - `drivertypename` : The name for the driver type. This is derived from drivertypecode.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   </ul>
   - `driverversion` : The name of the driver with its version.
   - `id` : The internal ID of the connection object.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   </ul>
   - `instrumentnumber` : The instrument number.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This field is read-only and only retrieved if the code is CN- followed by a number.</li>
   </ul>
   - `location` : The internal ID of the resource representing the location.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This resource can be used as a connection group.</li>
   </ul>
   - `locationcode` : The code for the location.
@@ -1692,11 +1759,15 @@ Additional, IM-specific information about a ressource that acts as a connection.
   </ul>
   - `name` : The name of the connection. This field is retrieved from the name of the corresponding resource.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   </ul>
   - `site` : The internal ID of the resource representing the site.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This resource can be used as a connection group.</li>
   </ul>
   - `sitecode` : The code for the site.
@@ -1707,72 +1778,80 @@ Additional, IM-specific information about a ressource that acts as a connection.
   </ul>
   - `systemconnection` : Whether this is a system connection.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>The value is derived from instrumentnumber</li>
   </ul>
 
 <a name="20cc19602ef95cf1b3646183b9238977"></a>
 ### Kpi
 
-Kpi
+The setup of an individual KPI.
 
 
-  - `additionaldata` : Additional data attached to the value, in JSON format, depending on the KPI.
-  - `id` : The internal UUID of the KPI
+  - `errorrangehigh` : The high error threshold. Any value higher than this will be marked as in error
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
   </ul>
-  - `issuedat` : The timestamp when the value was issued by the microservice.
+  - `errorrangelow` : The low error threshold. Any value lower than this will be marked as in error
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
   </ul>
-  - `kindid` : The internal UUID for the Kpi Kind
+  - `hidden` : Whether this Definition has been hidden.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+  It can still be referenced explicitly.</li>
+  <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+  setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
   </ul>
-  - `kindname` : The name of the KPI Kind
+  - `id` : The internal ID of the Definition.
+  Once attributed, the internal ID can no longer be changed.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+  <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+  The client must ensure that the ID, if forced, does not already exists.</li>
   </ul>
-  - `label` : A short label for the KPI
+  - `kind` : The internal id of the KPI kind of that KPI
+  - `name` : A descriptive name for the Definition.
+  The name should be descriptive and specific enough for a user to quickly identify the
+  Definition referred to by that entry.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>Two entries may have the same name.</li>
+  <li>Changing the name of an entry does not alter its identity.</li>
+  <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
   </ul>
-  - `name` : The name of the KPI
+  - `resource` : The internal id of the resource that this KPI monitors
+  - `shortname` : A name for the Definition, shorter than the standard name.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+  <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
   </ul>
-  - `recomputepending` : Whether a recomputation was scheduled for the value
+  - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
   </ul>
-  - `refreshat` : The timestamp when a client should ask for a refreshed value.
+  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
+  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
   </ul>
-  - `refreshdelta` : The number of milliseconds between issuedat and refreshat
+  - `warningrangehigh` : The high warning threshold. Any value higher than this will be marked as in warning, unless it is outside the error thresholds
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
   </ul>
-  - `resourceid` : The internal ID of the resource targeted by the KPI
+  - `warningrangelow` : The low warning threshold. Any value lower than this will be marked as in warning, unless it is outside the error thresholds
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
-  </ul>
-  - `status` : The status of the value, as one of the KpiStatus values
-  - `timestamp` : The timestamp when the value was computed.
-  - `validfor` : The number of milliseconds between issuedat and validuntil
-  <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
-  </ul>
-  - `validuntil` : The timestamp when the value will cease to be valid
-  <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
-  </ul>
-  - `value` : The value of the KPI
-  - `waitsuccess` : Whether recomputation of the value completed within the allowed wait time
-  <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
-  <li>This field is only present when the 'wait' option is specified in GET queries</li>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
   </ul>
 
 <a name="3960a8c176275169910ae9eb926692b8"></a>
@@ -1781,6 +1860,18 @@ Kpi
 KpiKind
 
 
+  - `errorrangehigh` : The high error threshold. Any value higher than this will be marked as in error
+  <br/><b>Notes:</b><ul>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
+  </ul>
+  - `errorrangelow` : The low error threshold. Any value lower than this will be marked as in error
+  <br/><b>Notes:</b><ul>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
+  </ul>
   - `hidden` : Whether this Definition has been hidden.
   <br/><b>Notes:</b><ul>
   <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
@@ -1817,6 +1908,108 @@ KpiKind
   <br/><b>Notes:</b><ul>
   <li>The systematic name may be as complete as needed to fully describe the resource.</li>
   <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  </ul>
+  - `warningrangehigh` : The high warning threshold. Any value higher than this will be marked as in warning, unless it is outside the error thresholds
+  <br/><b>Notes:</b><ul>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
+  </ul>
+  - `warningrangelow` : The low warning threshold. Any value lower than this will be marked as in warning, unless it is outside the error thresholds
+  <br/><b>Notes:</b><ul>
+  <li>This field is duplicated in the KPI and and KPI Kind.</li>
+  <li>A non-null value in the KPI overrides the value in the KPI Kind.</li>
+  <li>A null value in the KPI uses the value from the KPI kind as default</li>
+  </ul>
+
+<a name="4db55ad553df567baf7cf7e52bce8a4d"></a>
+### KpiValue
+
+KpiValue
+
+
+  - `additionaldata` : Additional data attached to the value, in JSON format, depending on the KPI.
+  - `id` : The internal UUID of the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `issuedat` : The timestamp when the value was issued by the microservice.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `kindid` : The internal UUID for the Kpi Kind
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `kindname` : The name of the KPI Kind
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `label` : A short label for the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `name` : The name of the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `recomputepending` : Whether a recomputation was scheduled for the value
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `refreshat` : The timestamp when a client should ask for a refreshed value.
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `refreshdelta` : The number of milliseconds between issuedat and refreshat
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `resourceid` : The internal ID of the resource targeted by the KPI
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `status` : The status of the value, as one of the KpiStatus values
+  - `timestamp` : The timestamp when the value was computed.
+  - `validfor` : The number of milliseconds between issuedat and validuntil
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `validuntil` : The timestamp when the value will cease to be valid
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `value` : The value of the KPI
+  - `waitsuccess` : Whether recomputation of the value completed within the allowed wait time
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  <li>This field is only present when the 'wait' option is specified in GET queries</li>
   </ul>
 
 <a name="deeaaa542ddd557ca6dc47f68b7b2ef3"></a>
@@ -1871,7 +2064,9 @@ MetricValue
 
   - `name` : The name of the Metric
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. The value is ignored in PUT and POST queries.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   </ul>
   - `timestamp` : The timestamp when the value was computed.
   - `value` : The value of the Metric
@@ -1895,7 +2090,9 @@ but the user is free to create additional custom kinds to suit the lab's needs.
   </ul>
   - `hiddenelements` : hiddenelements
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
   </ul>
   - `hiddenreason` : The reason why that resource was marked as hidden.
@@ -1918,7 +2115,9 @@ but the user is free to create additional custom kinds to suit the lab's needs.
   - `kind` : The UUID of a ResourceKind that acts as the resource kind
   - `links` : The list of downwards links (ie to elements) emanating from the resource, as a list of ResourceLinkItems.
   <br/><b>Notes:</b><ul>
-  <li>This field is read only. It will be ignored in a PUT or a POST query.</li>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This field is only present when the <tt>includelinks</tt> option in the query is set to <tt>true</tt></li>
   <li>The <tt>maxreportedlinks</tt> options may be used to limit the number of links returned. There is however no way
   of using pagination in links.</li>
@@ -2171,7 +2370,7 @@ SpecimenEventKind
 <a name="24c970298d8f57f184be984a5b49a5fe"></a>
 ### SpecimenWorkflowKind
 
-SpecimenWorkflowKind
+An event is used as base for defining workflows. Workflows and TATs are curretnly experimental.
 
 
   - `hidden` : Whether this Definition has been hidden.
@@ -2249,21 +2448,21 @@ Query Params:
 </ul>
 
 
-  - `resource` : A comma-separated list of GUID of Resource objects. Only Kpi objects having one of these values as resource are selected.
+  - `resource` : A comma-separated list of GUID of Resource objects. Only KpiValue objects having one of these values as resource are selected.
 <br/><b>Notes:</b><ul>
-<li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+<li>This parameter acts as a filter, and combines with other filters. Only KpiValue objects matching all filters are selected.</li>
 </ul>
 
 
-  - `kind` : A comma-separated list of GUID of KPI Kind objects. Only Kpi objects having one of these values as kind are selected.
+  - `kind` : A comma-separated list of GUID of KPI Kind objects. Only KpiValue objects having one of these values as kind are selected.
 <br/><b>Notes:</b><ul>
-<li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+<li>This parameter acts as a filter, and combines with other filters. Only KpiValue objects matching all filters are selected.</li>
 </ul>
 
 
-  - `id` : A comma-separated list of GUID of KPI objects. Only Kpi objects having one of these values as id are selected.
+  - `id` : A comma-separated list of GUID of KPI objects. Only KpiValue objects having one of these values as id are selected.
 <br/><b>Notes:</b><ul>
-<li>This parameter acts as a filter, and combines with other filters. Only Kpi objects matching all filters are selected.</li>
+<li>This parameter acts as a filter, and combines with other filters. Only KpiValue objects matching all filters are selected.</li>
 </ul>
 
 
@@ -2526,6 +2725,87 @@ Responses:
 - `401`: Access token is missing or invalid
 
 
+<a name="dfe9afe69d0d57f39d45a1105775af31"></a>
+### GET /api/kpi/1.0/kpis/(id)
+
+
+
+
+
+
+Obtain the setup properties of a KPI
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal id of the KPI
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="182a77464d7d5325a8b3da5af4d2c56c"></a>
+### PUT /api/kpi/1.0/kpis/(id)
+
+
+
+
+
+
+Update the setup properties of a KPI
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal id of the KPI
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="d8619822f7ba5b95876ed44d21951a82"></a>
+### GET /api/kpi/1.0/resources/(id)/setup
+
+
+
+
+
+
+Obtain the list of all KPIs defined for a resource
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal id of the resource for which KPIs are requested
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
 <a name="833bd86b23cb5503b90866fdc39c5cad"></a>
 ### GET /api/metric/1.0/metrickinds
 
@@ -2734,6 +3014,59 @@ Responses:
 - `401`: Access token is missing or invalid
 
 
+<a name="89d92045b1f85e969be5c07830b1a3de"></a>
+### GET /api/resource/1.0/connectiongroups
+
+
+
+
+
+
+Retrieves a list of all connection groups that can be monitored by the current user
+<br/><b>Notes:</b><ul>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
 <a name="b5e793b551915e93b8e726b2add46431"></a>
 ### DELETE /api/resource/1.0/connections/(uniqueid)
 
@@ -2836,6 +3169,30 @@ Responses:
 - `401`: Access token is missing or invalid
 
 
+<a name="dd3b4d2faf055287907977128baac460"></a>
+### GET /api/resource/1.0/currentuser
+
+
+
+
+
+
+Retrieves the description of the current user
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
 <a name="689219aef8be54b9b254d292bbaf4d1f"></a>
 ### GET /api/resource/1.0/imconnections/(id)
 
@@ -2884,6 +3241,59 @@ Update the IM information about a connection.
 Path Params:
 
   - `id` : The GUID of the connection resource
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="4df4411acf0c5b56959723e5b83a1a51"></a>
+### GET /api/resource/1.0/middlewares
+
+
+
+
+
+
+Retrieves a list of all middlewares that can be monitored by the current user
+<br/><b>Notes:</b><ul>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
 
 
 Responses:
@@ -4027,6 +4437,59 @@ Responses:
 - `401`: Access token is missing or invalid
 
 
+<a name="f5870149d61d5763a45061ce855c9d33"></a>
+### GET /api/resource/1.0/users
+
+
+
+
+
+
+Retrieves a list of all users allowed to log-on into the application
+<br/><b>Notes:</b><ul>
+<li>The returned list of objects is subject to pagination.</li>
+</ul>
+
+
+
+Query Params:
+
+  - `page` : The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>To iterate through items, increase the page number until the returned set is empty</li>
+</ul>
+
+
+  - `pagesize` : The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `first` : The index of the first item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+</ul>
+
+
+  - `last` : The index + 1 of the last item to return.
+<br/><b>Notes:</b><ul>
+<li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+<li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+</ul>
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
 <a name="19d3d71a8fe959f0a604bc7e791606f7"></a>
 ### GET /api/resource/1.0/workstations/(uniqueid)
 
@@ -4620,7 +5083,7 @@ ___
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.544
+Version: 1.0.0.549
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
