@@ -779,6 +779,25 @@ To remove a group from the user, issue a DELETE to:
         element=«group-id»&
         linkkind=«ResourceLinkKind_ReadAccess»
 
+Retrieving the "Current Tenant" resource
+----------------------------------------
+
+This resource represents the current tenant. It is the root resource needed to
+retrieve or store global settings.
+
+To retrieve the current tenant, issue a GET query to
+
+    http://server/api/resource/1.0/currenttenant
+
+This will return a resource representing the current tenant. Parse the return
+value and obtain its ID. This will be used later as `tenant-id`.
+
+To retrieve and store global settings (attached to the current tenant), issue
+a GET or a PUT to
+
+    http://server/api/resource/1.0/resources/«tenant-id»/properties/«property-id»
+(see the chapter about resource properties for details).
+
 Getting and setting additional resource properties
 --------------------------------------------------
 
@@ -3159,6 +3178,30 @@ Path Params:
 <li>It is impossible to change the uniqueid of a resource. Once it has been referred to using a given uniqueid, the same uniqueid should be used forever.</li>
 <li>uniqueids need to be unique only in the context of the middleware, if one is specified as owner.</li>
 </ul>
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="0d2d799dbf4d5129b00e4965be377467"></a>
+### GET /api/resource/1.0/currenttenant
+
+
+
+
+
+
+Retrieves the description of the current tenant
+
+
+
+
+
 
 
 Responses:

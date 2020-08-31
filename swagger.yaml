@@ -1294,6 +1294,39 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/currenttenant':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - resource
+      description: |
+        Retrieves the description of the current tenant
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/Resource"
+        "401":
+          description: |
+            Access token is missing or invalid
   '/api/resource/1.0/currentuser':
     get:
       security:
