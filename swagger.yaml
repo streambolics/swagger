@@ -1674,6 +1674,16 @@ paths:
       - resource
       description: |
         Sets the value of the property associated with the resource.
+        <br/><b>Notes:</b><ul>
+        <li>The payload (body) is used as the value of the property. It can be any JSON value, either a scalar, an array or a map.</li>
+        <li>The new value totally replaces the old one, even if the value is a structured JSON map.</li>
+        </ul>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JsonData"
       parameters:
       - name: "resource"
         in: "path"
@@ -3015,9 +3025,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceKind objects. Only Not specified objects having one of these values as kind are selected.
+          A comma-separated list of GUID of ResourceKind objects. Only Resource objects having one of these values as kind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -3026,9 +3036,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceLinkKind objects. Only Not specified objects having one of these values as linkkind are selected.
+          A comma-separated list of GUID of ResourceLinkKind objects. Only Resource objects having one of these values as linkkind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -3145,7 +3155,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 204
+                    example: 200
                   status:
                     type: string
                     example: 'Success'
@@ -3155,7 +3165,9 @@ paths:
                       type: string
                     example: null
                   data:
-                    example: null
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Resource"
         "401":
           description: |
             Access token is missing or invalid
@@ -3291,9 +3303,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceKind objects. Only Not specified objects having one of these values as kind are selected.
+          A comma-separated list of GUID of ResourceKind objects. Only Resource objects having one of these values as kind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -3302,9 +3314,9 @@ paths:
         in: "query"
         required: false
         description: |
-          A comma-separated list of GUID of ResourceLinkKind objects. Only Not specified objects having one of these values as linkkind are selected.
+          A comma-separated list of GUID of ResourceLinkKind objects. Only Resource objects having one of these values as linkkind are selected.
           <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter, and combines with other filters. Only Not specified objects matching all filters are selected.</li>
+          <li>This parameter acts as a filter, and combines with other filters. Only Resource objects matching all filters are selected.</li>
           </ul>
         schema:
           type: string
@@ -3421,7 +3433,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 204
+                    example: 200
                   status:
                     type: string
                     example: 'Success'
@@ -3431,7 +3443,9 @@ paths:
                       type: string
                     example: null
                   data:
-                    example: null
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Resource"
         "401":
           description: |
             Access token is missing or invalid
@@ -4242,6 +4256,7 @@ components:
             It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
+          example: 'd461286e-0897-459e-bb7e-949f2dfdaa5b'
         name:
           description: |
             The name of the connection. This field is retrieved from the name of the corresponding resource.
@@ -4250,6 +4265,7 @@ components:
             It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
+          example: 'Architect 1'
         code:
           description: |
             The code of the connection, typically in the form CN-xxxx
@@ -4259,6 +4275,7 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is retrieved from the systematic name of the corresponding resource.</li>
             </ul>
+          example: 'CN-102'
         instrumentnumber:
           description: |
             The instrument number.
@@ -4268,6 +4285,7 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is read-only and only retrieved if the code is CN- followed by a number.</li>
             </ul>
+          example: 102
         systemconnection:
           description: |
             Whether this is a system connection.
@@ -4277,6 +4295,7 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>The value is derived from instrumentnumber</li>
             </ul>
+          example: 'false'
         connectiontype:
           description: |
             The type of connection.
@@ -4286,6 +4305,7 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>The value is derived from `systemconnection`.</li>
             </ul>
+          example: 'User Defined'
         site:
           description: |
             The internal ID of the resource representing the site.
@@ -4295,9 +4315,11 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          example: '11c8e647-f52c-40d2-9551-0bb62070236d'
         sitecode:
           description: |
             The code for the site.
+          example: 'SW-HOSP'
         sitename:
           description: |
             The name of the site.
@@ -4305,6 +4327,7 @@ components:
             <li>This field is ignored in a PUT if no `sitecode` is given.</li>
             <li>If this field is not specified, it defaults to `sitecode`.</li>
             </ul>
+          example: 'Southwest Hospital'
         location:
           description: |
             The internal ID of the resource representing the location.
@@ -4314,9 +4337,11 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          example: '3ff65def-017e-49ee-845c-eac36bba4c32'
         locationcode:
           description: |
             The code for the location.
+          example: 'EM'
         locationname:
           description: |
             The name of the location.
@@ -4324,6 +4349,7 @@ components:
             <li>This field is ignored in a PUT if no `locationcode` is given.</li>
             <li>If the field is not specified, it defaults to `locationcode`.</li>
             </ul>
+          example: 'Emergency Lab'
         configuration:
           description: |
             The internal ID of the resource representing the configuration.
@@ -4333,15 +4359,18 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          example: 'ee2168f0-183b-454f-a8a4-9f108baf2054'
         configurationcode:
           description: |
             The code for the configuration, typically in the form of CF-xxxx.
+          example: 'CF-101'
         configurationname:
           description: |
             The name of the configuration.
             <br/><b>Notes:</b><ul>
             <li>This field is ignored in a PUT if no `configurationcode` is given.</li>
             </ul>
+          example: 'Architect'
         driver:
           description: |
             The internal ID of the resource representing the driver and its version.
@@ -4351,15 +4380,19 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          example: '2271bc02-fbb6-4a9e-aadd-9955db569252'
         drivercode:
           description: |
             The code for the driver.
+          example: 'diihl7i'
         drivername:
           description: |
             The name of the driver
+          example: 'Configurable HL7 instrument'
         driverversion:
           description: |
             The name of the driver with its version.
+          example: 'diihl7i 8.15.0.3'
         drivertypecode:
           description: |
             The code for the driver type. This is a single character, and is derived from drivercode.
@@ -4368,6 +4401,7 @@ components:
             It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
+          example: 'i'
         drivertypename:
           description: |
             The name for the driver type. This is derived from drivertypecode.
@@ -4376,6 +4410,20 @@ components:
             It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
+          example: 'Instrument'
+    JsonData:
+      type: object
+      description: |
+        JsonData
+      properties:
+        anyname:
+          description: |
+            anyname
+          example: 'Any Value'
+        othername:
+          description: |
+            othername
+          example: 'Other Value'
     Kpi:
       type: object
       description: |
@@ -4956,18 +5004,21 @@ components:
         Relations link resources in hierarchical dependencies and can be freely created and removed. The LabX system attaches special meaning
         to the predefined link kinds, but the user is free to create additional custom kinds to suit the lab's needs.
       properties:
-        kind:
+        linkkind:
           description: |
             The UUID of a ResourceLinkKind that acts as the kind of relation between the master and the element
+          example: 'dd22c801-f53a-4e5f-9fba-838fdc7383ab'
         master:
           description: |
             The UUID of a Resource that acts as the master (ie owner) in the relation
             <br/><b>Notes:</b><ul>
             <li>When used in a POST query, this field must either match the <tt>id</tt> parameter in the path, or be absent.</li>
             </ul>
+          example: '6c496342-e424-4cd7-a211-825ad18fc028'
         element:
           description: |
             The UUID of a Resource that acts as the element (ie content) in the relation
+          example: '39f739ec-f8fd-4170-bc19-71b61fc167f0'
     ResourceLinkItem:
       type: object
       description: |
@@ -5068,12 +5119,15 @@ components:
             <li>In the case a hierarchical search was performed, this is the GUID of the resource that is actually associated with the property.
             This may be the resource corresponding to the query, or the closest parent that has a value for that property.</li>
             </ul>
+          example: 'ad6f38a3-540f-4dde-8d09-2fdbae15af04'
         property:
           description: |
             The GUID of the property kind
+          example: '06d6e916-660f-4eff-8634-932128eae5e3'
         value:
           description: |
             The value of the property. This can be a simple value such as a string or a number, or a composite value (JSON).
+          example: 'Value of the property'
     ResourcePropertyKind:
       type: object
       description: |
