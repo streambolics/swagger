@@ -501,7 +501,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -511,7 +511,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/KpiKind"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -700,6 +700,101 @@ paths:
                     type: "array"
                     items:
                       $ref: "#/components/schemas/Kpi"
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/kpi/1.0/resources/{id}/setup/{kind}':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - kpi
+      - definition
+      description: |
+        Obtain the setup of a single KPI for the given resource
+        <br/><b>Notes:</b><ul>
+        <li>This call always returns a properly setup KPI, even if the provided KPI kind does not formally
+        apply to the resource. This is useful to obtain KPIs with custom kinds.</li>
+        </ul>
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        description: |
+          The internal id of the resource for which KPIs are requested
+        schema:
+          type: string
+          format: guid
+      - name: "kind"
+        in: "path"
+        required: true
+        description: |
+          The internal id of the reqiested KPI kind
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/Kpi"
+        "401":
+          description: |
+            Access token is missing or invalid
+  '/api/metric/1.0/currentvalues':
+    post:
+      security:
+        - Authorization: []
+      tags:
+      - metric
+      - realtime
+      description: |
+        Update the value of a set of resource metrics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MetricValues"
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 204
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -923,7 +1018,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -933,7 +1028,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/MetricKind"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -1043,6 +1138,56 @@ paths:
                     example: null
                   data:
                     example: null
+        "401":
+          description: |
+            Access token is missing or invalid
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - metric
+      - realtime
+      description: |
+        Retrieve the value of a resource metric
+      parameters:
+      - name: "resourceid"
+        in: "path"
+        required: true
+        description: |
+          The internal GUID of the resource targeted by the metric
+        schema:
+          type: string
+          format: guid
+      - name: "metrickindid"
+        in: "path"
+        required: true
+        description: |
+          The internal GUID of the Metric Kind
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/MetricData"
         "401":
           description: |
             Access token is missing or invalid
@@ -1995,7 +2140,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -2005,7 +2150,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/ResourcePropertyKind"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -2281,7 +2426,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -2291,7 +2436,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/ResourceKind"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -2567,7 +2712,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -2577,7 +2722,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/ResourceLinkKind"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -2942,7 +3087,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -2952,7 +3097,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/Resource"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -3845,7 +3990,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -3855,7 +4000,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/SpecimenEventKind"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -4168,7 +4313,7 @@ paths:
                 properties:
                   statuscode:
                     type: number
-                    example: 200
+                    example: 204
                   status:
                     type: string
                     example: 'Success'
@@ -4178,7 +4323,7 @@ paths:
                       type: string
                     example: null
                   data:
-                    $ref: "#/components/schemas/SpecimenWorkflowKind"
+                    example: null
         "401":
           description: |
             Access token is missing or invalid
@@ -4315,6 +4460,8 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          type: string
+          format: guid
           example: '11c8e647-f52c-40d2-9551-0bb62070236d'
         sitecode:
           description: |
@@ -4337,6 +4484,8 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          type: string
+          format: guid
           example: '3ff65def-017e-49ee-845c-eac36bba4c32'
         locationcode:
           description: |
@@ -4359,6 +4508,8 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          type: string
+          format: guid
           example: 'ee2168f0-183b-454f-a8a4-9f108baf2054'
         configurationcode:
           description: |
@@ -4380,6 +4531,8 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This resource can be used as a connection group.</li>
             </ul>
+          type: string
+          format: guid
           example: '2271bc02-fbb6-4a9e-aadd-9955db569252'
         drivercode:
           description: |
@@ -4758,6 +4911,88 @@ components:
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             <li>This field is only present when the 'wait' option is specified in GET queries</li>
             </ul>
+    MetricData:
+      type: object
+      description: |
+        MetricData
+      properties:
+        id:
+          description: |
+            The Internal ID of the metric
+          type: string
+          format: guid
+          example: 'c9315a0a-83a9-446a-ae78-375e15bec892'
+        name:
+          description: |
+            The name of the Metric
+            <br/><b>Notes:</b><ul>
+            <li>Contrary to definitions, metrics do not require a name. If no name is provided, the client should
+            use a combination of the resource name and the metric kind name.</li>
+            </ul>
+          type: string
+          example: 'Architect - Send Queue'
+        shortname:
+          description: |
+            The short name of the Metric
+          type: string
+          example: 'Send'
+        systematicname:
+          description: |
+            The systematic name of the Metric
+          type: string
+          example: 'Metric - Send Queue - Architect'
+        sortkey:
+          description: |
+            The sort key of the Metric
+          type: string
+          example: 'ABC'
+        hidden:
+          description: |
+            Whether the metric is hidden
+          type: string
+        kind:
+          description: |
+            The Internal ID of the metric kind
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+            </ul>
+          type: string
+          format: guid
+          example: 'cb709847-8b45-4f20-90ba-512005a6a81a'
+        kindname:
+          description: |
+            The name of the Metric Kind
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+            </ul>
+          type: string
+          example: 'Send Queue'
+        value:
+          description: |
+            The value of the Metric
+          type: string
+          example: '12'
+        timestamp:
+          description: |
+            The timestamp when the value was computed.
+          type: string
+          format: ISO-8601
+          example: '2020-01-01T10:00:00'
+        resource:
+          description: |
+            The Internal ID of the resource
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+            </ul>
+          type: string
+          format: guid
+          example: 'de77a641-f98e-4421-98b3-df1046d8bf0b'
     MetricKind:
       type: object
       description: |
@@ -4830,15 +5065,79 @@ components:
             It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
+          type: string
           example: 'Architect - Send Queue'
         value:
           description: |
             The value of the Metric
+          type: string
           example: '12'
         timestamp:
           description: |
             The timestamp when the value was computed.
+          type: string
+          format: ISO-8601
           example: '2020-01-01T10:00:00'
+        provider:
+          description: |
+            The internal ID of the process that uploads the values
+          type: string
+          format: guid
+          example: '2e802d16-86f7-4898-b972-4c82cf411387'
+        validity:
+          description: |
+            The number of seconds the metric should remain valid
+            <br/><b>Notes:</b><ul>
+            <li>The default value is 600 seconds.</li>
+            </ul>
+          type: number
+          example: 600
+        kind:
+          description: |
+            The internal ID of the Metric Kind
+            <br/><b>Notes:</b><ul>
+            <li>If the Metric Kind is already specified in the URL itself, this value is ignored. It is recommended
+            then for this field to be either absent, or equal to the value on the URL.</li>
+            </ul>
+          type: string
+          format: guid
+        resource:
+          description: |
+            The internal ID of the Resource
+            <br/><b>Notes:</b><ul>
+            <li>If the resource is already specified in the URL itself, this value is ignored. It is recommended
+            then for this field to be either absent, or equal to the value on the URL.</li>
+            </ul>
+          type: string
+          format: guid
+    MetricValues:
+      type: object
+      description: |
+        MetricValues
+      properties:
+        provider:
+          description: |
+            The default value for the provider field in each individual metric
+            <br/><b>Notes:</b><ul>
+            <li>This value is used as default when the corresponding field is not explicitly set in the individual metrics.</li>
+            </ul>
+          type: string
+          format: guid
+          example: '2e802d16-86f7-4898-b972-4c82cf411387'
+        validity:
+          description: |
+            The default value for the validity field in each individual metric
+            <br/><b>Notes:</b><ul>
+            <li>This value is used as default when the corresponding field is not explicitly set in the individual metrics.</li>
+            </ul>
+          type: number
+          example: 600
+        metrics:
+          description: |
+            The metric values to upload
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MetricValue"
     Resource:
       type: object
       description: |
@@ -4928,6 +5227,9 @@ components:
             <li>The <tt>maxreportedlinks</tt> options may be used to limit the number of links returned. There is however no way
             of using pagination in links.</li>
             </ul>
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ResourceLinkItem"
         hiddenelements:
           description: |
             hiddenelements

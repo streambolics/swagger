@@ -1018,6 +1018,54 @@ group and counts the number of specimens that have a pending call, ie a
 manual action needed to inform the ordering physician of the results.
 What exactly constitutes a pending call is defined by the client.
 
+<a name="040cd8cf-b72a-4682-b5a6-ab8350d97f9b"></a>
+###KpiKind_Storage_AllocatedSize
+    GUID: '040cd8cf-b72a-4682-b5a6-ab8350d97f9b'
+The _Storage Allocated Size_ KPI reports the total amount of storage that
+is currently allocated for a data store.
+The allocated size is typically less or equal to the total size. Some
+data stores can dynamically adjust the allocated size of a data store.
+However, like in the case of an Oracle datafile, the allocated size may
+grow automatically, but not shrink.
+#### Applies to
+- Logical data stores
+
+<a name="42b822fa-c504-4c63-8546-4897d4061e85"></a>
+###KpiKind_Storage_DataSize
+    GUID: '42b822fa-c504-4c63-8546-4897d4061e85'
+The _Storage Data Size_ KPI reports the total amount of useful data that
+is currently occupying the data store.
+The storage data size may be less than the used size, because of metadata
+or padding, or larger than the used size, if lossless compression is used.
+
+<a name="4fe4e843-2f6a-4b04-a98c-1150fe1474bc"></a>
+###KpiKind_Storage_PercentFree
+    GUID: '4fe4e843-2f6a-4b04-a98c-1150fe1474bc'
+The _Storage Percent Free_ KPI reports the proportion of storage that
+is available for more data.
+The percent free KPI is computed as the total size minus the used size,
+divided by the total size.
+
+<a name="4b9cbc79-a64e-45b7-9058-c4a1b44e9320"></a>
+###KpiKind_Storage_TotalSize
+    GUID: '4b9cbc79-a64e-45b7-9058-c4a1b44e9320'
+The _Storage Total Size_ KPI reports the total amount of storage available
+in a data store, in bytes.
+When that amount of storage is reached, the data store cannot accept
+additional data until some remedial action is taken.
+The total size may be either a physical constraint (in the case of disk
+drives) or a logical limit (in the case of virtual disks or database files)
+#### Applies to
+  - Any kind of data store.
+
+<a name="6dc8f10f-45a3-4ebb-b902-3e62cc53fea9"></a>
+###KpiKind_Storage_UsedSize
+    GUID: '6dc8f10f-45a3-4ebb-b902-3e62cc53fea9'
+The _Storage Used Size_ KPI reports the total amount of storage that is
+currently occupied by actual data.
+The used size is typically less or equal to the allocated size, and as
+consequence, less or equal to the total size.
+
 <a name="dd21900f-3fed-46e2-b247-dd52361f6125"></a>
 ###KpiKind_WindowsServiceStatus
     GUID: 'dd21900f-3fed-46e2-b247-dd52361f6125'
@@ -1827,7 +1875,7 @@ ___
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.350
+Version: 1.0.0.359
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
