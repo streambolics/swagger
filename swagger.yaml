@@ -4,8 +4,8 @@ info:
   description: This document contains the externally accessible API endpoints for the LabX Cloud Backend.
   version: 1.0.0
 externalDocs:
-  description: Index to individual Readme files
-  url: 'readme.html'
+  description: Cross-reference of all Resource Kinds, Kpi Kinds, etc.
+  url: 'http://website-di-labx-documentation.s3-website.us-east-2.amazonaws.com/'
 servers:
   - url: https://api.verval.di-labx.com
   - url: https://api.int.di-labx.com
@@ -4622,18 +4622,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
         errorrangelow:
@@ -4723,18 +4733,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
         errorrangelow:
@@ -5038,18 +5058,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
     MetricValue:
@@ -5187,18 +5217,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
         kind:
@@ -5284,18 +5324,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
     ResourceLink:
@@ -5395,18 +5445,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
     ResourceProperty:
@@ -5475,18 +5535,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
     SpecimenEventKind:
@@ -5534,18 +5604,28 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
     SpecimenWorkflowKind:
@@ -5593,17 +5673,27 @@ components:
           example: 'Widget'
         systematicname:
           description: |
-            A name for the Definition, using systematic conventions to make it the most descriptive as possible
+            A name for the Definition, using systematic conventions.
             <br/><b>Notes:</b><ul>
-            <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-            <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
             </ul>
-          example: 'Printer, third floor, serial number xxxxxxxx'
+          example: 'CN-101'
         sortkey:
           description: |
             An arbitrary key used to sort the definitions in lists.
             <br/><b>Notes:</b><ul>
             <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
             <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
