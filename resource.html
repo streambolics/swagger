@@ -1223,13 +1223,36 @@ Resource Kinds
     GUID: '87f5b70d-3069-4d57-86d4-baf6edc9144e'
 An _Analytical Process Monitor_ is software that monitors the analytical
 processes in instruments to verify that the instrument works as expected.
-<a name="14ee978529ad53f1959aa29ad53dc5e6"></a>
-#### Examples
+<a name="88660668804e59b3bf31accead86bf18"></a>
+# Examples
 -   EP Evaluator
 -   LQC
-<a name="42e8b990bde55550a8d0157a0fb49351"></a>
-#### Links
--   Monitor -> Instrument
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Monitor --> Instrument
+
+<a name="f8dd9786-bf8e-4ef8-897f-afedb6542d25"></a>
+<a name="a2bc482941c45344ae19586357c54db5"></a>
+###ResourceKind_AnalyticalUnit
+    GUID: 'f8dd9786-bf8e-4ef8-897f-afedb6542d25'
+An _Analytical Unit_ is a sub-part of an instrument responsible for the
+internal handling of the analytical process.
+An instrument can be divided in analytical units either physically (the
+whole instrument is composed of a juxtaposition of multiple similar units)
+or logically (the instrument uses multiple different paths for the specimen).
+A typical example of a logical division is when an instrument has two sampling
+needles, one for specimens loaded on the automatic feeder, and one for manually
+fed STAT specimens.
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
+The distinction of several sub-units is important when monitoring the performance of
+individual units, typically for standard QC and EP evaluator.
+In the case of EP Evaluator, having multiple sub-units is important when doing method
+comparison, eg to verify that results obtained using the automatic loader are the same
+as those obtained using the manual STAT loader.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Component <-- Instrument
 
 <a name="1389ad81-7863-4d2e-ad8d-5c96df1cadff"></a>
 <a name="6e2a90ffdb0157a69ac036920396bba0"></a>
@@ -1249,15 +1272,22 @@ Connections are managed by larger software modules. In the current version
 of LabX, the only software modules that can manage connections are
 middlewares, but other kinds of resources (LIS, quality managers such as
 EE) will be able to do that in the future.
-<a name="7c329d9861fd542ebe2ae98a5314c975"></a>
-#### Owner
+<a name="90a5318c6cfe5cee93c93e0a573feae2"></a>
+# Owner
 The owner of a Connection is the Middleware or LIS that hosts it.
-<a name="42e8b990bde55550a8d0157a0fb49351"></a>
-#### Links
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
 -   Component <-- Middleware
--   Connect --> Instrument
--   Connect --> Middleware: The connection allows its owner middleware
+-   Connection --> Instrument
+-   Connection --> Middleware The connection allows its owner middleware
     to communicate with another middleware.
+<a name="41f2c43ab48451f9a09c00a4adb18eae"></a>
+# Metrics
+ -   ResultsReleased
+<a name="189c8741c6dc5c3e9fefce86326f440c"></a>
+# KPIs
+ -   SpecimensHeld
+ -   CriticalSpecimensHeld
 
 <a name="5f00f658-4d33-4690-bc99-570097d92de9"></a>
 <a name="519ba9c94cf95dfd908bddf95da8affa"></a>
@@ -1265,9 +1295,10 @@ The owner of a Connection is the Middleware or LIS that hosts it.
     GUID: '5f00f658-4d33-4690-bc99-570097d92de9'
 A _Connection Group_ is a grouped resource that represents a set of
 connections that are usually handled as a whole.
-<a name="42e8b990bde55550a8d0157a0fb49351"></a>
-#### Links
-Content --> Connection
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Content --> Connection
+    The main purpose of a connection group is to contain connections
 
 <a name="eb90752d-230e-4534-9e27-3d83f8e6b50a"></a>
 <a name="7a9cb079fa255d7f856bf8ef2f7da9d8"></a>
@@ -1275,29 +1306,46 @@ Content --> Connection
     GUID: 'eb90752d-230e-4534-9e27-3d83f8e6b50a'
 A _Data File_ is the storage space (is usually a file) where the actual
 data is kept.
-<a name="af7acd927c8c5f94afda54092e5a19f6"></a>
-#### Rationale
+<a name="fa26bc45bce2563a97c9999c3e467579"></a>
+# Usage
 Data files are usually found as the backend data storage of databases,
-through tablespaces.
-<a name="d7c2117b18495594bb7b815210a4d684"></a>
-#### Instrument Manager
+through tablespaces. They can also be used for other purposes, such as
+virtual memory.
+Note that datafiles represent permanent structure. A PDF file holding an
+export of a report requested by the user is not a datafile.
+<a name="e717e1d7ef095bb6be25ba35a662b4ac"></a>
+## Instrument Manager
 A typical datafile is the `CACHE.DAT` file in which actual data is stored.
 For technical reasons, a Caché Tablespace only contains a single Datafile,
 but that may change with sharding and/or the move away from Caché.
 Note however that a Caché database (ie a Tablespace resource) contains
 more than just the Datafile: it contains also journaling logs, etc.
-<a name="f362e748f32f5c1996d181f65829a2ed"></a>
-#### LPM
+<a name="5bb43e59817f58e09f71a5e2dc52bf8e"></a>
+## LPM
 A Datafile corresponds to an Oracle Datafile. A single Tablespace may
 contain any number of Datafiles.
-<a name="233f9b2c475e5173afdd3f6582d9a478"></a>
-#### EP Evaluator
+<a name="ddb0fc902855508cb411d196cae09095"></a>
+## EP Evaluator
 EP Evaluator stores data in distinct "isam" files. Each of those files is
 a DataFile.
-<a name="151a53924a4050f1a5dd8d1336233ce9"></a>
-#### Master Links
-- Component --> Tablespace
-- Host -> DataVolume
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
+Datafiles need to be monitored because they have an inherent limit on the
+quantity of data they can hold. Datafile can either have a predetermined
+fixed size, or allowed to grow within certain limits.
+Datafiles growing too large, or fixed size datafiles becoming full are
+potential problems that can cause downtime, and need addressing.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Component <-- TableSpace
+    A database TableSpace needs storage for the data, and uses one or more
+    data files to do so.
+-   Host <-- DataVolume
+    Most datafiles are stored on a file system, and thus have a file name, etc.
+-   Host <-- Partition
+    Some systems, like database servers and virtual memory can put their data files directly
+    into a raw partition. This removes the overhead of a file system.
+    Doing so is more common in Unix-like systems than in Windows.
 
 <a name="42f0c08a-7c50-4c1e-a8c8-161de3a93e7b"></a>
 <a name="3863878cf440525a959052e3057b15bc"></a>
@@ -1309,60 +1357,67 @@ A DataVolume can be:
 -   A logical drive allocated in a SAN
 -   A virtual drive in a VM.
 -   A RAID assembly
-<a name="055163a82ad95593a88f4b396a43c3d2"></a>
-#### Mounted volumes
+<a name="5f756861907e5d72b3c31ecf58bca0f6"></a>
+# Mounted volumes
 A Datavolume is not used for remote volumes that are made available from
 another workstation. For example:
 - Workstation `SRV` has a partition C:. This is represented by a Datavolume
   hosted on SRV. This volume is exposed by a network share.
 - Workstation `CLI` connects to SRV and mounts the network share as N:. N:
   is not represented by a Datavolume.
-<a name="151a53924a4050f1a5dd8d1336233ce9"></a>
-#### Master Links
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
 -   Component <-- Workstation
+    A Data Volume is part of the workstation. Most workstations have one preferred
+    data volume they call the "system drive" or "root drive".
 -   Host <-- Partition
+    A Data Volume is typically hosted in a disk partition. The volume occupies all
+    available space in that partitiion.
 
 <a name="3f15b9e1-b0cf-4581-9592-c9f206e22945"></a>
 <a name="055f835ed9e15937b124194ffa836d08"></a>
 ###ResourceKind_Database
     GUID: '3f15b9e1-b0cf-4581-9592-c9f206e22945'
-  A _Database_ resource represents the collection of data used by an
-  application.
-<a name="14ee978529ad53f1959aa29ad53dc5e6"></a>
-#### Examples
--   The Caché database holding all of IM information.
--   The Oracle database holding all of LPM information.
-<a name="d7c2117b18495594bb7b815210a4d684"></a>
-#### Instrument Manager
+  A _Database_ resource represents a collection of data used by an application.
+  A database can be either self-hosted (such as SQLite databases) or managed
+  by a database server such as Oracle, Caché, Postgres, etc.
+<a name="88660668804e59b3bf31accead86bf18"></a>
+# Examples
+<a name="e717e1d7ef095bb6be25ba35a662b4ac"></a>
+## Instrument Manager
 In Instrument Manager, there is one Caché database per mirror member.
 Note that what Caché calls a database is represented as a Tablespace in
 LabX. What LabX calls the database more precisely corresponds to what
 Caché calls the "IM Namespace".
-<a name="f362e748f32f5c1996d181f65829a2ed"></a>
-#### LPM
-In LPM, there is one database per Dataguard cluster member.
-<a name="233f9b2c475e5173afdd3f6582d9a478"></a>
-#### EP Evaluator
-Each EP Evaluator project is a database.
-<a name="151a53924a4050f1a5dd8d1336233ce9"></a>
-#### Master Links
--   Component --> Middleware:
--   Host --> Workstation
+<a name="5bb43e59817f58e09f71a5e2dc52bf8e"></a>
+## LPM
+In LPM, there is one Oracle database per Dataguard cluster member. LPM also
+uses some local databases (eg the Analyzer Run Databases, the Input Fifos) that
+could also be represented by database resources.
+<a name="ddb0fc902855508cb411d196cae09095"></a>
+## EP Evaluator
+Each EP Evaluator project is a database. These are self hosted databases managed
+by a library known as DB-ISAM.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Component <-- Middleware
+-   Host <-- Workstation
 
 <a name="2095bb5f-bd9f-4633-ab6a-895b8b498abb"></a>
 <a name="b40c09de795e54488c6ced5630abbd10"></a>
 ###ResourceKind_Disk
     GUID: '2095bb5f-bd9f-4633-ab6a-895b8b498abb'
 A _Disk_ is a physical or virtual disk drive containing partitions.
-<a name="af7acd927c8c5f94afda54092e5a19f6"></a>
-#### Rationale
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
 Disk drives need to be monitored along the following axes:
 -   SMART characteristics and Temperature. This may preventively detect
  failures.
 -   Communication channel performance and usage
 Note that it is usually unnecessary to monitor the size and usage of
-storage space, as disks are divided in fixed partitions. However, in
-the case of a virtual disk, it may be interesting to monitor the
+storage space, as disks are divided in fixed partitions. It is therefore
+recommended to monitor free space on data volumes hosted by those partitions.
+In the case of a virtual disk, it may be interesting to monitor the
 data file that is used as backing storage.
 
 <a name="1294ed5b-40da-4f52-9f6d-822994a985dd"></a>
@@ -1389,11 +1444,11 @@ favor of using middlewares as default connection groups. It was meant as a
 group containing all connections a user can monitor.
 There was one such Home Connection Group for each user. Its contents was
 derived automatically from all other groups the user has access to.
-<a name="5e0179c5d4d35c089e20c406a020abbb"></a>
-####Owner
+<a name="90a5318c6cfe5cee93c93e0a573feae2"></a>
+# Owner
 The owner of a Home Connection Group is the corresponding user.
-<a name="63ca703bb7c1525895021beb0d03767d"></a>
-####Usage
+<a name="fa26bc45bce2563a97c9999c3e467579"></a>
+# Usage
 Home Connection Groups are not implemented.
 
 <a name="2af58fea-4240-4305-b7c4-5144457454cb"></a>
@@ -1406,12 +1461,12 @@ Instruments are typically connected to a middleware or directly to an LIS,
 through one or more connections.
 Note that it is not required that instruments are defined in order for
 LabX to work.
-<a name="d7c2117b18495594bb7b815210a4d684"></a>
-#### Instrument Manager
+<a name="91b963d6024d5bb697e39a7d63d5e3a8"></a>
+# Instrument Manager
 IM only uses connections. This is a limitation when multiple connections
 are used to connect the same actual device.
-<a name="f362e748f32f5c1996d181f65829a2ed"></a>
-#### LPM
+<a name="0842816b5d675b54a2c2d89d0c043b14"></a>
+# LPM
 While LPM has the notion of "analyzer", what LPM calls an analyzer is
 not an instrument: LPM uses analyzers to connect automation lines, etc.
 Moreover, some instruments use multiple analyzers when multiple
@@ -1420,15 +1475,15 @@ As such, an LPM analyzer should be mapped to a connection, not an
 instrument.
 However, when using QC, what is monitored is the instrument, not the
 connection. See LQC discussion.
-<a name="233f9b2c475e5173afdd3f6582d9a478"></a>
-#### EP Evaluator
+<a name="62c37009c4115245b9020b4ed3d280b8"></a>
+# EP Evaluator
 EP evaluator uses instruments.
-<a name="5983b3b2204c5a589d133bb66476ad9a"></a>
-#### LQC
+<a name="65e37010b1ad51bd8c3936ee7ee7c571"></a>
+# LQC
 What LQC calls an "analyzer" is an instrument. This is in contrast with LPM
 that shares the same concept of analyzer.
-<a name="42e8b990bde55550a8d0157a0fb49351"></a>
-#### Links
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
 Connect <-- Connection
 
 <a name="b99fcd5f-4dc5-485d-bf3a-1fb462a5e175"></a>
@@ -1471,6 +1526,13 @@ mirror set) will be represented by sub-resources.
 Note that the case of EP Evaluator is not clear yet. While EE can manage
 instrument connections, its main goal is not to manage the connections
 themselves.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Component --> Workstation
+    A middleware runs on one or more workstations; most of them typically
+    being large servers in a data center. A middleware usually runs on
+    multiple such workstations forming a cluster (aka mirror set) for
+    redundancy. Each workstation has a definite role.
 
 <a name="11e92349-ac51-4aeb-b450-c48863d7ed6b"></a>
 <a name="0c25429c7679513a8f0aa221cb0b2654"></a>
@@ -1485,12 +1547,10 @@ to be monitored as a whole.
     GUID: 'f64fe2a3-57a3-42ba-bff4-9e48b14c9e2e'
 A _Partition_ is a logical segment within a disk, where data volumes
 or swap memory can be hosted.
-<a name="42e8b990bde55550a8d0157a0fb49351"></a>
-#### Links
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
 -   Host <-- Disk
 -   Host --> DataVolume
--   Host --> VirtualMemory
--   Host --> TableSpace
 
 <a name="94702439-8791-4fbb-8d49-c41b5cdf2453"></a>
 <a name="d37173806fc35467a8e385eed66d6f00"></a>
@@ -1499,6 +1559,13 @@ or swap memory can be hosted.
 The _Physical Memory_ is the internal data storage of a computer consisting
 of the physical RAM useable by application programs and the Operating
 System, excluding all virtual memory.
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
+Physical memory becoming full may degrade the performance of the applications
+because part of memory must be offloaded secondary storage.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Component <-- Workstation
 
 <a name="8b46c098-7c38-49ad-a4e5-5711b6c9a93c"></a>
 <a name="a2d477bb74785eb495ebb587b391e7b0"></a>
@@ -1506,11 +1573,11 @@ System, excluding all virtual memory.
     GUID: '8b46c098-7c38-49ad-a4e5-5711b6c9a93c'
 A _Process_ represents a generic software component that runs on a
 (group of) workstations to provide some kind of service.
-<a name="47ce0bee0ebc5c7ea0aba605d196db84"></a>
-####Examples
+<a name="88660668804e59b3bf31accead86bf18"></a>
+# Examples
 A web server, a FTP server, a Docker cluster.
-<a name="db96d317d6015146a305c7fcc5cdf6a0"></a>
-####Refinements
+<a name="26c2fcb377ab5c01a67893035b4c37d9"></a>
+# Refinements
 Many kinds of processes are more finely known by LabX and thave their
 own Resource Kind : middlewares, connections, etc.
 
@@ -1519,13 +1586,13 @@ own Resource Kind : middlewares, connections, etc.
 ###ResourceKind_Processor
     GUID: 'f9608440-aff8-44c2-baea-3420474728c9'
 A _Processor_ is the execution unit of a workstation.
-<a name="af7acd927c8c5f94afda54092e5a19f6"></a>
-#### Rationale
+<a name="3383675838f85fadbae4f663d59f2fed"></a>
+#  Rationale
 Processor resources are used as components of a workstation to represent
 the computing resources of the workstation. A processor needs to be
 monitored for percentage of usage and for temperature.
-<a name="42e8b990bde55550a8d0157a0fb49351"></a>
-#### Links
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
 -   Component <-- Workstation
 
 <a name="2d4f4340-9612-473f-b7bb-22b900068a95"></a>
@@ -1533,8 +1600,8 @@ monitored for percentage of usage and for temperature.
 ###ResourceKind_Software
     GUID: '2d4f4340-9612-473f-b7bb-22b900068a95'
 A _Software_ represents a (version) of code that implements an application.
-<a name="47ce0bee0ebc5c7ea0aba605d196db84"></a>
-####Examples
+<a name="88660668804e59b3bf31accead86bf18"></a>
+# Examples
 Instrument Manager 8.15.3, ASTM driver 8.12.22, etc.
 
 <a name="d450c960-ac36-4404-8adb-e1e8292362ec"></a>
@@ -1544,35 +1611,34 @@ Instrument Manager 8.15.3, ASTM driver 8.12.22, etc.
 A _Tablespace_ is a logical subdivision of a database that holds related
 data together. In SQL databases, a tablespace contains a collection of
 tables, indexes, and ancillary data.
-<a name="af7acd927c8c5f94afda54092e5a19f6"></a>
-#### Rationale
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
 Databases usually contain huge amounts of data. Not all data in a datbase
 is accessed according to the same patterns. As a result, the data is
 segregated in several different storage segments, so that those segments
 can be spread across multiple physical storage spaces.
 Typically, data used very frequently would be kept on high-speed disk
 drives, while archive data would be stored on slower but larger drives.
-<a name="d7c2117b18495594bb7b815210a4d684"></a>
-#### Instrument Manager
+<a name="88660668804e59b3bf31accead86bf18"></a>
+# Examples
+<a name="e717e1d7ef095bb6be25ba35a662b4ac"></a>
+## Instrument Manager
 A Tablespace is called a "Database" in Caché. Examples include `IM-GBL`,
 `IM-ARCHIVE`, `IM-TRACE`, etc;
 Note that a Tablespace is a way to physically organize data in the database
 based on their storage characteristic, and has nothing to do with Namespaces,
 which are a way to logically organize data that is commonly used together.
-<a name="f362e748f32f5c1996d181f65829a2ed"></a>
-#### LPM
-A Tablespace represents one Oracle TableSpace. Oracle Tablespaces may
-consist of datafiles and/or partitions.
-<a name="233f9b2c475e5173afdd3f6582d9a478"></a>
-#### EP Evaluator
-See discussion in Database.
-<a name="151a53924a4050f1a5dd8d1336233ce9"></a>
-#### Master Links
--   Component --> Database
-<a name="5bf0c524e3975095826031b6d57b0e08"></a>
-#### Element Links
+<a name="5bb43e59817f58e09f71a5e2dc52bf8e"></a>
+## LPM
+A Tablespace represents one Oracle TableSpace. Examples include `V5HIST_DAT', `V5HIST_IDX` etc.
+<a name="ddb0fc902855508cb411d196cae09095"></a>
+## EP Evaluator
+DB-ISAM databases do not have the notion of tablespaces. As such, it is easier to have
+a single tablespace in each database.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Component <-- Database
 -   Component --> DataFile
--   Component --> Partition
 
 <a name="9a910022-bb72-45c6-b858-93daa4955758"></a>
 <a name="9c17aa80591a5c75a5e9a751c1eab04e"></a>
@@ -1594,12 +1660,16 @@ be used to represent processes (eg an ETL driver in an Instrument Manager
 system) or roles (eg _the administrator_). Similarly, multiple different
 users may correspond to the same actual person (eg someone might logon
 as a regular user or as an administrative user)
-<a name="0f2c869918a35e7fa858d4e35af8f78d"></a>
-####Rationale
+<a name="e4ea8ec528da50de91bf09c62c574c0a"></a>
+# Cognito replacement
+The following text assumes that users are stored in a Cognito database.
+The argument is the same for any other user authentication database.
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
 Users pulled from the Cognito user pool are encapsulated in resources for
 the following reasons.
-<a name="c8b5f20825e85de4a97d6bec0ec7bab9"></a>
-#####Executive summary
+<a name="24f76842128c576eb42b5b38c1a84146"></a>
+## Executive summary
 *    Simplifies the handling of API keys needed to access Cognito.
 *    Simplifies client code that no longer has to deal with token
      negociation.
@@ -1611,8 +1681,8 @@ Basically, the encapsulation works by only performing the operations that
 are relevant to the task at hand (by explicitly writing code that does
 it), instead of intercepting irrelevant operations and denying them (by
 writing complex access IAM profiles and rules).
-<a name="e0597932980e53b5a74aa0d1b1655ab7"></a>
-#####Simplicity
+<a name="bcd29f9e443b54f5aa4a42406ed8f511"></a>
+## Simplicity
 Accessing Cognito from a client is not as easy as it may seem. The client
 must provide an authentication token, and API key, etc to Cognito in order
 to support its claims. Since client code is freely available to the end
@@ -1625,13 +1695,13 @@ protocol.
 Using the resource microservice instead, the client just has to query the
 appropriate endpoint, providing its existing LabX authorization token.
 The results are returned with an already agreed upon format.
-<a name="62883d7ca952560dbe43c46d97902de5"></a>
-#####Security
+<a name="5ace1228bd615208917c993b138ab992"></a>
+## Security
 All Cognito tokens and secret API keys remain on the server and are never
 revealed to the client, greatly simplifying their management and
 preventing leaks.
-<a name="e6285a445eb25671b7199e73ed0d18f9"></a>
-#####Privacy
+<a name="2e0499ec9a1e5b1586531e21829cf6dc"></a>
+## Privacy
 LabX power users may need to access the list of users, especially to grant
 them access rights (to connection groups, for example) or insert them in
 user groups. That does not mean however that power users have the right to
@@ -1651,8 +1721,8 @@ the user belongs to another region.
 Moreover, the encapsulation provides an identity based on an opaque GUID
 that contains no decodable personal information, thus providing
 pseudonymization.
-<a name="1b7971b60ca3514db9828b1c2f3ac178"></a>
-#####Durability
+<a name="9b3fd11f68c35c30a69ad70fe4feeee5"></a>
+## Durability
 Cognito records can be deleted at any time. However, LabX may need to keep
 track of users even in the case they are deleted from the Cognito user
 pool:
@@ -1667,8 +1737,8 @@ pool:
 *   Since users are represented as resources, they can be used in any
     place where a resource is used to represent the _who_ in trace
     records.
-<a name="780fa80a972b52b092702432f8062513"></a>
-####Access
+<a name="26ec7f3d24f650af95cecd3711d52cc4"></a>
+# Access
 Resources of type user can be accessed from the generalized API. However,
 the generalized API will _not_ automatically synchronize the users from
 the identity provider.
@@ -1687,6 +1757,20 @@ For users to be automatically synchronized, use the following
 <a name="6be8f8c83552518c85ddfabffcc3b923"></a>
 ###ResourceKind_VirtualMemory
     GUID: '886f5412-20da-4415-b7f1-da5b62600243'
+The _Virtual Memory_ is the data storage of a computer consisting of the
+total amount of working memory useable by application programs, including
+physical memory and all paging space.
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
+Virtual memory becoming full may make applications fail to allocate additional
+working memory. This may also indicate memory leaks.
+Note that memory leaks are best detected by monitoring the working set size
+of applications.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Component <-- Workstation
+-   Component --> PhysicalMemory
+-   Component --> DataFile
 
 <a name="a3047565-0717-4032-9f2e-011485b8e83a"></a>
 <a name="e46618d376855b3286395a96973deb36"></a>
@@ -1728,12 +1812,12 @@ It is usually considered that the composite resource needs all its
 components to work properly. If one of the components of a composite
 resource fails, the whole composite resource is in a failed state also,
 or at least operating in a sub-optimal fashion.
-<a name="14ee978529ad53f1959aa29ad53dc5e6"></a>
-#### Examples
--  Middleware --> Connection: The middleware runs the software needed to
-   establish the connection. If the connection fails, the middleware can
-   no longer route messages to and from that connection.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-  Middleware --> Connection
 -  Instrument --> AnalyticalUnit
+-  AnalyticalProcessMonitor --> Connection
+-  AnalyticalProcessMonitor --> Database
 
 <a name="5196d206-a507-4880-a52c-23288ec1b895"></a>
 <a name="f9d05b9b1f295d3e99dcc2b87845a4b3"></a>
@@ -1741,11 +1825,9 @@ or at least operating in a sub-optimal fashion.
     GUID: '5196d206-a507-4880-a52c-23288ec1b895'
 The _Configuration_ link unites a configuration with the connections that
 use that configuration.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master        | Element    | Meaning
- |---------------|------------|-------------------------------------------
- | Configuration | Connection | The given connection is configured with the given configuration
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Configuration --> Connection
 
 <a name="2924dd58-72f6-4c3d-93eb-cd2bfc1db3d9"></a>
 <a name="b37aac2b81e355f3b209e30c6a3de0a8"></a>
@@ -1757,12 +1839,10 @@ To avoid ambiguous situations, a connection is never connected to another
 connection.
 Note that the type of data exchanged by the connection and the device
 is not modeled. Whether it is medical data or stock quotes is irrelevant.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master     | Element    | Meaning
- |------------|------------|-------------------------------------------
- | Connection | Instrument | The connection leads to the instrument
- | Connection | Middleware | The connection leads to another middleware
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Connection --> Instrument
+-   Connection --> Middleware
 
 <a name="3075f69c-d115-4b7d-8f3d-dad5a4d10d91"></a>
 <a name="e9302978acbc5661b74835f349b699c1"></a>
@@ -1775,12 +1855,11 @@ grouped in "user groups", which mostly behave as a single user.
 The current LabX implementation recognizes only the "Connection Group"
 kind, that groups connections.
 A resource may be member of any number of groups.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master           | Element    | Meaning
- |------------------|------------|-------------------------------------------
- | Connection Group | Connection | The group represents a summary of the connections
- | User Group       | User       | The user belongs to the group  and inherits access rights
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   ConnectionGroup --> Connection
+-   UserGroup --> User
+-   MiddlewareGroup --> Middleware
 
 <a name="c49f7cc5-e9b3-42f7-aa8a-a6d547dc9d10"></a>
 <a name="748a2c1ec8f4596dbdce705e538f553e"></a>
@@ -1788,8 +1867,8 @@ A resource may be member of any number of groups.
     GUID: 'c49f7cc5-e9b3-42f7-aa8a-a6d547dc9d10'
 The _Host_ link unites a master resource that "hosts" or "contains"
 an element resource that needs the master to function correctly.
-<a name="af7acd927c8c5f94afda54092e5a19f6"></a>
-#### Rationale
+<a name="11c3c02256ba5614b5aa884a56702e86"></a>
+# Rationale
 The Host link unites an element resource that needs a master resource to
 work properly. This is essentially the reverse of a Component link.
 Both kinds of links unite a large item such as a workstation to a smaller
@@ -1812,11 +1891,11 @@ corrupted.
     GUID: '26449177-7c4d-41b6-9349-c8fb3ce751bc'
 The _Version_ link unites a generic resource with a versioned vision of
 itself.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master   | Element    | Meaning
- |----------|------------|-------------------------------------------
- | Software | Connection | The connection uses the software as a driver
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Software --> Connection
+-   Software --> AnalyticalProcessMonitor
+-   Software --> Middleware
 
 <a name="3f72bb16-602f-4608-a091-ee10721d1be7"></a>
 <a name="c50d26e35b4e572585bfc40e081a5600"></a>
@@ -1824,11 +1903,19 @@ itself.
     GUID: '3f72bb16-602f-4608-a091-ee10721d1be7'
 The _Location_ link unites a location with the connections defined in
 that location.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master        | Element    | Meaning
- |---------------|------------|-------------------------------------------
- | Laboratory    | Connection | The connection is located in the laboratory
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Laboratory --> Connection
+
+<a name="713d7a7a-a89a-4ab9-bf8a-28da2c135002"></a>
+<a name="ff8277f136585e22894d55bb996d1801"></a>
+###ResourceLinkKind_Monitor
+    GUID: '713d7a7a-a89a-4ab9-bf8a-28da2c135002'
+The _Monitor_ link unites a monitoring product with the equipment that it
+monitors.
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   AnalyticalProcessMonitor --> Instrument
 
 <a name="aff0d320-9909-4d14-addb-f2d0982ded84"></a>
 <a name="425d252abbef5db08c041a9b3a63a25a"></a>
@@ -1836,11 +1923,10 @@ that location.
     GUID: 'aff0d320-9909-4d14-addb-f2d0982ded84'
 The _ReadAccess_ link unites a resource (typically an actor such as a
 user) with another resource visible by that actor.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master     | Element    | Meaning
- |------------|------------|-------------------------------------------------
- | User | Connection Group | The user is allowed to monitor the KPIs for the group
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   User --> ConnectionGroup
+-   User --> Middleware
 
 <a name="1979ff93-fb60-4aa6-91a2-fe83d9ce3dc3"></a>
 <a name="d973a3f9f37b5d29a16854f00457b894"></a>
@@ -1848,11 +1934,9 @@ user) with another resource visible by that actor.
     GUID: '1979ff93-fb60-4aa6-91a2-fe83d9ce3dc3'
 The _Site_ link unites a site with the connections defined in
 that location.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master        | Element    | Meaning
- |---------------|------------|-------------------------------------------
- | Laboratory    | Connection | The connection is located in the site
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Laboratory --> Connection
 
 <a name="a2c387f8-8d5d-47e5-9c98-a5e21645fc4f"></a>
 <a name="c5ac6634840c5f57b1d68bb32321cabd"></a>
@@ -1860,13 +1944,11 @@ that location.
     GUID: 'a2c387f8-8d5d-47e5-9c98-a5e21645fc4f'
 The _Version_ link unites a generic resource with a versioned vision of
 itself.
-<a name="266c5f4305d056a4a39dd12512f4983b"></a>
-####Typical Usages
- | Master   | Element  | Meaning
- |----------|----------|-------------------------------------------
- | Software | Software | The element is a version of the software denoted by the master.
-<a name="47ce0bee0ebc5c7ea0aba605d196db84"></a>
-####Examples
+<a name="914265aecb515bd4aa7ad8dfe3423368"></a>
+# Links
+-   Software --> Software
+<a name="88660668804e59b3bf31accead86bf18"></a>
+# Examples
   "Instrument Manager 8.15" is a version of "Instrument Manager"
 
 
@@ -1879,14 +1961,14 @@ Resource Property Kinds
     GUID: 'df8aee43-4573-456c-9d28-6ac42d1baf58'
 The _Failover Mode_ property gives additional information about failover modes
 in high availability configurations.
-<a name="96609897a1545312abf336b623dd7b71"></a>
-####Applies to
+<a name="4446b1d3a29f5ed8857dd5d177babe2d"></a>
+# Applies to
 Workstation :    How that workstation participates in a failover scenario
 Middleware :     How all workstations in that middleware participate in the
                  failover scenario.
                  Example: "Both primary and failover are managed by arbiter"
-<a name="9fd84338f3a95e3db9914969514db722"></a>
-####Format
+<a name="e779c820d2545caaade02d9d4ed908ae"></a>
+# Format
 {
     "description": "some descriptive text"
 }
@@ -1899,8 +1981,8 @@ description:     A descriptive text. This can be anything that describes the
     GUID: '8d45af1f-e176-4bdf-b05f-a5b2c9a34962'
 The _Network Addresses_ property gives the collection of addresses of a
 workstation or other network equipment.
-<a name="9fd84338f3a95e3db9914969514db722"></a>
-####Format
+<a name="e779c820d2545caaade02d9d4ed908ae"></a>
+# Format
  {
      "ipv4": ["IP-1", "IP-2", etc],
      "vipv4": ["VIP-1", "VIP-2", etc]
@@ -1940,7 +2022,7 @@ Additional, IM-specific information about a ressource that acts as a connection.
   A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This field is retrieved from the systematic name of the corresponding resource.</li>
   </ul>
-  - `configuration` : The internal ID of the resource representing the configuration.
+  - `configuration` *(string)* : The internal ID of the resource representing the configuration.
   <br/><b>Notes:</b><ul>
   <li>This field is read only.
   It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
@@ -1959,7 +2041,7 @@ Additional, IM-specific information about a ressource that acts as a connection.
   A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>The value is derived from `systemconnection`.</li>
   </ul>
-  - `driver` : The internal ID of the resource representing the driver and its version.
+  - `driver` *(string)* : The internal ID of the resource representing the driver and its version.
   <br/><b>Notes:</b><ul>
   <li>This field is read only.
   It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
@@ -1994,7 +2076,7 @@ Additional, IM-specific information about a ressource that acts as a connection.
   A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   <li>This field is read-only and only retrieved if the code is CN- followed by a number.</li>
   </ul>
-  - `location` : The internal ID of the resource representing the location.
+  - `location` *(string)* : The internal ID of the resource representing the location.
   <br/><b>Notes:</b><ul>
   <li>This field is read only.
   It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
@@ -2013,7 +2095,7 @@ Additional, IM-specific information about a ressource that acts as a connection.
   It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
   A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   </ul>
-  - `site` : The internal ID of the resource representing the site.
+  - `site` *(string)* : The internal ID of the resource representing the site.
   <br/><b>Notes:</b><ul>
   <li>This field is read only.
   It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
@@ -2093,12 +2175,22 @@ The setup of an individual KPI.
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
   - `warningrangehigh` : The high warning threshold. Any value higher than this will be marked as in warning, unless it is outside the error thresholds
   <br/><b>Notes:</b><ul>
@@ -2161,12 +2253,22 @@ KpiKind
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
   - `warningrangehigh` : The high warning threshold. Any value higher than this will be marked as in warning, unless it is outside the error thresholds
   <br/><b>Notes:</b><ul>
@@ -2271,6 +2373,43 @@ KpiValue
   <li>This field is only present when the 'wait' option is specified in GET queries</li>
   </ul>
 
+<a name="32b854eddb9a5634a8e50296d319a769"></a>
+### MetricData
+
+MetricData
+
+
+  - `hidden` *(string)* : Whether the metric is hidden
+  - `id` *(string)* : The Internal ID of the metric
+  - `kind` *(string)* : The Internal ID of the metric kind
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `kindname` *(string)* : The name of the Metric Kind
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `name` *(string)* : The name of the Metric
+  <br/><b>Notes:</b><ul>
+  <li>Contrary to definitions, metrics do not require a name. If no name is provided, the client should
+  use a combination of the resource name and the metric kind name.</li>
+  </ul>
+  - `resource` *(string)* : The Internal ID of the resource
+  <br/><b>Notes:</b><ul>
+  <li>This field is read only.
+  It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+  A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+  </ul>
+  - `shortname` *(string)* : The short name of the Metric
+  - `sortkey` *(string)* : The sort key of the Metric
+  - `systematicname` *(string)* : The systematic name of the Metric
+  - `timestamp` *(string)* : The timestamp when the value was computed.
+  - `value` *(string)* : The value of the Metric
+
 <a name="deeaaa542ddd557ca6dc47f68b7b2ef3"></a>
 ### MetricKind
 
@@ -2307,12 +2446,22 @@ MetricKind
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
 
 <a name="5c2946c75cf55e50b53c8fd8da548dd9"></a>
@@ -2321,14 +2470,48 @@ MetricKind
 MetricValue
 
 
-  - `name` : The name of the Metric
+  - `kind` *(string)* : The internal ID of the Metric Kind
+  <br/><b>Notes:</b><ul>
+  <li>If the Metric Kind is already specified in the URL itself, this value is ignored. It is recommended
+  then for this field to be either absent, or equal to the value on the URL.</li>
+  </ul>
+  - `name` *(string)* : The name of the Metric
   <br/><b>Notes:</b><ul>
   <li>This field is read only.
   It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
   A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
   </ul>
-  - `timestamp` : The timestamp when the value was computed.
-  - `value` : The value of the Metric
+  - `provider` *(string)* : The internal ID of the process that uploads the values
+  - `resource` *(string)* : The internal ID of the Resource
+  <br/><b>Notes:</b><ul>
+  <li>If the resource is already specified in the URL itself, this value is ignored. It is recommended
+  then for this field to be either absent, or equal to the value on the URL.</li>
+  </ul>
+  - `timestamp` *(string)* : The timestamp when the value was computed.
+  - `validity` *(number)* : The number of seconds the metric should remain valid
+  <br/><b>Notes:</b><ul>
+  <li>The default value is 600 seconds.</li>
+  </ul>
+  - `value` *(string)* : The value of the Metric
+
+<a name="eb5cb34b39635fcfb280fb7fe00097e6"></a>
+### MetricValues
+
+MetricValues
+
+
+  - `metrics` *(array)* : The metric values to upload
+    -
+
+        [#/components/schemas/MetricValue](##/components/schemas/MetricValue)
+  - `provider` *(string)* : The default value for the provider field in each individual metric
+  <br/><b>Notes:</b><ul>
+  <li>This value is used as default when the corresponding field is not explicitly set in the individual metrics.</li>
+  </ul>
+  - `validity` *(number)* : The default value for the validity field in each individual metric
+  <br/><b>Notes:</b><ul>
+  <li>This value is used as default when the corresponding field is not explicitly set in the individual metrics.</li>
+  </ul>
 
 <a name="60a80972feb45f2bad7fb349771ab127"></a>
 ### Resource
@@ -2372,7 +2555,7 @@ but the user is free to create additional custom kinds to suit the lab's needs.
   The client must ensure that the ID, if forced, does not already exists.</li>
   </ul>
   - `kind` : The UUID of a ResourceKind that acts as the resource kind
-  - `links` : The list of downwards links (ie to elements) emanating from the resource, as a list of ResourceLinkItems.
+  - `links` *(array)* : The list of downwards links (ie to elements) emanating from the resource, as a list of ResourceLinkItems.
   <br/><b>Notes:</b><ul>
   <li>This field is read only.
   It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
@@ -2381,6 +2564,9 @@ but the user is free to create additional custom kinds to suit the lab's needs.
   <li>The <tt>maxreportedlinks</tt> options may be used to limit the number of links returned. There is however no way
   of using pagination in links.</li>
   </ul>
+    -
+
+        [#/components/schemas/ResourceLinkItem](##/components/schemas/ResourceLinkItem)
   - `name` : A descriptive name for the Definition.
   The name should be descriptive and specific enough for a user to quickly identify the
   Definition referred to by that entry.
@@ -2397,12 +2583,22 @@ but the user is free to create additional custom kinds to suit the lab's needs.
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
 
 <a name="98a01cf1e57051baac5706f7ae652302"></a>
@@ -2441,12 +2637,22 @@ ResourceKind
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
 
 <a name="d528654bceac560c9d05fd1ea63a74ff"></a>
@@ -2516,12 +2722,22 @@ ResourceLinkKind
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
 
 <a name="f8625011980b53859993aaa3efb7dcd9"></a>
@@ -2574,12 +2790,22 @@ The description of a Resource Property. The property kind is mainly used to give
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
 
 <a name="9bf61a3583c355b6a51780f77a27fd38"></a>
@@ -2618,12 +2844,22 @@ SpecimenEventKind
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
 
 <a name="24c970298d8f57f184be984a5b49a5fe"></a>
@@ -2662,12 +2898,22 @@ An event is used as base for defining workflows. Workflows and TATs are curretnl
   - `sortkey` : An arbitrary key used to sort the definitions in lists.
   <br/><b>Notes:</b><ul>
   <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+  <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+  That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+  However, that order can change between different versions of the backend.</li>
   <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+  <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+  Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+  For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+  It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
   </ul>
-  - `systematicname` : A name for the Definition, using systematic conventions to make it the most descriptive as possible
+  - `systematicname` : A name for the Definition, using systematic conventions.
   <br/><b>Notes:</b><ul>
-  <li>The systematic name may be as complete as needed to fully describe the resource.</li>
-  <li>The systematic name is not meant to be shown to the end user. It is used exclusively by the administrator to systematically name the items in the laboratory.</li>
+  <li>The systematic name is typically used by automated procedures to give unique identities to items.
+  It is common for a systematic name to be unique only within a given context.
+  For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+  <li>The systematic name is not meant to be shown to the end user.
+  It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
   </ul>
 
 
@@ -3065,6 +3311,64 @@ Responses:
 - `401`: Access token is missing or invalid
 
 
+<a name="0d51b2eb3cb1553783a6da51a0f6a68e"></a>
+### GET /api/kpi/1.0/resources/(id)/setup/(kind)
+
+
+
+
+
+
+Obtain the setup of a single KPI for the given resource
+<br/><b>Notes:</b><ul>
+<li>This call always returns a properly setup KPI, even if the provided KPI kind does not formally
+apply to the resource. This is useful to obtain KPIs with custom kinds.</li>
+</ul>
+
+
+
+
+
+Path Params:
+
+  - `id` : The internal id of the resource for which KPIs are requested
+
+
+  - `kind` : The internal id of the reqiested KPI kind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="dc651316418d5be3b5d914fde985aa83"></a>
+### POST /api/metric/1.0/currentvalues
+
+
+
+
+
+
+Update the value of a set of resource metrics
+
+
+
+
+
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
 <a name="833bd86b23cb5503b90866fdc39c5cad"></a>
 ### GET /api/metric/1.0/metrickinds
 
@@ -3233,6 +3537,36 @@ Updates selected properties of the MetricKind object.
 Path Params:
 
   - `id` : The internal Id of the MetricKind
+
+
+Responses:
+
+- `200`: Successful operation
+
+
+- `401`: Access token is missing or invalid
+
+
+<a name="2df4ea0ea0aa5a5d8003d85393ff89cc"></a>
+### GET /api/metric/1.0/resources/(resourceid)/currentvalues/(metrickindid)
+
+
+
+
+
+
+Retrieve the value of a resource metric
+
+
+
+
+
+Path Params:
+
+  - `resourceid` : The internal GUID of the resource targeted by the metric
+
+
+  - `metrickindid` : The internal GUID of the Metric Kind
 
 
 Responses:
@@ -5370,7 +5704,7 @@ ___
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.574
+Version: 1.0.0.578
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>

@@ -331,7 +331,10 @@ paths:
         Retrieves a list of KpiKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -350,7 +353,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -364,7 +367,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -377,7 +380,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -386,10 +389,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -848,7 +856,10 @@ paths:
         Retrieves a list of MetricKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -867,7 +878,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -881,7 +892,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -894,7 +905,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -903,10 +914,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -1200,7 +1216,10 @@ paths:
       description: |
         Retrieves a list of all connection groups that can be monitored by the current user
         <br/><b>Notes:</b><ul>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "page"
@@ -1209,7 +1228,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -1223,7 +1242,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -1236,7 +1255,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -1245,10 +1264,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -1607,7 +1631,10 @@ paths:
       description: |
         Retrieves a list of all middlewares that can be monitored by the current user
         <br/><b>Notes:</b><ul>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "page"
@@ -1616,7 +1643,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -1630,7 +1657,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -1643,7 +1670,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -1652,10 +1679,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -1970,7 +2002,10 @@ paths:
         Retrieves a list of ResourcePropertyKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -1989,7 +2024,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -2003,7 +2038,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2016,7 +2051,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2025,10 +2060,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -2256,7 +2296,10 @@ paths:
         Retrieves a list of ResourceKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -2275,7 +2318,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -2289,7 +2332,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2302,7 +2345,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2311,10 +2354,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -2542,7 +2590,10 @@ paths:
         Retrieves a list of ResourceLinkKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -2561,7 +2612,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -2575,7 +2626,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2588,7 +2639,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2597,10 +2648,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -2828,7 +2884,10 @@ paths:
         Retrieves a list of Resource objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -2847,7 +2906,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -2861,7 +2920,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2874,7 +2933,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -2883,10 +2942,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -3162,7 +3226,10 @@ paths:
       description: |
         The list of elements of a given resource.
         <br/><b>Notes:</b><ul>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
         </ul>
       parameters:
@@ -3227,7 +3294,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -3241,7 +3308,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3254,7 +3321,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3263,10 +3330,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -3440,7 +3512,10 @@ paths:
       description: |
         The list of masters of a given resource.
         <br/><b>Notes:</b><ul>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
         </ul>
       parameters:
@@ -3505,7 +3580,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -3519,7 +3594,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3532,7 +3607,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3541,10 +3616,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -3603,7 +3683,10 @@ paths:
       description: |
         Retrieves a list of all users allowed to log-on into the application
         <br/><b>Notes:</b><ul>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "page"
@@ -3612,7 +3695,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -3626,7 +3709,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3639,7 +3722,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3648,10 +3731,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -3820,7 +3908,10 @@ paths:
         Retrieves a list of SpecimenEventKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -3839,7 +3930,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -3853,7 +3944,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3866,7 +3957,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -3875,10 +3966,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer
@@ -4143,7 +4239,10 @@ paths:
         Retrieves a list of SpecimenWorkflowKind objects.
         <br/><b>Notes:</b><ul>
         <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.</li>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
         </ul>
       parameters:
       - name: "includehidden"
@@ -4162,7 +4261,7 @@ paths:
         description: |
           The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>To iterate through items, increase the page number until the returned set is empty</li>
           </ul>
         schema:
@@ -4176,7 +4275,7 @@ paths:
         description: |
           The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -4189,7 +4288,7 @@ paths:
         description: |
           The index of the first item to return.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           </ul>
         schema:
           type: integer
@@ -4198,10 +4297,15 @@ paths:
         in: "query"
         required: false
         description: |
-          The index + 1 of the last item to return.
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
           <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters.</li>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
           <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
           </ul>
         schema:
           type: integer

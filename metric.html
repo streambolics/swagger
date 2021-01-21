@@ -254,8 +254,8 @@ Metric Kinds
     GUID: '11689cd2-146e-433c-ac29-e745d71621f7'
 The _Arbiter Connection Status_ KPI reports whether the mirror member can
 report its status to the arbiter.
-#### Applies to
-  - A workstation
+# Resources
+  -   Workstation
 #### Unit of measure
   A member of the ArbiterStatus_ enumeration.
   0 - Unreachable
@@ -278,8 +278,8 @@ connection.
 ###MetricKind_DatabaseTimeLatency
     GUID: 'db80f8ba-3978-477d-913d-8dbc2288e5d1'
 The _Database Time Latency_ KPI reports the estimated latency ...
-#### Applies to
-  - A workstation
+# Resources
+  -   Workstation
 #### Unit of measure
   Seconds.
 
@@ -300,8 +300,9 @@ connection.
 The _IIS Running_ metric is used to report the fact that IIS is running.
 #### Unit
 One of the values in the IMStatus_* range.
-#### Target
-A middleware or a workstation
+# Resources
+  -   Middleware
+  -   Workstation
 
 <a name="34ec7ce7-c998-478d-ae83-7322e003df9a"></a>
 ###MetricKind_ImCommTrace
@@ -312,6 +313,8 @@ trace.
 One of the values in the IMBool_* range. IMBool_True means that the
 connection trace is on, ImBool_False means the connection trace is off,
 ImBool_NotLicensed can be used if the feature is not licensed.
+# Resources
+  -   Connection
 
 <a name="24afd0b1-8de7-43c5-ae76-f24263becd59"></a>
 ###MetricKind_ImErrors
@@ -322,9 +325,8 @@ errors currently logged for a connection.
  notion is free to use it also.
 #### Unit
 Number of errors
-#### Target
-A direct connection. The metric should not be reported for indirect
-connections.
+# Resources
+  -   Connection
 
 <a name="3a105742-8c87-4572-be3d-331d752ee612"></a>
 ###MetricKind_ImIn
@@ -332,6 +334,8 @@ connections.
 The _IM In_ metric is used to report the count of inbound messages
 #### Unit
 The number of messages
+# Resources
+  -   Connection
 
 <a name="9745e87e-c2d1-4e06-98ec-b72e78b02daa"></a>
 ###MetricKind_ImInQ
@@ -342,9 +346,8 @@ for a connection.
  notion is free to use it also.
 #### Unit
   Number of messages
-#### Target
-A direct connection. The metric should not be reported for indirect
-connections.
+# Resources
+  -   Connection
 
 <a name="9774730c-025a-4153-88d0-b4196c6ac620"></a>
 ###MetricKind_ImLastTransaction
@@ -359,6 +362,8 @@ zone, not the local time zone.
 In Caché, the UNIX_TIMESTAMP function can be used to convert to a Unix
 Timestamp.
 If the value is not known, send 0.
+# Resources
+  -   Connection
 
 <a name="ee5be383-9ad9-4f80-abf3-a15071a8ac2b"></a>
 ###MetricKind_ImOutOfService
@@ -371,13 +376,8 @@ different from the IMStatus_OutOfService value for ImStatus.
 One of the values in the IMBool_* range. IMBool_True means that the
 connection is marked as out-of-service, ImBool_False means the connection is
 not out-of-service.
-#### Target
-A direct or indirect connection.
-  - For indirect connections, it is recommended to mirror the status of the
- corresponding direct connection, but use the ImStatus_Indirect status
- instead of the ImStatus_On when the connection is functional. This
- indicates that the status is expected to be OK, but that cannot be
- guaranteed.
+# Resources
+  -   Connection
 
 <a name="9b1253e8-e611-4f66-adf4-bf89cf116375"></a>
 ###MetricKind_ImRunningInstances
@@ -393,6 +393,8 @@ item.
   Setting that number is not sufficient for the backend to deduce the
   status of the service. The status of the connection must also be
   reported in MetricKind_ImStatus, as usual.
+# Resources
+  -   Connection
 
 <a name="a51de484-cf70-4eeb-ba05-bd262578c226"></a>
 ###MetricKind_ImSendQ
@@ -401,16 +403,17 @@ The _Instrument Manager Send Queue_ metric is used to report the SendQ size
 for a connection.
   - This is an IM-Specific value, but any middleware that has a similar
  notion is free to use it also.
-#### Unit
+# Unit
 Number of messages
-#### Target
-A direct connection. The metric should not be reported for indirect
-connections.
+# Resources
+  -   Connection
 
 <a name="ff07c388-06f9-46f0-bad6-58fe8bfe5f07"></a>
 ###MetricKind_ImSent
     GUID: 'ff07c388-06f9-46f0-bad6-58fe8bfe5f07'
 The _IM Sent_ metric is used to report the count of outbound messages
+# Resources
+  -   Connection
 
 <a name="d65be8ca-13c3-4393-a70e-5dd4c93ff9c0"></a>
 ###MetricKind_ImStatus
@@ -419,13 +422,8 @@ The _Instrument Manager Status_ metric is used to report the current status
 of a connection.
 #### Unit
 One of the values in the IMStatus_* range.
-#### Target
-A direct or indirect connection.
-  - For indirect connections, it is recommended to mirror the status of the
- corresponding direct connection, but use the ImStatus_Indirect status
- instead of the ImStatus_On when the connection is functional. This
- indicates that the status is expected to be OK, but that cannot be
- guaranteed.
+# Resources
+  -   Connection
 
 <a name="756c7255-a92a-4f96-a45f-2e3953189c61"></a>
 ###MetricKind_ImTotalInstances
@@ -435,13 +433,15 @@ of instances of a connection.
 This is mainly useful for system connections, and especially Qmgr, that
 exist in multiple instances, but that we want to represent as a single
 item.
+# Resources
+  -   Connection
 
 <a name="76689d05-aae3-4d7b-8a20-d13e3f5404fb"></a>
 ###MetricKind_JournalTimeLatency
     GUID: '76689d05-aae3-4d7b-8a20-d13e3f5404fb'
 The _Journal Time Latency_ KPI reports the estimated latency ...
-#### Applies to
-  - A workstation
+# Resources
+  -   Workstation
 #### Unit of measure
   Seconds.
 
@@ -453,17 +453,17 @@ physical main memory (RAM).
 #### Unit
 A percentage value between 0 and 100. 100% means that all RAM is used, and 0%
 indicates that all of RAM is free.
-#### Target
-  - A resource representing a middleware, a workstation or an IoT appliance
- that uses a CPU for control.
+# Resources
+  -   Middleware
+  -   Workstation
 
 <a name="1ce8d9c9-98b9-43a3-82eb-b745c4a445d8"></a>
 ###MetricKind_MirrorRole
     GUID: '1ce8d9c9-98b9-43a3-82eb-b745c4a445d8'
 The _Mirroring Role_ KPI reports the current role of the workstation in
 a mirror set.
-#### Applies to
-  - A workstation
+# Resources
+  -   Workstation
 #### Unit of measure
   One of the values in the MirrorRole_* enumeration.
 
@@ -472,8 +472,8 @@ a mirror set.
     GUID: '22d9863f-c0e5-4fcf-87e8-b0a6f5fee4f3'
 The _Mirroring Status_ KPI reports the current status of the mirror in
 a mirror set.
-#### Applies to
-  - A workstation
+# Resources
+  -   Workstation
 #### Unit of measure
   One of the values in the MirrorStatus_* enumeration.
 
@@ -486,10 +486,9 @@ this represents the load on the whole array of available CPUs.
 #### Unit
 A percentage value between 0 and 100. 100% indicates that processor is fully
 busy and 0% indicates that processor is entirely idle.
-#### Target
-  - A resource representing a middleware, a workstation or an IoT appliance
- that uses a CPU for control.
-  - A resource representing a CPU, a CPU core, or a CPU hyperthreading cell.
+# Resources
+  -   Middleware
+  -   Workstation
 
 <a name="e04bdf79-458a-4970-98a5-1d8ed44acfe8"></a>
 ###MetricKind_RepeatedResults
@@ -562,8 +561,9 @@ The _Windows Service Status_ metric is used to report the status of the
 uploader service from IM to the cloud.
 #### Unit
 One of the values in the IMStatus_* range.
-#### Target
-A middleware or a workstation
+# Resources
+  -   Middleware
+  -   Workstation
 
 
 Instrument Manager Status Codes
@@ -1295,7 +1295,7 @@ ___
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.208
+Version: 1.0.0.211
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
