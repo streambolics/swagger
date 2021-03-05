@@ -5215,6 +5215,15 @@ components:
         provider:
           description: |
             The internal ID of the process that uploads the values
+            <br/><b>Notes:</b><ul>
+            <li>The provider must be the ID of an existing resource.</li>
+            <li>If the provider is not specified, it defaults to the resource representing the current user.</li>
+            <li>When using bulk-loading (ie when this record is part of a larger <tt>MetricValues</tt> structure), the value of the
+            field can be specified for each metric individually, or as part of the whole structure</li>
+            <li>The choice of a proper provider is central to the function of the metric watchdog.
+            It is recommended that the provider explicitly identifies the process (eg the ETL connection, in the case of IM) that uploads the metrics.
+            An ETL connection should use the same provider for every metric it uploads. Two different ETL connections should use different provider ids.</li>
+            </ul>
           type: string
           format: guid
           example: '2e802d16-86f7-4898-b972-4c82cf411387'
@@ -5223,6 +5232,8 @@ components:
             The number of seconds the metric should remain valid
             <br/><b>Notes:</b><ul>
             <li>The default value is 600 seconds.</li>
+            <li>When using bulk-loading (ie when this record is part of a larger <tt>MetricValues</tt> structure), the value of the
+            field can be specified for each metric individually, or as part of the whole structure</li>
             </ul>
           type: number
           example: 600
