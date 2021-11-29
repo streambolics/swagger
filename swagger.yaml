@@ -4492,6 +4492,32 @@ components:
       in: header
       name: Authorization
   schemas:
+    ControlledResource:
+      type: object
+      description: |
+        A resource that has additional fields so it can be used as a controlled document.
+      properties:
+        submitted:
+          description: |
+            The Date and Time when this resource was submitted into the system
+        submitter:
+          description: |
+            The GUID of the agent that submitted that resource
+        submitcomments:
+          description: |
+            Any comments provided by the submitter
+        reviewstatus:
+          description: |
+            The current review status of the resource. 0 = unreviewed, 1 = approved, 2 = rejected
+        reviewed:
+          description: |
+            The date and time the resource was last reviewed.
+        reviewer:
+          description: |
+            The GUID of the agent that reviewed that resource
+        reviewcomments:
+          description: |
+            Any comments provided by the reviewer.
     ImConnection:
       type: object
       description: |
@@ -5283,6 +5309,150 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/MetricValue"
+    Operation:
+      type: object
+      description: |
+        The description of an action performed on a target.
+        <br>
+        Operations have a *target* that indicates on what object the operation was performed (typically, a resource),
+        and a *Kind* that indicates the action that was performed.
+        <br>
+        Operations serve both as entries in audit logs and todo lists. When used as an audit log, the operation has its `performed` field set to
+        true. When used as a todo list, the operation has this field set to false. When the todo item is completed, the `performed` field
+        is set to true, turning the operation into an audit log.
+        <br/><b>Notes:</b><ul>
+        <li>The current implementation leaves out most of the fields needed for an operation to be used as a todo list
+        entry. Typically, all fields needed to schedule a future execution are currently not provided.</li>
+        </ul>
+      properties:
+        id:
+          description: |
+            The internal ID of the operation
+        kind:
+          description: |
+            The internal ID of the Operation Kind.
+            <br/><b>Notes:</b><ul>
+            <li>The workitem microservice is largely agnostic to the operation kind. Any application can add its own operation kinds.</li>
+            </ul>
+        kindname:
+          description: |
+            kindname
+        performer:
+          description: |
+            The internal GUID of the agent resource that performed the operation.
+        performername:
+          description: |
+            The name of the agent resource that performed the operation.
+        performed:
+          description: |
+            Whether the operation has already been performed.
+            <br/><b>Notes:</b><ul>
+            <li>If true, the operation was completed. If false, it is either not started, or still pending.</li>
+            </ul>
+        failed:
+          description: |
+            Whether the operation ended in failure.
+            <br/><b>Notes:</b><ul>
+            <li>The operation may fail even if it was never completed. This means that the operation was not even attempted.</li>
+            </ul>
+        performedat:
+          description: |
+            The date and time the operation was performed.
+            <br/><b>Notes:</b><ul>
+            <li>This field is usually NULL until the operation is complete.</li>
+            <li>The field can be null even if the operation is complete, indicating the date and time is unknown</li>
+            </ul>
+        targetid:
+          description: |
+            The internal ID of the object on which the operation was performed.
+            <br/><b>Notes:</b><ul>
+            <li>Use the `targettype` field to determine the type of the object.</li>
+            <li>This field is typically the internal ID of a resource.</li>
+            </ul>
+        targettype:
+          description: |
+            The internal ID of the type of the target.
+        targetname:
+          description: |
+            The name of the target
+            <br/><b>Notes:</b><ul>
+            <li>This field is only meaningful if the target is a resource</li>
+            </ul>
+        details:
+          description: |
+            Details of the operation
+            <br/><b>Notes:</b><ul>
+            <li>The structure of this field depends on the nature of the operation. Typically, this is a list of the fields that were changed.</li>
+            </ul>
+    OperationKind:
+      type: object
+      description: |
+        OperationKind
+      properties:
+        id:
+          description: |
+            The internal ID of the Definition.
+            Once attributed, the internal ID can no longer be changed.
+            <br/><b>Notes:</b><ul>
+            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
+            <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
+            The client must ensure that the ID, if forced, does not already exists.</li>
+            </ul>
+        name:
+          description: |
+            A descriptive name for the Definition.
+            The name should be descriptive and specific enough for a user to quickly identify the
+            Definition referred to by that entry.
+            <br/><b>Notes:</b><ul>
+            <li>Two entries may have the same name.</li>
+            <li>Changing the name of an entry does not alter its identity.</li>
+            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
+            </ul>
+          example: 'An Example Name'
+        hidden:
+          description: |
+            Whether this Definition has been hidden.
+            <br/><b>Notes:</b><ul>
+            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
+            It can still be referenced explicitly.</li>
+            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
+            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
+            </ul>
+          example: 'false'
+        shortname:
+          description: |
+            A name for the Definition, shorter than the standard name.
+            <br/><b>Notes:</b><ul>
+            <li>If a definition does not have a short name, the application should use the standard name instead.</li>
+            <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
+            </ul>
+          example: 'Widget'
+        systematicname:
+          description: |
+            A name for the Definition, using systematic conventions.
+            <br/><b>Notes:</b><ul>
+            <li>The systematic name is typically used by automated procedures to give unique identities to items.
+            It is common for a systematic name to be unique only within a given context.
+            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
+            <li>The systematic name is not meant to be shown to the end user.
+            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
+            </ul>
+          example: 'CN-101'
+        sortkey:
+          description: |
+            An arbitrary key used to sort the definitions in lists.
+            <br/><b>Notes:</b><ul>
+            <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
+            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
+            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
+            However, that order can change between different versions of the backend.</li>
+            <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
+            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
+            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
+            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
+            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
+            </ul>
+          example: 'A'
     Resource:
       type: object
       description: |

@@ -450,6 +450,7 @@ KPI Kinds
 |----|-----|
 |Validity|120|
 |Computer|'copy/11689cd2-146e-433c-ac29-e745d71621f7'|
+|ValueKind|0|
 The _Arbiter Connection_ KPI reports whether the mirror member can
 report its status to the arbiter.
 #### Applies to
@@ -467,6 +468,7 @@ report its status to the arbiter.
 |Validity|1800|
 |Computer|'/api/specimen/1.0/rates/386c6158-1926-400c-9ae4-741c8fe72efa/cfd2146c-3697-483c-a38f-1370f0cd7f41/{R}/8ac62bd9-9ada-497c-8431-4883391e5704?interval=86400'|
 |RoundingPrecision|1|
+|ValueKind|0|
 The _Autoverification Rate_ KPI is applied to a connection or connection
 group, and returns the ratio of auto-verified results on total released
 results in the last 24 hours.
@@ -480,6 +482,7 @@ results in the last 24 hours.
 |ShortName|'Connecting'|
 |Validity|120|
 |Computer|'/api/metric/1.0/counts/d65be8ca-13c3-4393-a70e-5dd4c93ff9c0/{R}/8ac62bd9-9ada-497c-8431-4883391e5704//9'|
+|ValueKind|0|
 The _Connections Connecting_ KPI counts the number of connections that
 are in the “Connecting” status, ie those that have fully started, but have
 not yet been able to establish a communication link with the instrument.
@@ -498,6 +501,7 @@ not yet been able to establish a communication link with the instrument.
 |ShortName|'Error'|
 |Validity|120|
 |Computer|'/api/metric/1.0/counts/d65be8ca-13c3-4393-a70e-5dd4c93ff9c0/{R}/8ac62bd9-9ada-497c-8431-4883391e5704//1'|
+|ValueKind|0|
 The _Connections In Error_ KPI counts the number of connections that are
 currently in the “Error” status.
 #### Applies to
@@ -518,6 +522,7 @@ currently in the “Error” status.
 |ShortName|'Off'|
 |Computer|'/api/metric/1.0/counts/d65be8ca-13c3-4393-a70e-5dd4c93ff9c0/{R}/8ac62bd9-9ada-497c-8431-4883391e5704//2'|
 |Validity|120|
+|ValueKind|0|
 The _Connections Off_ KPI counts the number of connections in a group that
 are currently in the “Off” state, ie are not running.
 No distinction is made between connections that are Off on purpose (because
@@ -538,6 +543,7 @@ Off temporarily while some maintenance procedure is underway.
 |ShortName|'Off Request'|
 |Validity|120|
 |Computer|'/api/metric/1.0/counts/d65be8ca-13c3-4393-a70e-5dd4c93ff9c0/{R}/8ac62bd9-9ada-497c-8431-4883391e5704//8'|
+|ValueKind|0|
 The _Connections Off Request_ KPI counts the number of connections that
 are in the “Off Request” status, ie those that have received a command to
 be turned off, but are not off yet.
@@ -556,6 +562,7 @@ be turned off, but are not off yet.
 |ShortName|'On'|
 |Validity|120|
 |Computer|'/api/metric/1.0/counts/d65be8ca-13c3-4393-a70e-5dd4c93ff9c0/{R}/8ac62bd9-9ada-497c-8431-4883391e5704//10'|
+|ValueKind|0|
 The _Connections ON_ KPI counts the number of connections that are currently
 in the “On” state, ie those that are working as expected.
 #### Applies to
@@ -573,6 +580,7 @@ in the “On” state, ie those that are working as expected.
 |ShortName|'On Request'|
 |Validity|120|
 |Computer|'/api/metric/1.0/counts/d65be8ca-13c3-4393-a70e-5dd4c93ff9c0/{R}/8ac62bd9-9ada-497c-8431-4883391e5704//7'|
+|ValueKind|0|
 The _Connections On Request_ KPI counts the number of connections that
 are in the “On Request” status, ie those that have received a command to
 be turned on, but are not fully running yet.
@@ -591,6 +599,7 @@ be turned on, but are not fully running yet.
 |ShortName|'Out of Service'|
 |Validity|120|
 |Computer|'/api/metric/1.0/boolcounts/ee5be383-9ad9-4f80-abf3-a15071a8ac2b/{R}/8ac62bd9-9ada-497c-8431-4883391e5704/1'|
+|ValueKind|0|
 The _Connections Out Of Service_ KPI counts the number of connections that
 are in the “Out of Service” status.
 #### Applies to
@@ -608,6 +617,7 @@ are in the “Out of Service” status.
 |ShortName|'Unknown'|
 |Validity|120|
 |Computer|'/api/metric/1.0/counts/d65be8ca-13c3-4393-a70e-5dd4c93ff9c0/{R}/8ac62bd9-9ada-497c-8431-4883391e5704//0'|
+|ValueKind|0|
 The _Connections in Unknown State_ KPI counts the number of connections for
 which we have no indication of the current state.
 This includes:
@@ -629,6 +639,7 @@ This includes:
 |Name|Value|
 |----|-----|
 |Computer|'/api/specimen/1.0/sums/3364ff21-eaa1-4a86-9c91-8fff0f1b832c/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 To be specified further
 
 <a name="145c047f-7d62-4b42-b7f5-78a49cc0d2e9"></a>
@@ -644,6 +655,7 @@ To be specified further
 |WarningRangeLow|0|
 |WarningRangeHigh|0|
 |Computer|'/api/specimen/1.0/counts/3364ff21-eaa1-4a86-9c91-8fff0f1b832c/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 The _Critical Specimens Held_ KPI applies to a connection or connection
 group and returns the number of specimens with results from those connections
 that are held for verification while also being flagged as critical.
@@ -658,6 +670,7 @@ The exact meaning of "critical" is defined by the client.
 |RoundingPrecision|2|
 |Validity|120|
 |Computer|'copy/db80f8ba-3978-477d-913d-8dbc2288e5d1'|
+|ValueKind|0|
 The _Database Time Latency_ KPI reports the estimated latency ...
 #### Applies to
   - A workstation
@@ -671,6 +684,7 @@ The _Database Time Latency_ KPI reports the estimated latency ...
 |Name|Value|
 |----|-----|
 |ShortName|'Random'|
+|ValueKind|0|
 The _Delayed Random_ KPI produces a random value between 0 and 100 for any
 resource. It is similar to the Random KPI but the value is computed much
 less frequently, leading to gaps where the value might be stale.
@@ -687,6 +701,7 @@ computed in a background task.
 |ShortName|'IIS Status'|
 |Validity|120|
 |Computer|'csts/adb09229-f5d1-4a78-8167-0cb978ee71dd'|
+|ValueKind|0|
 The _IIS Status_ KPI reports the status of the Internet Information Services server
 running on the middleware.
 #### Applies to
@@ -703,6 +718,7 @@ running on the middleware.
 |ShortName|'Errors'|
 |Validity|600|
 |Computer|'/api/metric/1.0/sums/24afd0b1-8de7-43c5-ae76-f24263becd59/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 The _IM Error Count_ KPI reports the cumulated number of errors logged by
 connection or connection group.
 #### Applies to
@@ -724,6 +740,7 @@ connection or connection group.
 |Computer|'/api/metric/1.0/sums/3a105742-8c87-4572-be3d-331d752ee612/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
 |ShortName|'In'|
 |Validity|600|
+|ValueKind|0|
 The _IM In_ KPI reports the total number of messages received by a connection or group of connections.
 #### Applies to
   - A single connection (for IT dashboards)
@@ -739,6 +756,7 @@ The _IM In_ KPI reports the total number of messages received by a connection or
 |ShortName|'InQ'|
 |Validity|600|
 |Computer|'/api/metric/1.0/sums/9745e87e-c2d1-4e06-98ec-b72e78b02daa/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 The _IM In Queue Size_ KPI reports the cumulated size of the input queues of
 all connections in a group.
 #### Applies to
@@ -757,6 +775,11 @@ all connections in a group.
 |Computer|'/api/metric/1.0/latest/9774730c-025a-4153-88d0-b4196c6ac620/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
 |ShortName|'Last Transaction'|
 |Validity|600|
+|ErrorRangeLow|null|
+|ErrorRangeHigh|7199|
+|WarningRangeLow|null|
+|WarningRangeHigh|3599|
+|ValueKind|1|
 The _IM Last Transaction_ KPI returns the timestamp of the last exchange with the instrument,
 for a connection or a connection group.
 The value is a UNIX timestamp. Zero indicates that no exchange ever occurred.
@@ -768,6 +791,20 @@ The value is a UNIX timestamp. Zero indicates that no exchange ever occurred.
   This KPI includes the additionaldata field, that contains an interpretation of the
   UNIX timestamp as an ISO time string in field `timestamp`.
 
+<a name="dddb4d89-0c62-4c87-a1cb-be2cdd63cbf7"></a>
+###KpiKind_ImLastTransactionHighestStatus
+    GUID: 'dddb4d89-0c62-4c87-a1cb-be2cdd63cbf7'
+#### Default Properties
+|Name|Value|
+|----|-----|
+|Computer|'kpi/higheststatus/e3fe1c83-c21e-4790-9b42-e5d40463d205'|
+|ShortName|'Last Transaction Highest Status'|
+|Validity|600|
+|ValueKind|0|
+The _IM Last Transaction Highest Status_ is a middleware KPI. It returns the highest status among all
+IM Last Transaction KPIs belong to each connection under that middleware.
+The value is a status.
+
 <a name="70452853-f344-46d2-abcf-e9a81af48fa4"></a>
 ###KpiKind_ImOutQ
     GUID: '70452853-f344-46d2-abcf-e9a81af48fa4'
@@ -777,6 +814,7 @@ The value is a UNIX timestamp. Zero indicates that no exchange ever occurred.
 |ShortName|'SendQ'|
 |Validity|600|
 |Computer|'/api/metric/1.0/sums/a51de484-cf70-4eeb-ba05-bd262578c226/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 The _IM Out Queue Size_ KPI reports the cumulated size of the output queues
 (aka Send Queues) of all connections in a group.
 #### Applies to
@@ -795,6 +833,7 @@ The _IM Out Queue Size_ KPI reports the cumulated size of the output queues
 |Computer|'/api/metric/1.0/sums/ff07c388-06f9-46f0-bad6-58fe8bfe5f07/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
 |ShortName|'Sent'|
 |Validity|600|
+|ValueKind|0|
 The _IM Sent_ KPI reports the total number of messages sent by a connection or
 group of connections.
 
@@ -806,6 +845,7 @@ group of connections.
 |----|-----|
 |Computer|'/api/metric/1.0/imstatus/{R}'|
 |Validity|120|
+|ValueKind|0|
 The _IM Status KPI reports the status of a single connection.
 #### Applies to
   - A single connection
@@ -824,6 +864,7 @@ The _IM Status KPI reports the status of a single connection.
 |Computer|'/api/metric/1.0/latest/34ec7ce7-c998-478d-ae83-7322e003df9a/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
 |ShortName|'Trace'|
 |Validity|600|
+|ValueKind|0|
 The _IM Trace Status_ KPI returns the status of IM trace for a connection or a connection group.
 It can return either:
 -   0 to indicate that the trace is off.
@@ -850,6 +891,7 @@ If a timestamp is returned, it represents the latest of the trace starts.
 |RoundingPrecision|2|
 |Validity|120|
 |Computer|'copy/76689d05-aae3-4d7b-8a20-d13e3f5404fb'|
+|ValueKind|0|
 The _Journal Time Latency_ KPI reports the estimated latency ...
 #### Applies to
   - A workstation
@@ -870,6 +912,7 @@ The _Journal Time Latency_ KPI reports the estimated latency ...
 |ErrorRangeHigh|89|
 |WarningRangeLow|null|
 |WarningRangeHigh|69|
+|ValueKind|0|
 The _Maximum RAM Usage_ reports the amount of RAM used by middlewares. When
 applied to a group, this returns the usage of the highest consumer in the
 group.
@@ -887,6 +930,7 @@ group.
 |----|-----|
 |Validity|120|
 |Computer|'copy/1ce8d9c9-98b9-43a3-82eb-b745c4a445d8'|
+|ValueKind|0|
 The _Mirroring Role_ KPI reports the current role of the workstation in
 a mirror set.
 #### Applies to
@@ -902,6 +946,7 @@ a mirror set.
 |----|-----|
 |Validity|120|
 |Computer|'copy/22d9863f-c0e5-4fcf-87e8-b0a6f5fee4f3'|
+|ValueKind|0|
 The _Mirroring Status_ KPI reports the current status of the mirror in
 a mirror set.
 #### Applies to
@@ -918,6 +963,7 @@ a mirror set.
 |ShortName|'MA Violations'|
 |Validity|1200|
 |Computer|'/api/specimen/1.0/counts/00000000-d097-409a-9561-e61b1435a51b/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 To be specified further
 
 <a name="b5597f28-f7fa-404b-98c9-9b9b4927e946"></a>
@@ -929,11 +975,16 @@ To be specified further
 |ShortName|'QC Violations'|
 |Validity|1200|
 |Computer|'/api/specimen/1.0/counts/00000000-d097-409a-9561-e61b1435a51b/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 To be specified further
 
 <a name="3036e0cf-2ee9-40b5-bcb5-de7f8b4810d5"></a>
 ###KpiKind_Random
     GUID: '3036e0cf-2ee9-40b5-bcb5-de7f8b4810d5'
+#### Default Properties
+|Name|Value|
+|----|-----|
+|ValueKind|0|
 The _Random_ KPI produces a random value between 0 and 100 for any
 resource. It can be used to test client behavior.
 ### Rationale
@@ -950,6 +1001,7 @@ so fast that they don't need a background task to update their value.
 |Validity|1200|
 |Computer|'/api/specimen/1.0/rates/e04bdf79-458a-4970-98a5-1d8ed44acfe8/a5e80958-c99a-4b81-9540-5c8b412591af/{R}/8ac62bd9-9ada-497c-8431-4883391e5704?interval=86400'|
 |RoundingPrecision|1|
+|ValueKind|0|
 The _Rerun Rate_ KPI applies to connections and connection groups, and returns
 the ratio of repeated results over first-run results in the last 24 hours.
 The ratio may be higher than 100% (if each result in  aset of 100 is rerun
@@ -963,6 +1015,7 @@ twice, there will be 100 first-run results and 200 repeats, thus a rate of
 |Name|Value|
 |----|-----|
 |Computer|'/api/specimen/1.0/sums/91be7235-fe53-450a-b1ba-f1507b2254be/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 To be specified further
 
 <a name="be287b84-308d-4457-87de-d987d5ae9525"></a>
@@ -978,6 +1031,7 @@ To be specified further
 |ErrorRangeHigh|99|
 |WarningRangeLow|0|
 |WarningRangeHigh|49|
+|ValueKind|0|
 The _Specimens Held_ KPI applies to a connection or connection group and
 returns the number of specimens with results from those connections that
 are held for verification.
@@ -991,6 +1045,7 @@ are held for verification.
 |ShortName|'Delayed'|
 |Validity|120|
 |Computer|'/api/specimen/1.0/counts/00000000-d097-409a-9561-e61b1435a51b/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 To be specified further
 
 <a name="9bd0f649-bdde-4857-bca4-a0748b1ba0b2"></a>
@@ -1002,6 +1057,7 @@ To be specified further
 |ShortName|'Overdue'|
 |Validity|120|
 |Computer|'/api/specimen/1.0/counts/00000000-d097-409a-9561-e61b1435a51b/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 To be specified further
 
 <a name="53591129-f14e-40bf-b22f-4701b9008a4f"></a>
@@ -1013,14 +1069,19 @@ To be specified further
 |ShortName|'Pending Calls'|
 |Validity|1200|
 |Computer|'/api/specimen/1.0/counts/3494d33c-d097-409a-9561-e61b1435a51b/{R}/8ac62bd9-9ada-497c-8431-4883391e5704'|
+|ValueKind|0|
 The _Specimens with Pending Calls_ KPI applies to a connection or connection
 group and counts the number of specimens that have a pending call, ie a
 manual action needed to inform the ordering physician of the results.
 What exactly constitutes a pending call is defined by the client.
 
 <a name="040cd8cf-b72a-4682-b5a6-ab8350d97f9b"></a>
-###KpiKind_Storage_AllocatedSize
+###KpiKind_StorageAllocatedSize
     GUID: '040cd8cf-b72a-4682-b5a6-ab8350d97f9b'
+#### Default Properties
+|Name|Value|
+|----|-----|
+|ValueKind|0|
 The _Storage Allocated Size_ KPI reports the total amount of storage that
 is currently allocated for a data store.
 The allocated size is typically less or equal to the total size. Some
@@ -1031,24 +1092,36 @@ grow automatically, but not shrink.
 - Logical data stores
 
 <a name="42b822fa-c504-4c63-8546-4897d4061e85"></a>
-###KpiKind_Storage_DataSize
+###KpiKind_StorageDataSize
     GUID: '42b822fa-c504-4c63-8546-4897d4061e85'
+#### Default Properties
+|Name|Value|
+|----|-----|
+|ValueKind|0|
 The _Storage Data Size_ KPI reports the total amount of useful data that
 is currently occupying the data store.
 The storage data size may be less than the used size, because of metadata
 or padding, or larger than the used size, if lossless compression is used.
 
 <a name="4fe4e843-2f6a-4b04-a98c-1150fe1474bc"></a>
-###KpiKind_Storage_PercentFree
+###KpiKind_StoragePercentFree
     GUID: '4fe4e843-2f6a-4b04-a98c-1150fe1474bc'
+#### Default Properties
+|Name|Value|
+|----|-----|
+|ValueKind|0|
 The _Storage Percent Free_ KPI reports the proportion of storage that
 is available for more data.
 The percent free KPI is computed as the total size minus the used size,
 divided by the total size.
 
 <a name="4b9cbc79-a64e-45b7-9058-c4a1b44e9320"></a>
-###KpiKind_Storage_TotalSize
+###KpiKind_StorageTotalSize
     GUID: '4b9cbc79-a64e-45b7-9058-c4a1b44e9320'
+#### Default Properties
+|Name|Value|
+|----|-----|
+|ValueKind|0|
 The _Storage Total Size_ KPI reports the total amount of storage available
 in a data store, in bytes.
 When that amount of storage is reached, the data store cannot accept
@@ -1059,8 +1132,12 @@ drives) or a logical limit (in the case of virtual disks or database files)
   - Any kind of data store.
 
 <a name="6dc8f10f-45a3-4ebb-b902-3e62cc53fea9"></a>
-###KpiKind_Storage_UsedSize
+###KpiKind_StorageUsedSize
     GUID: '6dc8f10f-45a3-4ebb-b902-3e62cc53fea9'
+#### Default Properties
+|Name|Value|
+|----|-----|
+|ValueKind|0|
 The _Storage Used Size_ KPI reports the total amount of storage that is
 currently occupied by actual data.
 The used size is typically less or equal to the allocated size, and as
@@ -1075,6 +1152,7 @@ consequence, less or equal to the total size.
 |ShortName|'LabGPS Connector'|
 |Validity|120|
 |Computer|'/api/metric/1.0/watchdog/6234d37a-8620-43e7-a62b-571fdccd749b/{R}/b3115cba-34af-47ca-8405-f328858d6f89'|
+|ValueKind|0|
 The _LabGPS Connector Status_ KPI reports the status of the Windows
 service running on a Middleware that uploads IM metrics to the cloud.
 #### Applies to
@@ -1110,772 +1188,13 @@ The _KPI Group_ resource kind represents a group of KPIs.
 KPI groups can be used to groups related KPIs as a single entity.
 
 
-# API Reference
-
-<a name="swagger"></a>
-
-This API reference is automatically extracted from the swagger documentation.
-The source swagger file may contain more detailed information than this
-static document.
-
-LabX API specification.
-
-Version: 1.0.0
-
-## Definitions
-### Kpi
-
-The definition of a KPI. Most KPI represent the value of a given
-KPI kind computed on a given resource, but it is allowed to have
-KPIs that do not follow this rule. None of these non-standard KPIs are
-computed by LabX, and their value must be uploaded by an external
-entity.
-
-
-  - `id` *(string)* : An opaque, unique ID that identifies the definition.
-  <ul>
-  <li>The unique ID is a GUID; it is expressed in hexadecimal, lowercase, including dashes as separators.</li>
-  <li>When issuing a POST query, the ID should normally be omitted; the service will then generate a new, unique ID.
-      Otherwise, the ID must be different from those of the already existing definitions. </li>
-  <li>When issuing a PUT query, the ID must match the one specified in the path or be omitted.</li>
-  </ul>
-  - `kind` *(string)* : The unique ID of the KPI kind of this KPI. This property can be
-  null if the KPI cannot be properly described by a KPI kind.
-  Note that in that case, the KPI cannot be computed by LabX and
-  its value must be provided by an external entity.
-  - `name` *(string)* : The usual name for the definition. This usual name needs to make
-  sense for an end user.
-  <ul>
-  <li>Multiple definitions may share the same name if they reference two objects that are never used in the same context.</li>
-  <li>Usual names should never be left empty.</li>
-  <li>Usual names have no fixed size limit, but should not normally exceed 50 characters or glyphs.</li>
-  </ul>
-  - `resource` *(string)* : The unique ID of the resource monitored by this KPI. This property
-  can be null if the KPI is not restricted to a given resource.
-  Note that in that case, the KPI cannot be computed by LabX and
-  its value must be provided by an external entity.
-  - `shortname` *(string)* : A shorter version of the usual name. This may be used instead of
-  the usual name where space is constrained, eg in grids.
-  <ul>
-  <li>If no short name is given, the usual name is used instead, but may be truncated as needed.</li>
-  <li>Short names have no fixed size limit, but should not normally exceed 12 characters or glyphs.</li>
-  </ul>
-  - `sortkey` *(string)* : An arbitrary string that is used to sort lists of definitions.
-  Definitions are sorted according to the increasing value of this
-  key.
-  <ul>
-  <li>When two definitions share the same sortkey (and especially when their sortkey is empty, which is the usual case)
-      they are sorted according to their usual name using localized conventions.</li>
-  <li>Value should consist exclusively of printable ASCII characters.</li>
-  <li>Lexicographic sort is used, implying that `item9` is after `item10`</li>
-  <li>The sortkey is never meant to be shown to the end user, only to admins during setup.</li>
-  </ul>
-  - `systematicname` *(string)* : A systematized version of the name of the definition.
-  <ul>
-  <li>This is used in global contexts, when it is imperative to correctly disambiguate what is shown, typically during setup.</li>
-  <li>If the systematic name is not given, the usual name is used instead.</li>
-  <li>The systematic name is not meant to be shown to the end user, although it may be displayed when advanced details are requested.</li>
-  </ul>
-
-### KpiKind
-
-The kind (aka meaning of computed value) of a KPI. Examples include
-“QC Violations”, “Queue status“. The type of KPI indicates how the
-value of the KPI should be computed.
-
-
-  - `id` *(string)* : An opaque, unique ID that identifies the definition.
-  <ul>
-  <li>The unique ID is a GUID; it is expressed in hexadecimal, lowercase, including dashes as separators.</li>
-  <li>When issuing a POST query, the ID should normally be omitted; the service will then generate a new, unique ID.
-      Otherwise, the ID must be different from those of the already existing definitions. </li>
-  <li>When issuing a PUT query, the ID must match the one specified in the path or be omitted.</li>
-  </ul>
-  - `name` *(string)* : The usual name for the definition. This usual name needs to make
-  sense for an end user.
-  <ul>
-  <li>Multiple definitions may share the same name if they reference two objects that are never used in the same context.</li>
-  <li>Usual names should never be left empty.</li>
-  <li>Usual names have no fixed size limit, but should not normally exceed 50 characters or glyphs.</li>
-  </ul>
-  - `shortname` *(string)* : A shorter version of the usual name. This may be used instead of
-  the usual name where space is constrained, eg in grids.
-  <ul>
-  <li>If no short name is given, the usual name is used instead, but may be truncated as needed.</li>
-  <li>Short names have no fixed size limit, but should not normally exceed 12 characters or glyphs.</li>
-  </ul>
-  - `sortkey` *(string)* : An arbitrary string that is used to sort lists of definitions.
-  Definitions are sorted according to the increasing value of this
-  key.
-  <ul>
-  <li>When two definitions share the same sortkey (and especially when their sortkey is empty, which is the usual case)
-      they are sorted according to their usual name using localized conventions.</li>
-  <li>Value should consist exclusively of printable ASCII characters.</li>
-  <li>Lexicographic sort is used, implying that `item9` is after `item10`</li>
-  <li>The sortkey is never meant to be shown to the end user, only to admins during setup.</li>
-  </ul>
-  - `systematicname` *(string)* : A systematized version of the name of the definition.
-  <ul>
-  <li>This is used in global contexts, when it is imperative to correctly disambiguate what is shown, typically during setup.</li>
-  <li>If the systematic name is not given, the usual name is used instead.</li>
-  <li>The systematic name is not meant to be shown to the end user, although it may be displayed when advanced details are requested.</li>
-  </ul>
-
-### KpiStatus
-
-| Value | Meaning | Description |
-|-------|---------|-------------|
-| `0` | **Acceptable** | The KPI value is within normal range |
-| `1` | **Warning** | The KPI value indicates a status that is still within range, but may evolve to an unacceptable level if no corrective action is undertaken.
-| `2` | **Unacceptable** | The KPI value indicates a status that prevents normal operation to continue.
-| `3` | **Not available** | The KPI value has one or more issues that prevent it from being reliable. The value should not be shown to the user as it may represent a past state or a partial state that is not representative of the current state.
-| `4` | **Not authorized** | The current user is not authorized to retrieve the value for this KPI. This status is not returned in version 1.0 of the API, where it is always replaced by 3.
-| `5` | **Insufficient Data** | The KPI value is based on insufficient data and may be incorrect. This status is not returned in version 1.0 of the API, where it is always replaced by 3.
-| `6` | **Stale value** | The current value was computed too long ago and may have changed significantly. This status is not returned in version 1.0 of the API, where it is always replaced by 3.
-| `7` | **Not Licensed** | The KPI cannot be computed because it monitors a feature that is not licensed. This status is not returned in version 1.0 of the API, where it is always replaced by 3.
-
-
-
-### KpiValue
-
-The value of the KPI.
-
-
-  - `computationpending` *(boolean)* : This indicates whether the query triggered a recomputation of a new
-  value. A client should not normally use this value to decide when
-  to refresh the display, and instead rely on the `refreshat` and
-  `refreshdelta` values returned by the server.
-  - `id` *(string)* : The internal ID of the KPI definition
-  - `issuedat` *(string)* : The date and time when the reply was issued by the server. This is
-  mainly used to allow the client to compare its own internal clock
-  with the clock on the server. This is particuarly important when
-  the client uses the `refreshat` timestamp to schedule the refresh
-  of the value; if the clocks on the server and client are not
-  synchronized, this may lead the client to issue refreshes too often
-  or too seldom.
-  - `label` *(string)* : A useful label for the KPI, retrieved from the usual name of the
-  KPI kind.
-  - `name` *(string)* : The usual name, retrieved from the KPI definition.
-  - `refreshat` *(string)* : The date and time when the client should issue a new query to
-  obtain an updated value of the KPI. This is only an indication and
-  a client is free to use any other schedule.
-  - `refreshdelta` *(number)* : This is the number of milliseconds between `issuedat` and
-  `refreshat`. This can be used by the client to schedule a refresh
-  instead of using `refreshat` directly (which requires the client
-  to ensure that its own clock is synchronous with the one on the
-  server).
-  - `resourcename` *(string)* : The usual name of the resource.
-  -
-
-      [#/components/schemas/KpiStatus](##/components/schemas/KpiStatus)
-  - `statusdetail` *(number)* : The current status, in detailed form. This is the same value as
-  the `status` field, except it is not coerced to the range 0 to 3.
-  - `statustext` *(string)* : A short text corresponding to the status.
-  - `timestamp` *(string)* : The date and time when the KPI value was computed. The timestamp
-  includes the timezone.
-  - `validfor` *(integer)* : The number of milliseconds left until the value becomes stale.
-  This is computed as the delta between `issuedat` and `validuntil`.
-  This can be used by the client to schedule an action instead of
-  using `validuntil` as a limit.
-  - `validuntil` *(string)* : The date and time when the returned value will become stale.
-  - `value` *(string)* : The current value. This is typically a numerical value, but other
-  kinds of values may be present, such as on/off. Some KPI may also
-  return values such as `>x` where x is a numeric threshold.
-  The value may be null if it cannot be computed.
-  - `waitsuccessful` *(boolean)* : This indicates whether a wait operation was successful. This field
-  is only present if an active wait occurred. It is absent when the
-  `wait` option was not present in the query, or when there was no
-  need for waiting as the cached value is still valid. A value of
-  false indicates that the wait ran until timeout, without the
-  computer returning a value; that does not necessarily mean that the
-  computation failed, just that it took longer than the timeout.
-
-
-## Paths
-
-### GET /_healthcheck
-
-
-
-
-
-
-
-
-
-
-
-Responses:
-
-- `200`: Success
-
-### GET /_version
-
-
-
-
-
-
-
-
-
-
-
-Responses:
-
-- `200`: Success
-
-### GET /api/kpi/1.0/currentvalues
-
-
-
-
-
-
-A list of current KPI values, optionally filtered according to resources or KPI kinds. Note: KPI values are returned immediately, even when the value is unknown or stale. If the values are unknown or stale, the back-end will initiate a background computation of the values, the client should retry the query later.
-
-
-Query Params:
-
-  - `page` : The page number in the list to return.
-This is used for pagination, to avoid returning too many entries
-when querying a data resource list.
-<ul>
-<li>This value, along with the `pagesize` parameter, determines the subset of items returned by the query.</li>
-<li>The first page is numbered as 0.</li>
-<li>It is legal to query for a page beyond the end of the list; in that case, an empty subset is returned.</li>
-</ul>
-
-
-  - `pagesize` : The size of an individual page. This is the maximum number of items
-that will be returned at once.
-<ul>
-<li>This is used in conjuction with the `page` parameter to determine the range of items to return.</li>
-<li>When less that this maximum number of items are returned, the end of the list has been reached.</li>
-</ul>
-
-
-  - `first` : The index of the first item to return.
-<ul>
-<li>This is an alternate to querying by a `page` number, and allows the query to start at any arbitrary position.</li>
-<li>This parameter is ignored if a page number is given.</li>
-<li>The very first item is numbered 0.</li>
-<li>It is legal to query for items past the end of the list; an empty subset will be returned in that case.</li>
-</ul>
-
-
-  - `last` : The index of the first item where to stop the list.
-<ul>
-<li>This item will _not_ be returned.</li>
-<li>The value of `last` should be used as the value of `first` to obtain the next items in the list.</li>
-<li>The parameter is ignored if `page` is specified.</li>
-<li>If not specified, defaults to `first` + `pagesize`.</li>
-<li>Less than last-first items will be returned if the end of the list has been reached.</li>
-<li><b>Known issue</b>: This parameter is ignored if the `first` parameter is absent or zero.</li>
-</ul>
-
-
-  - `resource` : The internal ID of a resource. If the resource is given, only KPIs applying to that resource are returned, otherwise all are returned.
- -  This parameter can consist of multiple ids separated by a comma.
- -  This parameter acts as a filter, and may be combined with more
-    filters. Only KPIs matching all filters are returned.
-
-  - `kind` : The internal ID of a KPI kind. If the kind is given, only KPIs of this kind are returned, otherwise all are returned.
- -  This parameter can consist of multiple ids separated by a comma.
- -  This parameter acts as a filter, and may be combined with more
-    filters. Only KPIs matching all filters are returned.
-
-  - `id` : A list of internal IDs of KPIs, separated by commas. If the list is given, only the KPIs with the given internal ids are returned, otherwise all KPIs are returned.
- -  This parameter acts as a filter, and may be combined with more
-    filters. Only KPIs matching all filters are returned.
-
-  - `recompute` : Whether KPI values must be recomputed.
- - true : all KPI values are recomputed, even if their
-   scheduled recomputation time is not yet reached.
- - false : none of the KPI values are recomputed, even if their
-   scheduled recomputation time is reached.
- - any other value : KPI values are recomputed based on their
-   recomputation schedule.
-
-  - `wait` : Whether the query should block until recomputations are complete. If the parameter is present, it contains the maximum time to wait for recomputations to be complete, in milliseconds. If the timeout elapses, the KPIs for which the computation is not complete are returned with their old value.
-
-
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiValue data as
-    an array.
- *  The array may be empty if the operation did not select any
-    relevant KpiValue.
- *  The data is returned as as array even if only one KpiValue
-    is returned.
- *  The `errors` property is empty.
-
-
-### GET /api/kpi/1.0/currentvalues/(id)
-
-
-
-
-
-
-The current value of the KPI identified by its internal ID. Note: KPI values are returned immediately, even when the value is unknown or stale. If the values are unknown or stale, the back-end will initiate a background computation of the values, the client should retry the query later.
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiValue
- *  The `errors` property is empty.
-
-
-- `400`: The requested Kpi cannot be retrieved because of a
-malformed argument in the query. Typically, an argument of type
-GUID has an invalid syntax, or an argument expected to be a number
-is badly formed.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-- `404`: The requested Kpi does not exist.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-### PUT /api/kpi/1.0/currentvalues/(id)
-
-
-
-
-
-
-Updates the current value of the KPI identified by an internal ID
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiValue
- *  The `errors` property is empty.
-
-
-- `400`: The requested Kpi cannot be retrieved because of a
-malformed argument in the query. Typically, an argument of type
-GUID has an invalid syntax, or an argument expected to be a number
-is badly formed.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-- `404`: The requested Kpi does not exist.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-### GET /api/kpi/1.0/kpikinds
-
-
-
-
-
-
-
-Query Params:
-
-  - `page` : The page number in the list to return.
-This is used for pagination, to avoid returning too many entries
-when querying a data resource list.
-<ul>
-<li>This value, along with the `pagesize` parameter, determines the subset of items returned by the query.</li>
-<li>The first page is numbered as 0.</li>
-<li>It is legal to query for a page beyond the end of the list; in that case, an empty subset is returned.</li>
-</ul>
-
-
-  - `pagesize` : The size of an individual page. This is the maximum number of items
-that will be returned at once.
-<ul>
-<li>This is used in conjuction with the `page` parameter to determine the range of items to return.</li>
-<li>When less that this maximum number of items are returned, the end of the list has been reached.</li>
-</ul>
-
-
-  - `first` : The index of the first item to return.
-<ul>
-<li>This is an alternate to querying by a `page` number, and allows the query to start at any arbitrary position.</li>
-<li>This parameter is ignored if a page number is given.</li>
-<li>The very first item is numbered 0.</li>
-<li>It is legal to query for items past the end of the list; an empty subset will be returned in that case.</li>
-</ul>
-
-
-  - `last` : The index of the first item where to stop the list.
-<ul>
-<li>This item will _not_ be returned.</li>
-<li>The value of `last` should be used as the value of `first` to obtain the next items in the list.</li>
-<li>The parameter is ignored if `page` is specified.</li>
-<li>If not specified, defaults to `first` + `pagesize`.</li>
-<li>Less than last-first items will be returned if the end of the list has been reached.</li>
-<li><b>Known issue</b>: This parameter is ignored if the `first` parameter is absent or zero.</li>
-</ul>
-
-
-
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiKind data as
-    an array.
- *  The array may be empty if the operation did not select any
-    relevant KpiKind.
- *  The data is returned as as array even if only one KpiKind
-    is returned.
- *  The `errors` property is empty.
-
-
-### POST /api/kpi/1.0/kpikinds
-
-
-
-
-
-
-
-
-
-
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiKind
- *  The `errors` property is empty.
-
-
-### DELETE /api/kpi/1.0/kpikinds/(id)
-
-
-
-
-
-
-Removes a KPI kind (not implemented)
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI kind
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiKind
- *  The `errors` property is empty.
-
-
-- `400`: The requested KpiKind cannot be retrieved because of a
-malformed argument in the query. Typically, an argument of type
-GUID has an invalid syntax, or an argument expected to be a number
-is badly formed.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-- `404`: The requested KpiKind does not exist.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-### GET /api/kpi/1.0/kpikinds/(id)
-
-
-
-
-
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI kind
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiKind
- *  The `errors` property is empty.
-
-
-- `400`: The requested KpiKind cannot be retrieved because of a
-malformed argument in the query. Typically, an argument of type
-GUID has an invalid syntax, or an argument expected to be a number
-is badly formed.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-- `404`: The requested KpiKind does not exist.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-### PUT /api/kpi/1.0/kpikinds/(id)
-
-
-
-
-
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI kind
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested KpiKind
- *  The `errors` property is empty.
-
-
-- `400`: The requested KpiKind cannot be retrieved because of a
-malformed argument in the query. Typically, an argument of type
-GUID has an invalid syntax, or an argument expected to be a number
-is badly formed.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-- `404`: The requested KpiKind does not exist.
- *  The `data` property is empty.
- *  The `errors` property contains a list of messages describing
-    the problem; those messages can be shown to the end user.
-
-
-### GET /api/kpi/1.0/kpis
-
-
-
-
-
-
-A list of availables KPIs for the given resource or kind
-
-
-Query Params:
-
-  - `page` : The page number in the list to return.
-This is used for pagination, to avoid returning too many entries
-when querying a data resource list.
-<ul>
-<li>This value, along with the `pagesize` parameter, determines the subset of items returned by the query.</li>
-<li>The first page is numbered as 0.</li>
-<li>It is legal to query for a page beyond the end of the list; in that case, an empty subset is returned.</li>
-</ul>
-
-
-  - `pagesize` : The size of an individual page. This is the maximum number of items
-that will be returned at once.
-<ul>
-<li>This is used in conjuction with the `page` parameter to determine the range of items to return.</li>
-<li>When less that this maximum number of items are returned, the end of the list has been reached.</li>
-</ul>
-
-
-  - `first` : The index of the first item to return.
-<ul>
-<li>This is an alternate to querying by a `page` number, and allows the query to start at any arbitrary position.</li>
-<li>This parameter is ignored if a page number is given.</li>
-<li>The very first item is numbered 0.</li>
-<li>It is legal to query for items past the end of the list; an empty subset will be returned in that case.</li>
-</ul>
-
-
-  - `last` : The index of the first item where to stop the list.
-<ul>
-<li>This item will _not_ be returned.</li>
-<li>The value of `last` should be used as the value of `first` to obtain the next items in the list.</li>
-<li>The parameter is ignored if `page` is specified.</li>
-<li>If not specified, defaults to `first` + `pagesize`.</li>
-<li>Less than last-first items will be returned if the end of the list has been reached.</li>
-<li><b>Known issue</b>: This parameter is ignored if the `first` parameter is absent or zero.</li>
-</ul>
-
-
-  - `resource` : The internal ID of a resource. If the resource is given, only KPIs applying to that resource are returned, otherwise all are returned.
- -  This parameter can consist of multiple ids separated by a comma.
- -  This parameter acts as a filter, and may be combined with more
-    filters. Only KPIs matching all filters are returned.
-
-  - `kind` : The internal ID of a KPI kind. If the kind is given, only KPIs of this kind are returned, otherwise all are returned.
- -  This parameter can consist of multiple ids separated by a comma.
- -  This parameter acts as a filter, and may be combined with more
-    filters. Only KPIs matching all filters are returned.
-
-
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested Kpi data as
-    an array.
- *  The array may be empty if the operation did not select any
-    relevant Kpi.
- *  The data is returned as as array even if only one Kpi
-    is returned.
- *  The `errors` property is empty.
-
-
-### POST /api/kpi/1.0/kpis
-
-
-
-
-
-
-
-
-
-
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested Kpi
- *  The `errors` property is empty.
-
-
-### DELETE /api/kpi/1.0/kpis/(id)
-
-
-
-
-
-
-Removes a KPI (not implemented)
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested Kpi
- *  The `errors` property is empty.
-
-
-### GET /api/kpi/1.0/kpis/(id)
-
-
-
-
-
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested Kpi
- *  The `errors` property is empty.
-
-
-### PUT /api/kpi/1.0/kpis/(id)
-
-
-
-
-
-
-
-
-
-Path Params:
-
-  - `id` : The internal ID of a KPI
-
-Responses:
-
-- `200`: The operation succeeded.
- *  The `data` property contains the requested Kpi
- *  The `errors` property is empty.
-
-
-### GET /api/kpi/1.0/resource/(resourceid)/setup/(kindid)
-
-
-
-
-
-
-Sets up a single KPI for the given resource and KPI kind.
-
-
-
-
-
-
-
-
-### GET /api/kpi/1.0/resources/(resourceid)/setup
-
-
-
-
-
-
-Sets up all standard KPIs for the given resource.
-
-
-
-
-
-
-
 
 ___
 
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.366
+Version: 1.0.0.380
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
