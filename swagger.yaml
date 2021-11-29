@@ -4483,6 +4483,52 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  'api/workitem/1.0/operations':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - audit
+      description: |
+        Retrieve a list of operations perfomed or scheduled on given targets
+      parameters:
+      - name: "targetid"
+        in: "query"
+        required: false
+        description: |
+          Filters operations on the target object.
+          <br/><b>Notes:</b><ul>
+          <li>This parameter acts as a filter. Only operations matching the condition are returned. Multiple filters can be specified,
+          in which case only operations matching all filters are returned.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/Operation"
+        "401":
+          description: |
+            Access token is missing or invalid
 components:
   securitySchemes:
     Authorization:
