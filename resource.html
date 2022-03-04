@@ -1266,6 +1266,12 @@ An _Asset_ represents a customer.
     GUID: '1389ad81-7863-4d2e-ad8d-5c96df1cadff'
 A _Configuration_ resource represents the configuration of a connection.
 
+<a name="6acd880f-1c33-44f9-b194-914c061fcc9d"></a>
+<a name="8d0bc426024d5dba964fb69d4d4da5c1"></a>
+###ResourceKind_ConfigurationProduct
+    GUID: '6acd880f-1c33-44f9-b194-914c061fcc9d'
+A _Configuration Product_ is a configuration that can be delivered to a customer.
+
 <a name="8ac62bd9-9ada-497c-8431-4883391e5704"></a>
 <a name="c37bca02df5b59118a377fb8d2d2d3f8"></a>
 ###ResourceKind_Connection
@@ -1601,6 +1607,18 @@ monitored for percentage of usage and for temperature.
 # Links
 -   Component <-- Workstation
 
+<a name="bea94d6e-ceb5-481b-87ce-791922ca6b53"></a>
+<a name="0ea3a35f2b425fb5b39f2d5cb52b900d"></a>
+###ResourceKind_RuleSet
+    GUID: 'bea94d6e-ceb5-481b-87ce-791922ca6b53'
+A _Ruleset_ is the list of rules used by a connection or configuration.
+
+<a name="23c4b56d-4ae7-4f27-b1aa-f8eec7aa9ac8"></a>
+<a name="25808ec144945724be66bed77bd5697f"></a>
+###ResourceKind_RuleSetProduct
+    GUID: '23c4b56d-4ae7-4f27-b1aa-f8eec7aa9ac8'
+A _Ruleset Product_ is a ruleset that can be delivered to a customer.
+
 <a name="2d4f4340-9612-473f-b7bb-22b900068a95"></a>
 <a name="1470a08bc8b95c4282cd9f883a964094"></a>
 ###ResourceKind_Software
@@ -1636,7 +1654,8 @@ based on their storage characteristic, and has nothing to do with Namespaces,
 which are a way to logically organize data that is commonly used together.
 <a name="5bb43e59817f58e09f71a5e2dc52bf8e"></a>
 ## LPM
-A Tablespace represents one Oracle TableSpace. Examples include `V5HIST_DAT', `V5HIST_IDX` etc.
+A Tablespace represents one Oracle TableSpace. Examples include `V5HIST_DAT',
+`V5HIST_IDX` etc.
 <a name="ddb0fc902855508cb411d196cae09095"></a>
 ## EP Evaluator
 DB-ISAM databases do not have the notion of tablespaces. As such, it is easier to have
@@ -1959,6 +1978,13 @@ itself.
 # Examples
   "Instrument Manager 8.15" is a version of "Instrument Manager"
 
+<a name="26140d9d-97e7-4f6e-beec-92a7e4ab0c6d"></a>
+<a name="20357ea702c651f8badb4ef2e6c023e8"></a>
+###ResourceLinkKind_WriteAccess
+    GUID: '26140d9d-97e7-4f6e-beec-92a7e4ab0c6d'
+The _WriteAccess_ link unites a resource (typically an actor such as a
+user) with another resource modifiable by that actor.
+
 
 Resource Property Kinds
 -----------------------
@@ -2136,7 +2162,7 @@ ___
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.585
+Version: 1.0.0.591
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>

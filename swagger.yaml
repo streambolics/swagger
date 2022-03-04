@@ -2966,6 +2966,113 @@ paths:
         schema:
           type: string
           format: guid
+      - name: "requiredmasterid"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of resource ids. Resources are only included in the results if one of their masters (irrelevant of the Link Kind) is in the list.
+          <br/><b>Notes:</b><ul>
+          <li>This can be used to filter resources depending on their relation to other resources.</li>
+          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
+          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
+          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
+          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
+          have a master relationship of kind A to any element.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "requiredelementid"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of resource ids. Resources are only included in the results if one of their elements (irrelevant of the Link Kind) is in the list.
+          <br/><b>Notes:</b><ul>
+          <li>This can be used to filter resources depending on their relation to other resources.</li>
+          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
+          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
+          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
+          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
+          have a master relationship of kind A to any element.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "requiredmasterlink"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if one of their masters is related by one of the kinds in the list.
+          <br/><b>Notes:</b><ul>
+          <li>This can be used to filter resources depending on their relation to other resources.</li>
+          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
+          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
+          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
+          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
+          have a master relationship of kind A to any element.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "requiredelementlink"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if one of their elements is related by one of the kinds  in the list.
+          <br/><b>Notes:</b><ul>
+          <li>This can be used to filter resources depending on their relation to other resources.</li>
+          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
+          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
+          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
+          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
+          have a master relationship of kind A to any element.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "forbiddenmasterlink"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if none of their masters is related by one of the kinds in the list.
+          <br/><b>Notes:</b><ul>
+          <li>This can be used to filter resources depending on their relation to other resources.</li>
+          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
+          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
+          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
+          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
+          have a master relationship of kind A to any element.</li>
+          <li>This can be used, for example, to list resources of type <i>Connection</i> that are not part of a group, using <tt>kind=ResourceKind_Connection&forbiddenmasterlink=ResourceLinkKind_Content</tt>.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "forbiddenelementlink"
+        in: "query"
+        required: false
+        description: |
+          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if none of their elements is related by one of the kinds  in the list.
+          <br/><b>Notes:</b><ul>
+          <li>This can be used to filter resources depending on their relation to other resources.</li>
+          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
+          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
+          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
+          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
+          have a master relationship of kind A to any element.</li>
+          </ul>
+        schema:
+          type: string
+          format: guid
+      - name: "sort"
+        in: "query"
+        required: false
+        description: |
+          An alternate sort order for the returned resources.
+          <br/><b>Notes:</b><ul>
+          <li>The value <tt>recent</tt> returns the resources by creation date, the most recently created being listed first.</li>
+          </ul>
+        schema:
+          type: string
       - name: "includelinks"
         in: "query"
         required: false
@@ -4784,16 +4891,19 @@ paths:
       tags:
       - audit
       description: |
-        Retrieve a list of operations perfomed or scheduled on given targets
+        Retrieve a list of operations performed (or scheduled) on given targets.
         <br/><b>Notes:</b><ul>
         <li>This API is only currently only available in IM configurator</li>
+        <li>Returned operations may include operations already performed (ie audit log entries), or operations scheduled
+        for later execution (ie todo list entries). Updating the <tt>performed</tt> property of an operation switches it from a todo list entry
+        to an audit log entry.</li>
         </ul>
       parameters:
       - name: "targetid"
         in: "query"
         required: false
         description: |
-          Filters entries according to the target object.
+          Filters entries according to the target object(s).
           <br/><b>Notes:</b><ul>
           <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
           in which case only entries matching all filters are returned.</li>
@@ -4802,6 +4912,19 @@ paths:
           type: string
           format: guid
         example: '091fc609-70a1-4b24-ac31-c268ce6e43e4'
+      - name: "sort"
+        in: "query"
+        required: false
+        description: |
+          An aditional sort criteria for items. Items are sorted according to the given criteria, then according to the
+          execution date.
+          <br/><b>Notes:</b><ul>
+          <li>When this parameter is equal to <tt>target</tt> the items are sorted according to the internal ID of the target.</li>
+          <li>When this parameter is equal to <tt>performer</tt> the items are sorted according to the internal ID of the performer.</li>
+          </ul>
+        schema:
+          type: string
+        example: 'target'
       - name: "performer"
         in: "query"
         required: false
@@ -4824,11 +4947,38 @@ paths:
           <br/><b>Notes:</b><ul>
           <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
           in which case only entries matching all filters are returned.</li>
+          <li>If this filter is specified, items with an unknown execution date are never returned.</li>
           </ul>
         schema:
           type: integer
           format: int64
         example: '15'
+      - name: "performedafter"
+        in: "query"
+        required: false
+        description: |
+          Filters items according to their execution time. Only items that were performed after the given timestamp are returned.
+          <br/><b>Notes:</b><ul>
+          <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
+          in which case only entries matching all filters are returned.</li>
+          <li>If this filter is specified, items with an unknown execution date are never returned.</li>
+          </ul>
+        schema:
+          type: string
+          format: ISO-8601
+      - name: "performedbefore"
+        in: "query"
+        required: false
+        description: |
+          Filters items according to their execution time. Only items that were performed before the given timestamp are returned.
+          <br/><b>Notes:</b><ul>
+          <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
+          in which case only entries matching all filters are returned.</li>
+          <li>If this filter is specified, items with an unknown execution date are never returned.</li>
+          </ul>
+        schema:
+          type: string
+          format: ISO-8601
       responses:
         "200":
           description: |
@@ -5690,9 +5840,14 @@ components:
         Operations have a *target* that indicates on what object the operation was performed (typically, a resource),
         and a *Kind* that indicates the action that was performed.
         <br>
-        Operations serve both as entries in audit logs and todo lists. When used as an audit log, the operation has its `performed` field set to
-        true. When used as a todo list, the operation has this field set to false. When the todo item is completed, the `performed` field
-        is set to true, turning the operation into an audit log.
+        Operations serve both as entries in audit logs and todo lists. When used as an audit log, the operation has its <tt>performed</tt> field set to
+        true. When used as a todo list, the operation has this field set to false. When the todo item is completed, the <tt>performed</tt> field
+        is set to true, turning the operation into an audit log entry.
+        <br>
+        The system automatically creates Operation entries each time a significant change is performed on the system (eg the change of some
+        properties of a resource object) and such entries cannot be modified once entered.
+        <br>
+        The users are also allowed to create Operation entries through the REST API to represent user-defined tasks.
         <br/><b>Notes:</b><ul>
         <li>The current implementation leaves out most of the fields needed for an operation to be used as a todo list
         entry. Typically, all fields needed to schedule a future execution are currently not provided.</li>
@@ -5701,31 +5856,49 @@ components:
         id:
           description: |
             The internal ID of the operation
+            <br/><b>Notes:</b><ul>
+            <li>This field is auto-generated. Its value is automatically generated at the creation of the object, and cannot be altered.</li>
+            </ul>
           example: 'b004484f-5bc6-4655-9e7b-3f86e618f73c'
         kind:
           description: |
             The internal ID of the Operation Kind.
             <br/><b>Notes:</b><ul>
-            <li>The workitem microservice is largely agnostic to the operation kind. Any application can add its own operation kinds.</li>
+            <li>This field is immutable. It should be given a value when the object is created, then never altered afterwards.</li>
             </ul>
           example: '097eaa8c-5eef-4c3f-949c-9d4da05953f2'
         kindname:
           description: |
-            kindname
+            The name of the operation kind.
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+            </ul>
           example: 'Calibrate instrument'
         performer:
           description: |
             The internal GUID of the agent resource that performed the operation.
+            <br/><b>Notes:</b><ul>
+            <li>This field is NULL until the operation starts. It is not meant to contain the expected performer of an operation
+            scheduled for later, it only contains the known performer for an operation that already occurred.</li>
+            </ul>
           example: '3dd16619-5687-429e-8b3b-34e627fa84e6'
         performername:
           description: |
-            The name of the agent resource that performed the operation.
+            The name of the performer.
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+            </ul>
           example: 'John Smith'
         performed:
           description: |
             Whether the operation has already been performed.
             <br/><b>Notes:</b><ul>
-            <li>If true, the operation was completed. If false, it is either not started, or still pending.</li>
+            <li>If true, the operation was performed; the operation represents an audit log entry.
+            If false, the operation is either not started, or still pending; the operation represents a todo list entry.</li>
             </ul>
           example: 'true'
         failed:
@@ -5741,6 +5914,8 @@ components:
             <br/><b>Notes:</b><ul>
             <li>This field is usually NULL until the operation is complete.</li>
             <li>The field can be null even if the operation is complete, indicating the date and time is unknown</li>
+            <li>When an operation takes a long time to complete (eg the calibration of an instrument may take several minutes), the field indicates
+            when the operation was complete (ie when it ended, not when it started). In the future, the start time may be added as a supplemental field.</li>
             </ul>
           example: '2021-11-12T09:00:00Z'
         targetid:
@@ -5749,17 +5924,24 @@ components:
             <br/><b>Notes:</b><ul>
             <li>Use the `targettype` field to determine the type of the object.</li>
             <li>This field is typically the internal ID of a resource.</li>
+            <li>This field is immutable. It should be given a value when the object is created, then never altered afterwards.</li>
             </ul>
           example: '5340adb8-e81e-4807-ac4e-f6d0f7b61828'
         targettype:
           description: |
             The internal ID of the type of the target.
+            <br/><b>Notes:</b><ul>
+            <li>This field is immutable. It should be given a value when the object is created, then never altered afterwards.</li>
+            </ul>
           example: '18701635-6821-403f-b005-5e0aadca4a3a'
         targetname:
           description: |
             The name of the target
             <br/><b>Notes:</b><ul>
             <li>This field is only meaningful if the target is a resource</li>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
           example: 'Cell-Dyn 4000'
         details:
@@ -5771,7 +5953,28 @@ components:
     OperationKind:
       type: object
       description: |
-        OperationKind
+        An operation kind describes a kind of operation that is performed on a target.
+        <br>
+        The Operation Kind is a generalized representation of the actual operation that was performed, disregarding the actual target
+        (the same operation kind can be executed on many different objects in the lab)
+        and the result of the operation (the execution may or may not succeed - eg the same operation kind is used to represent the
+        attempt at calibrating an instrument, the success of calibrating an instrument, and the failure at calibrating an instrument).
+        <br>
+        Examples:<ul><li>
+        Calibrate instrument
+        <li></li>
+        Approve result
+        <li></li>
+        Upload a configuration
+        </li></ul>
+        The workitem microservice itself is largely agnostic to the operation kind; any application can add its own operation kinds without the
+        need to re-deploy the microservice. In some workflows, it may be possible to allow the end user to create custom operation kinds as well.
+        However, some operation kinds are predefined and have well known semantics for the microservices. These are usually related to operation
+        performed on the data itself (eg change the value of a field in a resource object), rather than on a real-life object in the lab.
+        <br>
+        Operation kinds try not to be overly specific. For example, there is an operation kind _edit fields of a resource_ that is used for
+        any change in a resource object. We do not create one operation kind for each field (eg _edit the name field of a resource_).
+        
       properties:
         id:
           description: |
