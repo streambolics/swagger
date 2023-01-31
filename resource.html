@@ -1254,23 +1254,11 @@ as those obtained using the manual STAT loader.
 # Links
 -   Component <-- Instrument
 
-<a name="73361d2f-800d-4b6a-a219-222f8adb632c"></a>
-<a name="2819a43ea63b5349943c7d9f2e006fef"></a>
-###ResourceKind_Asset
-    GUID: '73361d2f-800d-4b6a-a219-222f8adb632c'
-An _Asset_ represents a customer.
-
 <a name="1389ad81-7863-4d2e-ad8d-5c96df1cadff"></a>
 <a name="6e2a90ffdb0157a69ac036920396bba0"></a>
 ###ResourceKind_Configuration
     GUID: '1389ad81-7863-4d2e-ad8d-5c96df1cadff'
 A _Configuration_ resource represents the configuration of a connection.
-
-<a name="6acd880f-1c33-44f9-b194-914c061fcc9d"></a>
-<a name="8d0bc426024d5dba964fb69d4d4da5c1"></a>
-###ResourceKind_ConfigurationProduct
-    GUID: '6acd880f-1c33-44f9-b194-914c061fcc9d'
-A _Configuration Product_ is a configuration that can be delivered to a customer.
 
 <a name="8ac62bd9-9ada-497c-8431-4883391e5704"></a>
 <a name="c37bca02df5b59118a377fb8d2d2d3f8"></a>
@@ -1607,18 +1595,6 @@ monitored for percentage of usage and for temperature.
 # Links
 -   Component <-- Workstation
 
-<a name="bea94d6e-ceb5-481b-87ce-791922ca6b53"></a>
-<a name="0ea3a35f2b425fb5b39f2d5cb52b900d"></a>
-###ResourceKind_RuleSet
-    GUID: 'bea94d6e-ceb5-481b-87ce-791922ca6b53'
-A _Ruleset_ is the list of rules used by a connection or configuration.
-
-<a name="23c4b56d-4ae7-4f27-b1aa-f8eec7aa9ac8"></a>
-<a name="25808ec144945724be66bed77bd5697f"></a>
-###ResourceKind_RuleSetProduct
-    GUID: '23c4b56d-4ae7-4f27-b1aa-f8eec7aa9ac8'
-A _Ruleset Product_ is a ruleset that can be delivered to a customer.
-
 <a name="2d4f4340-9612-473f-b7bb-22b900068a95"></a>
 <a name="1470a08bc8b95c4282cd9f883a964094"></a>
 ###ResourceKind_Software
@@ -1654,8 +1630,7 @@ based on their storage characteristic, and has nothing to do with Namespaces,
 which are a way to logically organize data that is commonly used together.
 <a name="5bb43e59817f58e09f71a5e2dc52bf8e"></a>
 ## LPM
-A Tablespace represents one Oracle TableSpace. Examples include `V5HIST_DAT',
-`V5HIST_IDX` etc.
+A Tablespace represents one Oracle TableSpace. Examples include `V5HIST_DAT', `V5HIST_IDX` etc.
 <a name="ddb0fc902855508cb411d196cae09095"></a>
 ## EP Evaluator
 DB-ISAM databases do not have the notion of tablespaces. As such, it is easier to have
@@ -1914,15 +1889,13 @@ corrupted.
 <a name="62cedbcc3c0258528afb94780e8eef01"></a>
 ###ResourceLinkKind_Instance
     GUID: '26449177-7c4d-41b6-9349-c8fb3ce751bc'
-The _Instance_ link unites a software component with resources that use
-one or more copies of that software.
+The _Version_ link unites a generic resource with a versioned vision of
+itself.
 <a name="914265aecb515bd4aa7ad8dfe3423368"></a>
 # Links
 -   Software --> Connection
 -   Software --> AnalyticalProcessMonitor
 -   Software --> Middleware
--   Software --> Configuration
--   Software --> RuleSet
 
 <a name="3f72bb16-602f-4608-a091-ee10721d1be7"></a>
 <a name="c50d26e35b4e572585bfc40e081a5600"></a>
@@ -1977,13 +1950,6 @@ itself.
 <a name="88660668804e59b3bf31accead86bf18"></a>
 # Examples
   "Instrument Manager 8.15" is a version of "Instrument Manager"
-
-<a name="26140d9d-97e7-4f6e-beec-92a7e4ab0c6d"></a>
-<a name="20357ea702c651f8badb4ef2e6c023e8"></a>
-###ResourceLinkKind_WriteAccess
-    GUID: '26140d9d-97e7-4f6e-beec-92a7e4ab0c6d'
-The _WriteAccess_ link unites a resource (typically an actor such as a
-user) with another resource modifiable by that actor.
 
 
 Resource Property Kinds
@@ -2162,7 +2128,7 @@ ___
 This document was generated automatically as part of the automated build
 process.
 
-Version: 1.0.0.591
+Version: 1.0.0.602
 </xmp>
 
 <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>

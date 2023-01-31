@@ -1622,6 +1622,144 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
+  '/api/resource/1.0/middlewareconnections':
+    get:
+      security:
+        - Authorization: []
+      tags:
+      - resource
+      description: |
+        get
+        <br/><b>Notes:</b><ul>
+        <li>The returned list of objects is subject to pagination.
+        Pagination ensures that a query does not return an unexpectedly large data set.
+        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
+        Making a single large query is usuall more efficient than making several small ones.</li>
+        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
+        </ul>
+      parameters:
+      - name: "middleware"
+        in: "query"
+        required: true
+        description: |
+          The middleware that owns the connections.
+        schema:
+          type: string
+          format: guid
+      - name: "page"
+        in: "query"
+        required: false
+        description: |
+          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
+          <li>To iterate through items, increase the page number until the returned set is empty</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+      - name: "pagesize"
+        in: "query"
+        required: false
+        description: |
+          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+          default: 20
+          minimum: 1
+      - name: "first"
+        in: "query"
+        required: false
+        description: |
+          The index of the first item to return.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "last"
+        in: "query"
+        required: false
+        description: |
+          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
+          <br/><b>Notes:</b><ul>
+          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
+          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
+          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
+          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
+          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
+          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
+          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
+          </ul>
+        schema:
+          type: integer
+          format: int64
+      - name: "sortorder"
+        in: "query"
+        required: false
+        description: |
+          Sort order to apply while retrieving the connections from database. Defaults to ascending order. Acceptables values are 'asc' or 'desc'.
+        schema:
+          type: string
+          format: csv
+      - name: "searchtext"
+        in: "query"
+        required: false
+        description: |
+          Searchs the connections matching search text.
+          Search is case in-sensitive. Note that, before passing searchtext as a query param, clients must encoded it using encodeURIComponent.
+        schema:
+          type: string
+          format: csv
+      - name: "includehidden"
+        in: "query"
+        required: false
+        description: |
+          Whether to include hidden objects in the returned set.
+          <br/><b>Notes:</b><ul>
+          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
+          </ul>
+        schema:
+          type: boolean
+      - name: "hiddenonly"
+        in: "query"
+        required: false
+        description: |
+          Whether to include only hidden connections in the returned set. Both includehidden and hiddenonly cannot be set to true. Defaults to false.
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: |
+            Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statuscode:
+                    type: number
+                    example: 200
+                  status:
+                    type: string
+                    example: 'Success'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: null
+                  data:
+                    $ref: "#/components/schemas/MiddlewareConnections"
+        "401":
+          description: |
+            Access token is missing or invalid
   '/api/resource/1.0/middlewares':
     get:
       security:
@@ -2966,113 +3104,6 @@ paths:
         schema:
           type: string
           format: guid
-      - name: "requiredmasterid"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of resource ids. Resources are only included in the results if one of their masters (irrelevant of the Link Kind) is in the list.
-          <br/><b>Notes:</b><ul>
-          <li>This can be used to filter resources depending on their relation to other resources.</li>
-          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
-          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
-          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
-          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
-          have a master relationship of kind A to any element.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "requiredelementid"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of resource ids. Resources are only included in the results if one of their elements (irrelevant of the Link Kind) is in the list.
-          <br/><b>Notes:</b><ul>
-          <li>This can be used to filter resources depending on their relation to other resources.</li>
-          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
-          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
-          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
-          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
-          have a master relationship of kind A to any element.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "requiredmasterlink"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if one of their masters is related by one of the kinds in the list.
-          <br/><b>Notes:</b><ul>
-          <li>This can be used to filter resources depending on their relation to other resources.</li>
-          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
-          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
-          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
-          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
-          have a master relationship of kind A to any element.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "requiredelementlink"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if one of their elements is related by one of the kinds  in the list.
-          <br/><b>Notes:</b><ul>
-          <li>This can be used to filter resources depending on their relation to other resources.</li>
-          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
-          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
-          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
-          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
-          have a master relationship of kind A to any element.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "forbiddenmasterlink"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if none of their masters is related by one of the kinds in the list.
-          <br/><b>Notes:</b><ul>
-          <li>This can be used to filter resources depending on their relation to other resources.</li>
-          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
-          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
-          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
-          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
-          have a master relationship of kind A to any element.</li>
-          <li>This can be used, for example, to list resources of type <i>Connection</i> that are not part of a group, using <tt>kind=ResourceKind_Connection&forbiddenmasterlink=ResourceLinkKind_Content</tt>.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "forbiddenelementlink"
-        in: "query"
-        required: false
-        description: |
-          A comma-separated list of Resource Link Kind ids. Resources are only included in the results if none of their elements is related by one of the kinds  in the list.
-          <br/><b>Notes:</b><ul>
-          <li>This can be used to filter resources depending on their relation to other resources.</li>
-          <li>That this is not a replacement for the <tt>elements</tt> or <tt>masters</tt> API calls. Especially, the sort order specified by the links is not used to sort the returned resources</li>
-          <li>Multiple filters on masters and elements may be specified, but they are not combined together.
-          For example, using both <tt>requiredelementlink=A</tt> and <tt>requiredelementid=B</tt> will **not** combine the two filters: it will not
-          restrict to resources linked to B using a link kind A. Instead, it will return resources that are masters of B (using any link kind) and
-          have a master relationship of kind A to any element.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-      - name: "sort"
-        in: "query"
-        required: false
-        description: |
-          An alternate sort order for the returned resources.
-          <br/><b>Notes:</b><ul>
-          <li>The value <tt>recent</tt> returns the resources by creation date, the most recently created being listed first.</li>
-          </ul>
-        schema:
-          type: string
       - name: "includelinks"
         in: "query"
         required: false
@@ -4590,422 +4621,6 @@ paths:
         "401":
           description: |
             Access token is missing or invalid
-  '/api/workitem/1.0/operationkinds':
-    post:
-      security:
-        - Authorization: []
-      tags:
-      - definition
-      - operation kind
-      description: |
-        Creates a new OperationKind object.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/OperationKind"
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 200
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    $ref: "#/components/schemas/OperationKind"
-        "401":
-          description: |
-            Access token is missing or invalid
-    get:
-      security:
-        - Authorization: []
-      tags:
-      - definition
-      - operation kind
-      description: |
-        Retrieves a list of OperationKind objects.
-        <br/><b>Notes:</b><ul>
-        <li>The returned list does not contain objects marked as hidden. To include those objects in the list, use the <tt>includehidden</tt> option in the parameters.</li>
-        <li>The returned list of objects is subject to pagination.
-        Pagination ensures that a query does not return an unexpectedly large data set.
-        It is recommended to adapt the size of individual pages according to the expected size of the dataset.
-        Making a single large query is usuall more efficient than making several small ones.</li>
-        </ul>
-      parameters:
-      - name: "includehidden"
-        in: "query"
-        required: false
-        description: |
-          Whether to include hidden objects in the returned set.
-          <br/><b>Notes:</b><ul>
-          <li>When absent, the returned object list does not contain objects marked as hidden.</li>
-          </ul>
-        schema:
-          type: boolean
-      - name: "page"
-        in: "query"
-        required: false
-        description: |
-          The page number. Combined with the <tt>pagesize</tt> parameter, this defines the range of objects returned.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
-          <li>To iterate through items, increase the page number until the returned set is empty</li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-          default: 0
-          minimum: 0
-      - name: "pagesize"
-        in: "query"
-        required: false
-        description: |
-          The page size. Combined with the <tt>page</tt> parameter, this defines the range of objects returned.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-          default: 20
-          minimum: 1
-      - name: "first"
-        in: "query"
-        required: false
-        description: |
-          The index of the first item to return.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-      - name: "last"
-        in: "query"
-        required: false
-        description: |
-          The index + 1 of the last item to return, when using the <tt>first</tt>/<tt>last</tt> combination.
-          <br/><b>Notes:</b><ul>
-          <li>Avoid specifying the range by mixing <tt>page</tt>/<tt>pagesize</tt> and <tt>first</tt>/<tt>last</tt> parameters. It is recommended to use <tt>page</tt>/<tt>pagesize</tt> rather than <tt>first</tt>/<tt>last</tt></li>
-          <li>Bear in mind that this is not the index of the last item to return, but the index <b>following</b> the last item to return.</li>
-          <li>The <tt>last</tt> parameter is ignored if the <tt>first</tt> parameter is not given.</li>
-          <li>The query will return at most <tt>last</tt> - <tt>first</tt> items.
-          If the <tt>last</tt> parameter is not given, at most <tt>pagesize</tt> items will be returned.
-          It is not recommended to leave <tt>last</tt> parameter unspecified.</li>
-          <li>The behavior when <tt>last</tt> is less or equal to <tt>first</tt> is not specified, and subject to change.</li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 200
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    type: "array"
-                    items:
-                      $ref: "#/components/schemas/OperationKind"
-        "401":
-          description: |
-            Access token is missing or invalid
-  '/api/workitem/1.0/operationkinds/{id}':
-    get:
-      security:
-        - Authorization: []
-      tags:
-      - definition
-      - operation kind
-      description: |
-        Gets a single OperationKind
-        <br/><b>Notes:</b><ul>
-        <li>The object is returned even if it is hidden.</li>
-        </ul>
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        description: |
-          The internal Id of the OperationKind
-        schema:
-          type: string
-          format: guid
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 200
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    $ref: "#/components/schemas/OperationKind"
-        "401":
-          description: |
-            Access token is missing or invalid
-    delete:
-      security:
-        - Authorization: []
-      tags:
-      - definition
-      - operation kind
-      description: |
-        Removes the OperationKind object.
-        <br/><b>Notes:</b><ul>
-        <li>This does not actually delete the object from the database, as it may be needed for historical reasons.
-        Instead, the <tt>hidden</tt> property of the object is set to <tt>true</tt>.</li>
-        <li>It is possible to <i>undelete</i> an object by issuing a <tt>put</tt> query to set the
-        <tt>hidden</tt> property back to <tt>false</tt>.</li>
-        </ul>
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        description: |
-          The internal Id of the OperationKind
-        schema:
-          type: string
-          format: guid
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 204
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    example: null
-        "401":
-          description: |
-            Access token is missing or invalid
-    put:
-      security:
-        - Authorization: []
-      tags:
-      - definition
-      - operation kind
-      description: |
-        Updates selected properties of the OperationKind object.
-        <br/><b>Notes:</b><ul>
-        <li>This query updates the fields explicitly present in the body. All fields absent from the body keep their existing value.</li>
-        <li>The id parameter <i>may</i> be present in the body, but it must match the existing id. It is not possible to change the unique ID of an object.</li>
-        </ul>
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/OperationKind"
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        description: |
-          The internal Id of the OperationKind
-        schema:
-          type: string
-          format: guid
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 200
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    $ref: "#/components/schemas/OperationKind"
-        "401":
-          description: |
-            Access token is missing or invalid
-  '/api/workitem/1.0/operations':
-    get:
-      security:
-        - Authorization: []
-      tags:
-      - audit
-      description: |
-        Retrieve a list of operations performed (or scheduled) on given targets.
-        <br/><b>Notes:</b><ul>
-        <li>This API is only currently only available in IM configurator</li>
-        <li>Returned operations may include operations already performed (ie audit log entries), or operations scheduled
-        for later execution (ie todo list entries). Updating the <tt>performed</tt> property of an operation switches it from a todo list entry
-        to an audit log entry.</li>
-        </ul>
-      parameters:
-      - name: "targetid"
-        in: "query"
-        required: false
-        description: |
-          Filters entries according to the target object(s).
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
-          in which case only entries matching all filters are returned.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-        example: '091fc609-70a1-4b24-ac31-c268ce6e43e4'
-      - name: "sort"
-        in: "query"
-        required: false
-        description: |
-          An aditional sort criteria for items. Items are sorted according to the given criteria, then according to the
-          execution date.
-          <br/><b>Notes:</b><ul>
-          <li>When this parameter is equal to <tt>target</tt> the items are sorted according to the internal ID of the target.</li>
-          <li>When this parameter is equal to <tt>performer</tt> the items are sorted according to the internal ID of the performer.</li>
-          </ul>
-        schema:
-          type: string
-        example: 'target'
-      - name: "performer"
-        in: "query"
-        required: false
-        description: |
-          Filters items according to the performer.
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
-          in which case only entries matching all filters are returned.</li>
-          </ul>
-        schema:
-          type: string
-          format: guid
-        example: '472b77da-07e1-47ee-9428-eb5d94abba15'
-      - name: "performedsince"
-        in: "query"
-        required: false
-        description: |
-          Filters items performed recently. The parameters gives the maximum number of seconds for the
-          _age_ of the operation. Only operations performed less than this number of seconds ago are returned.
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
-          in which case only entries matching all filters are returned.</li>
-          <li>If this filter is specified, items with an unknown execution date are never returned.</li>
-          </ul>
-        schema:
-          type: integer
-          format: int64
-        example: '15'
-      - name: "performedafter"
-        in: "query"
-        required: false
-        description: |
-          Filters items according to their execution time. Only items that were performed after the given timestamp are returned.
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
-          in which case only entries matching all filters are returned.</li>
-          <li>If this filter is specified, items with an unknown execution date are never returned.</li>
-          </ul>
-        schema:
-          type: string
-          format: ISO-8601
-      - name: "performedbefore"
-        in: "query"
-        required: false
-        description: |
-          Filters items according to their execution time. Only items that were performed before the given timestamp are returned.
-          <br/><b>Notes:</b><ul>
-          <li>This parameter acts as a filter. Only entries matching the condition are returned. Multiple filters can be specified,
-          in which case only entries matching all filters are returned.</li>
-          <li>If this filter is specified, items with an unknown execution date are never returned.</li>
-          </ul>
-        schema:
-          type: string
-          format: ISO-8601
-      responses:
-        "200":
-          description: |
-            Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statuscode:
-                    type: number
-                    example: 200
-                  status:
-                    type: string
-                    example: 'Success'
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                    example: null
-                  data:
-                    type: "array"
-                    items:
-                      $ref: "#/components/schemas/Operation"
-        "401":
-          description: |
-            Access token is missing or invalid
 components:
   securitySchemes:
     Authorization:
@@ -5015,32 +4630,6 @@ components:
       in: header
       name: Authorization
   schemas:
-    ControlledResource:
-      type: object
-      description: |
-        A resource that has additional fields so it can be used as a controlled document.
-      properties:
-        submitted:
-          description: |
-            The Date and Time when this resource was submitted into the system
-        submitter:
-          description: |
-            The GUID of the agent that submitted that resource
-        submitcomments:
-          description: |
-            Any comments provided by the submitter
-        reviewstatus:
-          description: |
-            The current review status of the resource. 0 = unreviewed, 1 = approved, 2 = rejected
-        reviewed:
-          description: |
-            The date and time the resource was last reviewed.
-        reviewer:
-          description: |
-            The GUID of the agent that reviewed that resource
-        reviewcomments:
-          description: |
-            Any comments provided by the reviewer.
     ImConnection:
       type: object
       description: |
@@ -5764,15 +5353,6 @@ components:
         provider:
           description: |
             The internal ID of the process that uploads the values
-            <br/><b>Notes:</b><ul>
-            <li>The provider must be the ID of an existing resource.</li>
-            <li>If the provider is not specified, it defaults to the resource representing the current user.</li>
-            <li>When using bulk-loading (ie when this record is part of a larger <tt>MetricValues</tt> structure), the value of the
-            field can be specified for each metric individually, or as part of the whole structure</li>
-            <li>The choice of a proper provider is central to the function of the metric watchdog.
-            It is recommended that the provider explicitly identifies the process (eg the ETL connection, in the case of IM) that uploads the metrics.
-            An ETL connection should use the same provider for every metric it uploads. Two different ETL connections should use different provider ids.</li>
-            </ul>
           type: string
           format: guid
           example: '2e802d16-86f7-4898-b972-4c82cf411387'
@@ -5781,8 +5361,6 @@ components:
             The number of seconds the metric should remain valid
             <br/><b>Notes:</b><ul>
             <li>The default value is 600 seconds.</li>
-            <li>When using bulk-loading (ie when this record is part of a larger <tt>MetricValues</tt> structure), the value of the
-            field can be specified for each metric individually, or as part of the whole structure</li>
             </ul>
           type: number
           example: 600
@@ -5832,214 +5410,28 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/MetricValue"
-    Operation:
+    MiddlewareConnections:
       type: object
       description: |
-        The description of an action performed on a target.
-        <br>
-        Operations have a *target* that indicates on what object the operation was performed (typically, a resource),
-        and a *Kind* that indicates the action that was performed.
-        <br>
-        Operations serve both as entries in audit logs and todo lists. When used as an audit log, the operation has its <tt>performed</tt> field set to
-        true. When used as a todo list, the operation has this field set to false. When the todo item is completed, the <tt>performed</tt> field
-        is set to true, turning the operation into an audit log entry.
-        <br>
-        The system automatically creates Operation entries each time a significant change is performed on the system (eg the change of some
-        properties of a resource object) and such entries cannot be modified once entered.
-        <br>
-        The users are also allowed to create Operation entries through the REST API to represent user-defined tasks.
-        <br/><b>Notes:</b><ul>
-        <li>The current implementation leaves out most of the fields needed for an operation to be used as a todo list
-        entry. Typically, all fields needed to schedule a future execution are currently not provided.</li>
-        </ul>
+        MiddlewareConnections
       properties:
-        id:
+        connections:
           description: |
-            The internal ID of the operation
-            <br/><b>Notes:</b><ul>
-            <li>This field is auto-generated. Its value is automatically generated at the creation of the object, and cannot be altered.</li>
-            </ul>
-          example: 'b004484f-5bc6-4655-9e7b-3f86e618f73c'
-        kind:
-          description: |
-            The internal ID of the Operation Kind.
-            <br/><b>Notes:</b><ul>
-            <li>This field is immutable. It should be given a value when the object is created, then never altered afterwards.</li>
-            </ul>
-          example: '097eaa8c-5eef-4c3f-949c-9d4da05953f2'
-        kindname:
-          description: |
-            The name of the operation kind.
+            The list of connections.
             <br/><b>Notes:</b><ul>
             <li>This field is read only.
             It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
             A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
             </ul>
-          example: 'Calibrate instrument'
-        performer:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/middlewareConnection"
+        totalConnectionCount:
           description: |
-            The internal GUID of the agent resource that performed the operation.
-            <br/><b>Notes:</b><ul>
-            <li>This field is NULL until the operation starts. It is not meant to contain the expected performer of an operation
-            scheduled for later, it only contains the known performer for an operation that already occurred.</li>
-            </ul>
-          example: '3dd16619-5687-429e-8b3b-34e627fa84e6'
-        performername:
-          description: |
-            The name of the performer.
-            <br/><b>Notes:</b><ul>
-            <li>This field is read only.
-            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
-            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
-            </ul>
-          example: 'John Smith'
-        performed:
-          description: |
-            Whether the operation has already been performed.
-            <br/><b>Notes:</b><ul>
-            <li>If true, the operation was performed; the operation represents an audit log entry.
-            If false, the operation is either not started, or still pending; the operation represents a todo list entry.</li>
-            </ul>
-          example: 'true'
-        failed:
-          description: |
-            Whether the operation ended in failure.
-            <br/><b>Notes:</b><ul>
-            <li>The operation may fail even if it was never completed. This means that the operation was not even attempted.</li>
-            </ul>
-          example: 'false'
-        performedat:
-          description: |
-            The date and time the operation was performed.
-            <br/><b>Notes:</b><ul>
-            <li>This field is usually NULL until the operation is complete.</li>
-            <li>The field can be null even if the operation is complete, indicating the date and time is unknown</li>
-            <li>When an operation takes a long time to complete (eg the calibration of an instrument may take several minutes), the field indicates
-            when the operation was complete (ie when it ended, not when it started). In the future, the start time may be added as a supplemental field.</li>
-            </ul>
-          example: '2021-11-12T09:00:00Z'
-        targetid:
-          description: |
-            The internal ID of the object on which the operation was performed.
-            <br/><b>Notes:</b><ul>
-            <li>Use the `targettype` field to determine the type of the object.</li>
-            <li>This field is typically the internal ID of a resource.</li>
-            <li>This field is immutable. It should be given a value when the object is created, then never altered afterwards.</li>
-            </ul>
-          example: '5340adb8-e81e-4807-ac4e-f6d0f7b61828'
-        targettype:
-          description: |
-            The internal ID of the type of the target.
-            <br/><b>Notes:</b><ul>
-            <li>This field is immutable. It should be given a value when the object is created, then never altered afterwards.</li>
-            </ul>
-          example: '18701635-6821-403f-b005-5e0aadca4a3a'
-        targetname:
-          description: |
-            The name of the target
-            <br/><b>Notes:</b><ul>
-            <li>This field is only meaningful if the target is a resource</li>
-            <li>This field is read only.
-            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
-            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
-            </ul>
-          example: 'Cell-Dyn 4000'
-        details:
-          description: |
-            Details of the operation
-            <br/><b>Notes:</b><ul>
-            <li>The structure of this field depends on the nature of the operation. Typically, this is a list of the fields that were changed.</li>
-            </ul>
-    OperationKind:
-      type: object
-      description: |
-        An operation kind describes a kind of operation that is performed on a target.
-        <br>
-        The Operation Kind is a generalized representation of the actual operation that was performed, disregarding the actual target
-        (the same operation kind can be executed on many different objects in the lab)
-        and the result of the operation (the execution may or may not succeed - eg the same operation kind is used to represent the
-        attempt at calibrating an instrument, the success of calibrating an instrument, and the failure at calibrating an instrument).
-        <br>
-        Examples:<ul><li>
-        Calibrate instrument
-        <li></li>
-        Approve result
-        <li></li>
-        Upload a configuration
-        </li></ul>
-        The workitem microservice itself is largely agnostic to the operation kind; any application can add its own operation kinds without the
-        need to re-deploy the microservice. In some workflows, it may be possible to allow the end user to create custom operation kinds as well.
-        However, some operation kinds are predefined and have well known semantics for the microservices. These are usually related to operation
-        performed on the data itself (eg change the value of a field in a resource object), rather than on a real-life object in the lab.
-        <br>
-        Operation kinds try not to be overly specific. For example, there is an operation kind _edit fields of a resource_ that is used for
-        any change in a resource object. We do not create one operation kind for each field (eg _edit the name field of a resource_).
-        
-      properties:
-        id:
-          description: |
-            The internal ID of the Definition.
-            Once attributed, the internal ID can no longer be changed.
-            <br/><b>Notes:</b><ul>
-            <li>When specified during a PUT, the field value must match the ID passed in the URL</li>
-            <li>When specified during a POST, the field value forces the ID for the object, otherwise a new unique ID will be generated.
-            The client must ensure that the ID, if forced, does not already exists.</li>
-            </ul>
-        name:
-          description: |
-            A descriptive name for the Definition.
-            The name should be descriptive and specific enough for a user to quickly identify the
-            Definition referred to by that entry.
-            <br/><b>Notes:</b><ul>
-            <li>Two entries may have the same name.</li>
-            <li>Changing the name of an entry does not alter its identity.</li>
-            <li>There is no limit to the size of a name, but this should not typically exceed 50 characters.</li>
-            </ul>
-          example: 'An Example Name'
-        hidden:
-          description: |
-            Whether this Definition has been hidden.
-            <br/><b>Notes:</b><ul>
-            <li>An entry with its <tt>hidden</tt> property set to true will no longer be returned in lists.
-            It can still be referenced explicitly.</li>
-            <li>As there are no way of deleting a definition from the database (as it may be needed for historical purposes)
-            setting the <tt>hidden</tt> property to true is the recommended way of <i>deleting</i> a definition.</li>
-            </ul>
-          example: 'false'
-        shortname:
-          description: |
-            A name for the Definition, shorter than the standard name.
-            <br/><b>Notes:</b><ul>
-            <li>If a definition does not have a short name, the application should use the standard name instead.</li>
-            <li>There is no limit to the size of a short name, but this should not typically exceed 15 characters.</li>
-            </ul>
-          example: 'Widget'
-        systematicname:
-          description: |
-            A name for the Definition, using systematic conventions.
-            <br/><b>Notes:</b><ul>
-            <li>The systematic name is typically used by automated procedures to give unique identities to items.
-            It is common for a systematic name to be unique only within a given context.
-            For example, the systematic name of a connection is of the form <tt>CN-xxxx</tt> and is only unique within a given middleware.</li>
-            <li>The systematic name is not meant to be shown to the end user.
-            It can be shown to an administrator as extended properties, but a user should refrain from arbitrarily changing it if it was attributed by an automatic process.</li>
-            </ul>
-          example: 'CN-101'
-        sortkey:
-          description: |
-            An arbitrary key used to sort the definitions in lists.
-            <br/><b>Notes:</b><ul>
-            <li>When a REST API returns multiple definitions, these are sorted first according to their Sort Key, then to their standard name.</li>
-            <li>When two definitions have the same Sort Key and the same Name, their sort order is chosen arbitrarily by the backend.
-            That sort order is consistent, it will be the same for each API call targeting the same version of the backend.
-            However, that order can change between different versions of the backend.</li>
-            <li>Sort Keys can be any arbitrary text. Multiple definitions may have the same sort key. A typical usage is to put a sortkey of 'A' for usual items and 'Z' for unusual items, so that usual items appear before unusual ones.</li>
-            <li>The keys are ordered in pure lexicographical order, based on the Unicode representation of individual characters.
-            Especially, all lowercase latin characters are sorted after all uppercase latin letters.
-            For example <tt>a</tt> is after <tt>Z</tt>, and <tt>9</tt> is after <tt>10</tt>.
-            It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
-            </ul>
-          example: 'A'
+            The total number of connections matching the criteria.
+          type: integer
+          format: int64
+          minimum: 0
     Resource:
       type: object
       description: |
@@ -6569,3 +5961,66 @@ components:
             It is recommended, but not required, for the sort key to use only digits and uppercase latin letters.</li>
             </ul>
           example: 'A'
+    middlewareConnection:
+      type: object
+      description: |
+        Additional, IM-specific information about a ressource that acts as a connection.
+      properties:
+        id:
+          description: |
+            The internal ID of the connection object.
+            <br/><b>Notes:</b><ul>
+            <li>This field is read only.
+            It is included in the result of a GET query as information so that a client does not need to issue a subsequent query just to obtain that information.
+            A client may choose to include it when updating the object with a PUT or a POST query, but the field will not be updated in the database.</li>
+            </ul>
+          type: string
+          format: guid
+          example: 'd461286e-0897-459e-bb7e-949f2dfdaa5b'
+        name:
+          description: |
+            The name of the connection. This field is retrieved from the name of the corresponding resource.
+          type: string
+        systematicname:
+          description: |
+            The code of the connection, typically in the form CN-xxxx
+            <br/><b>Notes:</b><ul>
+            <li>This field is retrieved from the systematic name of the corresponding resource.</li>
+            </ul>
+          type: string
+        hidden:
+          description: |
+            Whether the connection is hidden.
+          type: boolean
+        systemconnection:
+          description: |
+            Whether this is a system connection.
+            <br/><b>Notes:</b><ul>
+            <li>The value is derived from instrumentnumber</li>
+            </ul>
+          type: boolean
+        sitename:
+          description: |
+            The name of the site.
+            <br/><b>Notes:</b><ul>
+            <li>This field is ignored in a PUT if no `sitecode` is given.</li>
+            <li>If this field is not specified, it defaults to `sitecode`.</li>
+            </ul>
+          type: string
+        locationname:
+          description: |
+            The name of the location.
+            <br/><b>Notes:</b><ul>
+            <li>This field is ignored in a PUT if no `locationcode` is given.</li>
+            <li>If the field is not specified, it defaults to `locationcode`.</li>
+            </ul>
+          type: string
+        drivercode:
+          description: |
+            The code for the driver.
+          type: string
+          example: 'diihl7i'
+        drivertypename:
+          description: |
+            The name for the driver type. This is derived from drivertypecode.
+          type: string
